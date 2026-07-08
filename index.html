@@ -866,15 +866,15 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
 
     <!-- ═══════════════════════════════════════════════════ -->
-    <!-- SCREEN 5: WHY SALESFORCE OMS WINS -->
+    <!-- SCREEN 5: WHY THIS ARCHITECTURE -->
     <!-- ═══════════════════════════════════════════════════ -->
     <div class="screen" id="screen-4">
       <div class="screen-header">
         <div>
-          <h2>Why Salesforce Order Management — Not NetSuite, SAP, or a JDE Extension</h2>
-          <p>OMS is the irreplaceable center of this architecture. The pricing engine only works as well as the order layer it feeds into.</p>
+          <h2>Why This Architecture — IPS's Three Options</h2>
+          <p>IPS identified three paths forward. Here is how they compare.</p>
         </div>
-        <div class="screen-tag">Salesforce OMS — Competitive Analysis</div>
+        <div class="screen-tag">Architecture Rationale</div>
       </div>
 
       <div class="narration-bar">
@@ -882,143 +882,64 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
         <button class="narration-replay" id="narr-replay-5" onclick="replayNarration(5)">↺ Replay</button>
       </div>
 
-      <!-- THE CENTRAL POINT BOX -->
-      <div style="background:linear-gradient(135deg,#032D60 0%,#0070D2 100%);border-radius:10px;padding:22px 28px;margin-bottom:18px;display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center;">
-        <div style="font-size:40px;">⚙️</div>
-        <div>
-          <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:6px;">PriceFx makes the price. Salesforce OMS makes the order happen.</div>
-          <div style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.6;">Getting the right price is only half the problem. The order still has to be validated, split across IPS's brands, routed to the right JDE entity, tracked end-to-end, and surfaced to the distributor in real time. That orchestration layer — the one that sits between your distributors and JDE — is exactly what Salesforce OMS was built for. Without it, a pricing engine has nowhere to send the order.</div>
+      <!-- THREE OPTIONS -->
+      <div class="three-col" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-header" style="background:#fff3f3;border-color:#f5c6c6;color:#c0392b;">Option 1 — Fix It Inside J.D. Edwards</div>
+          <div class="card-body">
+            <p style="font-size:12px;color:#7a4040;line-height:1.6;margin-bottom:10px;">Optimize the existing pricing module inside J.D. Edwards — fewer customizations, faster processing, better maintainability.</p>
+            <div style="font-size:11px;font-weight:700;color:#c0392b;margin-bottom:6px;">The challenge:</div>
+            <p style="font-size:12px;color:#7a4040;line-height:1.6;">The complexity is already deeply embedded. More items, more customers, more acquisitions — the engine that is already stretched gets stretched further. This path buys time, but doesn't change the underlying architecture.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="background:#fff3f3;border-color:#f5c6c6;color:#c0392b;">Option 2 — Custom Integration to External Pricing</div>
+          <div class="card-body">
+            <p style="font-size:12px;color:#7a4040;line-height:1.6;margin-bottom:10px;">Build a custom integration between J.D. Edwards and a third-party pricing engine — bespoke middleware, hand-coded and maintained by IPS's I.T. team.</p>
+            <div style="font-size:11px;font-weight:700;color:#c0392b;margin-bottom:6px;">The challenge:</div>
+            <p style="font-size:12px;color:#7a4040;line-height:1.6;">Trading one set of complexity for another. Every acquisition adds to a custom integration that has to be rebuilt each time the business grows.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="background:#f0f9f4;border-color:#a8d5b5;color:#1a5c2a;">Option 3 — Salesforce OMS + PriceFx ✓ Recommended</div>
+          <div class="card-body">
+            <p style="font-size:12px;color:#2d6a3f;line-height:1.6;margin-bottom:10px;">A purpose-built external pricing engine connected to a certified order management layer — both with pre-built J.D. Edwards connectors, maintained by the vendors, not IPS's I.T. team.</p>
+            <div style="font-size:11px;font-weight:700;color:#1a5c2a;margin-bottom:6px;">Why this works:</div>
+            <p style="font-size:12px;color:#2d6a3f;line-height:1.6;">J.D. Edwards stays as the system of record. The integration is certified, not custom. Every new acquisition plugs into the same architecture — no rebuild required.</p>
+          </div>
         </div>
       </div>
 
-      <!-- WHAT OMS ACTUALLY DOES FOR IPS -->
+      <!-- WHAT THIS SOLVES -->
       <div class="card" style="margin-bottom:16px;">
-        <div class="card-header"><span class="dot dot-green"></span><span class="dot dot-yellow"></span><span class="dot dot-red"></span>&nbsp; What Salesforce OMS Does That No Other Option Matches for IPS</div>
+        <div class="card-header"><span class="dot dot-green"></span><span class="dot dot-yellow"></span><span class="dot dot-red"></span>&nbsp; What This Architecture Specifically Solves for IPS</div>
         <div class="card-body">
           <div class="three-col" style="margin-bottom:0;">
             <div style="border-right:1.5px solid #e0e8f5;padding-right:16px;">
-              <div style="font-size:22px;margin-bottom:8px;">🔀</div>
-              <div style="font-weight:700;font-size:13px;color:#032D60;margin-bottom:6px;">Multi-Brand Order Splitting</div>
-              <div style="font-size:12px;color:#4a6080;line-height:1.6;">When Ferguson orders Weld-On cement <em>and</em> Studor valves in a single cart, OMS automatically splits the order into separate JDE entities (WO-US and ST-US) with the correct routing logic per brand — and presents it to Ferguson as one unified order with one tracking number. No other platform handles this without custom code.</div>
+              <div style="font-size:22px;margin-bottom:8px;">⚡</div>
+              <div style="font-weight:700;font-size:13px;color:#032D60;margin-bottom:6px;">Speed to Price</div>
+              <div style="font-size:12px;color:#4a6080;line-height:1.6;">A pricing update that previously required weeks of J.D. Edwards system time becomes a rule change in PriceFx — live in Salesforce Order Management immediately. IPS's commercial team owns it. No I.T. ticket required.</div>
             </div>
             <div style="border-right:1.5px solid #e0e8f5;padding-right:16px;padding-left:16px;">
-              <div style="font-size:22px;margin-bottom:8px;">🔗</div>
-              <div style="font-weight:700;font-size:13px;color:#032D60;margin-bottom:6px;">Native PriceFx + JDE Bridge</div>
-              <div style="font-size:12px;color:#4a6080;line-height:1.6;">Salesforce OMS is the only order layer with certified integrations to <em>both</em> PriceFx <em>and</em> JDE simultaneously. It calls PriceFx for price validation at the moment of order submission, then passes a clean, price-confirmed record to JDE — no manual reconciliation, no middleware build, no batch sync delay.</div>
+              <div style="font-size:22px;margin-bottom:8px;">🏢</div>
+              <div style="font-weight:700;font-size:13px;color:#032D60;margin-bottom:6px;">Acquisition-Ready by Design</div>
+              <div style="font-size:12px;color:#4a6080;line-height:1.6;">Fifteen acquisitions in five years means the architecture has to absorb new brands without a new implementation project each time. With this model, a new brand's pricing is a rule set — not a J.D. Edwards configuration engagement.</div>
             </div>
             <div style="padding-left:16px;">
-              <div style="font-size:22px;margin-bottom:8px;">📡</div>
-              <div style="font-weight:700;font-size:13px;color:#032D60;margin-bottom:6px;">Distributor Visibility Layer</div>
-              <div style="font-size:12px;color:#4a6080;line-height:1.6;">Once an order enters JDE, it's a black box. OMS creates a live visibility layer on top — distributors see real-time status, split shipment tracking, return management, and invoice history through the portal. This is the experience your distributors benchmark you against. JDE alone cannot surface this.</div>
+              <div style="font-size:22px;margin-bottom:8px;">🤖</div>
+              <div style="font-weight:700;font-size:13px;color:#032D60;margin-bottom:6px;">The Agentforce Path</div>
+              <div style="font-size:12px;color:#4a6080;line-height:1.6;">Once pricing constructs are in place, Agentforce can automate what today requires a team — pricing updates across product lines, intelligent order routing, anomaly detection before problems escalate. This is the architecture that makes that possible.</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- COMPETITIVE TABLE -->
-      <div class="card" style="margin-bottom:16px;">
-        <div class="card-header"><span class="dot dot-green"></span><span class="dot dot-yellow"></span><span class="dot dot-red"></span>&nbsp; Head-to-Head: Order Management Options for a Multi-Brand JDE Manufacturer</div>
-        <div class="card-body">
-          <table class="compare-table">
-            <thead>
-              <tr>
-                <th>Capability</th>
-                <th>Salesforce OMS <span style="color:#27ae60;">★ Recommended</span></th>
-                <th>Extend JDE Natively</th>
-                <th>NetSuite OMS</th>
-                <th>SAP Order Mgmt</th>
-                <th>Custom Build</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Multi-brand order splitting per JDE entity</strong></td>
-                <td class="winner"><span class="check-icon">✓</span> Native — configurable rules, no code</td>
-                <td class="loser"><span class="x-icon">✗</span> Not natively supported in JDE</td>
-                <td class="loser"><span class="x-icon">~</span> Possible but requires customization</td>
-                <td class="loser"><span class="x-icon">~</span> Available but SAP-ecosystem-only</td>
-                <td class="loser"><span class="x-icon">✗</span> Full build — 12–18 months</td>
-              </tr>
-              <tr>
-                <td><strong>Real-time PriceFx price validation at checkout</strong></td>
-                <td class="winner"><span class="check-icon">✓</span> Certified ISV integration — sub-200ms API call</td>
-                <td class="loser"><span class="x-icon">✗</span> JDE has no PriceFx connector</td>
-                <td class="loser"><span class="x-icon">~</span> Custom integration required</td>
-                <td class="loser"><span class="x-icon">~</span> Custom integration required</td>
-                <td class="loser"><span class="x-icon">✗</span> Build from scratch</td>
-              </tr>
-              <tr>
-                <td><strong>Distributor self-service portal (B2B Commerce)</strong></td>
-                <td class="winner"><span class="check-icon">✓</span> Native — same platform, one data model</td>
-                <td class="loser"><span class="x-icon">✗</span> JDE has no front-end distributor portal</td>
-                <td class="loser"><span class="x-icon">~</span> Separate product, separate data model</td>
-                <td class="loser"><span class="x-icon">~</span> SAP Commerce — separate product, high cost</td>
-                <td class="loser"><span class="x-icon">✗</span> Full UI build required</td>
-              </tr>
-              <tr>
-                <td><strong>JDE as back-end system of record (no ERP replace)</strong></td>
-                <td class="winner"><span class="check-icon">✓</span> Designed for this — JDE stays authoritative</td>
-                <td class="winner"><span class="check-icon">✓</span> JDE remains ERP</td>
-                <td class="loser"><span class="x-icon">✗</span> NetSuite wants to become your ERP</td>
-                <td class="loser"><span class="x-icon">~</span> SAP often pushes full ERP migration</td>
-                <td class="winner"><span class="check-icon">✓</span> Possible but risky</td>
-              </tr>
-              <tr>
-                <td><strong>Post-acquisition brand onboarding</strong></td>
-                <td class="winner"><span class="check-icon">✓</span> New routing rule + catalog — days to configure</td>
-                <td class="loser"><span class="x-icon">✗</span> New JDE entity = months of ERP config</td>
-                <td class="loser"><span class="x-icon">~</span> Complex subsidiary setup in NetSuite</td>
-                <td class="loser"><span class="x-icon">~</span> SAP org expansion — high cost</td>
-                <td class="loser"><span class="x-icon">✗</span> Rebuild per brand</td>
-              </tr>
-              <tr>
-                <td><strong>CRM + Sales data in the same platform</strong></td>
-                <td class="winner"><span class="check-icon">✓</span> Same Salesforce org — account, contact, order unified</td>
-                <td class="loser"><span class="x-icon">✗</span> No CRM in JDE</td>
-                <td class="loser"><span class="x-icon">~</span> Separate Salesforce integration needed anyway</td>
-                <td class="loser"><span class="x-icon">~</span> SAP CRM separate product</td>
-                <td class="loser"><span class="x-icon">✗</span> No CRM layer</td>
-              </tr>
-              <tr>
-                <td><strong>Agentforce / AI on order workflows</strong></td>
-                <td class="winner"><span class="check-icon">✓</span> Native — proactive order alerts, anomaly detection, AI routing</td>
-                <td class="loser"><span class="x-icon">✗</span> Not available</td>
-                <td class="loser"><span class="x-icon">~</span> Limited AI, separate tooling</td>
-                <td class="loser"><span class="x-icon">~</span> SAP AI — separate licensing, complex</td>
-                <td class="loser"><span class="x-icon">✗</span> Not available</td>
-              </tr>
-              <tr>
-                <td><strong>Time to first production order</strong></td>
-                <td class="winner"><span class="check-icon">✓</span> 10–16 weeks for initial deployment</td>
-                <td class="loser"><span class="x-icon">✗</span> 12–24 months for meaningful capability</td>
-                <td class="loser"><span class="x-icon">~</span> 6–12 months + ERP migration risk</td>
-                <td class="loser"><span class="x-icon">✗</span> 12–18 months minimum</td>
-                <td class="loser"><span class="x-icon">✗</span> 18–36 months, highest risk</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- THE LOCKED-IN VALUE MOMENT -->
-      <div class="three-col" style="margin-bottom:4px;">
-        <div class="card">
-          <div class="card-header" style="background:#f0f9f4;border-color:#a8d5b5;color:#1a5c2a;">✓ &nbsp;The JDE Story Dave Needs to Hear</div>
-          <div class="card-body">
-            <p style="font-size:12px;color:#2d6a3f;line-height:1.6;">Extending JDE to do what OMS does natively is the option that looks cheapest on paper and costs the most in practice. It means custom development every time a new brand is added, no distributor portal without a separate build, and a pricing integration that has to be hand-coded and maintained. OMS eliminates all three.</p>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header" style="background:#e8f4ff;border-color:#c0d8f0;color:#032D60;">⚡ &nbsp;The NetSuite Displacement Risk</div>
-          <div class="card-body">
-            <p style="font-size:12px;color:#1a3a5c;line-height:1.6;">NetSuite's OMS pitch to IPS will include a quiet suggestion that IPS should consider NetSuite as the ERP too. That's a JDE replacement conversation wrapped in an OMS conversation. Salesforce OMS has no interest in replacing JDE — it's designed to work alongside it. That's a material difference for an IT organization that has years invested in JDE.</p>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header" style="background:#fffbf0;border-color:#f5d87a;color:#7d4e00;">★ &nbsp;The Future: Agentforce on Orders</div>
-          <div class="card-body">
-            <p style="font-size:12px;color:#5a3a00;line-height:1.6;">Only Salesforce OMS opens the door to Agentforce — proactive order anomaly alerts, AI-driven inventory routing, automated distributor communications when a shipment is delayed. No other order layer in this comparison has a credible AI roadmap that's in production today.</p>
-          </div>
+      <!-- ZILLIANT / CONGA NOTE -->
+      <div style="background:#fffbf0;border:1.5px solid #f5d87a;border-radius:9px;padding:16px 20px;margin-bottom:4px;display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;">
+        <div style="font-size:24px;">💡</div>
+        <div>
+          <div style="font-weight:800;font-size:13px;color:#7d4e00;margin-bottom:5px;">On Zilliant and Conga</div>
+          <div style="font-size:12px;color:#5a3a00;line-height:1.6;">Both came up in IPS's evaluation. Zilliant is a capable pricing tool, but those implementations tend to be large, bespoke, and I.T.-intensive — trading one set of custom complexity for another. Conga is built around CPQ and configure-price-quote workflows, which is not the problem IPS is trying to solve. This is a pricing engine and order management play, not a CPQ play.</div>
         </div>
       </div>
 
@@ -1027,21 +948,21 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
         <span class="step-indicator">Step 6 of 7</span>
         <div style="display:flex;align-items:center;gap:10px;">
           <span class="continue-prompt" id="prompt-5">👆 Click to continue</span>
-          <button class="nav-btn" id="next-btn-5" onclick="goTo(6)">See Why PriceFx Wins →</button>
+          <button class="nav-btn" id="next-btn-5" onclick="goTo(6)">Why PriceFx + Salesforce OMS →</button>
         </div>
       </div>
     </div>
 
     <!-- ═══════════════════════════════════════════════════ -->
-    <!-- SCREEN 6: WHY PRICEFX WINS -->
+    <!-- SCREEN 6: WHY PRICEFX + OMS -->
     <!-- ═══════════════════════════════════════════════════ -->
     <div class="screen" id="screen-5">
       <div class="screen-header">
         <div>
-          <h2>Why PriceFx — Not SAP, Oracle, or a Custom Build</h2>
-          <p>The pricing engine choice that makes the entire architecture work for IPS specifically.</p>
+          <h2>What PriceFx + Salesforce Order Management Delivers for IPS</h2>
+          <p>The core advantages of this architecture — grounded in what IPS said it needs.</p>
         </div>
-        <div class="screen-tag">Competitive Analysis</div>
+        <div class="screen-tag">Why This Wins</div>
       </div>
 
       <div class="narration-bar">
@@ -1049,99 +970,39 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
         <button class="narration-replay" id="narr-replay-6" onclick="replayNarration(6)">↺ Replay</button>
       </div>
 
-      <div class="card" style="margin-bottom:16px;">
-        <div class="card-header"><span class="dot dot-green"></span><span class="dot dot-yellow"></span><span class="dot dot-red"></span>&nbsp; Head-to-Head: Pricing Engine Options for a JDE-Based Multi-Brand Manufacturer</div>
-        <div class="card-body">
-          <table class="compare-table">
-            <thead>
-              <tr>
-                <th>Capability</th>
-                <th>PriceFx <span style="color:#27ae60;">★ Recommended</span></th>
-                <th>SAP Pricing</th>
-                <th>Oracle CPQ</th>
-                <th>Custom JDE Extension</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Native JDE Integration</strong></td>
-                <td class="winner"><span class="check-icon">✓</span> Pre-built JDE connector, live in weeks</td>
-                <td class="loser"><span class="x-icon">~</span> Requires SAP ecosystem alignment</td>
-                <td class="loser"><span class="x-icon">~</span> Middleware required, complex</td>
-                <td class="loser"><span class="x-icon">✗</span> Manual build, high IT cost</td>
-              </tr>
-              <tr>
-                <td><strong>Salesforce OMS Connector</strong></td>
-                <td class="winner"><span class="check-icon">✓</span> Certified Salesforce ISV partner, API-ready</td>
-                <td class="loser"><span class="x-icon">~</span> Custom integration needed</td>
-                <td class="loser"><span class="x-icon">~</span> Salesforce CPQ overlap, conflict risk</td>
-                <td class="loser"><span class="x-icon">✗</span> Not applicable</td>
-              </tr>
-              <tr>
-                <td><strong>Multi-Brand / Multi-Entity Pricing</strong></td>
-                <td class="winner"><span class="check-icon">✓</span> Native — unlimited brands, independent rules per entity</td>
-                <td class="loser"><span class="x-icon">~</span> Org-dependent, requires separate instances</td>
-                <td class="loser"><span class="x-icon">~</span> Possible but complex configuration</td>
-                <td class="loser"><span class="x-icon">✗</span> Rebuild per acquisition</td>
-              </tr>
-              <tr>
-                <td><strong>Commercial Team Ownership</strong></td>
-                <td class="winner"><span class="check-icon">✓</span> No-code UI, sales ops can manage rules directly</td>
-                <td class="loser"><span class="x-icon">✗</span> SAP admin required for changes</td>
-                <td class="loser"><span class="x-icon">~</span> Admin-heavy configuration</td>
-                <td class="loser"><span class="x-icon">✗</span> IT ticket every time</td>
-              </tr>
-              <tr>
-                <td><strong>Time to First Value</strong></td>
-                <td class="winner"><span class="check-icon">✓</span> 8–12 weeks for initial deployment</td>
-                <td class="loser"><span class="x-icon">✗</span> 6–18 months typical</td>
-                <td class="loser"><span class="x-icon">✗</span> 6–12 months typical</td>
-                <td class="loser"><span class="x-icon">✗</span> 12–24 months, highest risk</td>
-              </tr>
-              <tr>
-                <td><strong>M&A / Acquisition Onboarding</strong></td>
-                <td class="winner"><span class="check-icon">✓</span> New brand = new rule set, days not months</td>
-                <td class="loser"><span class="x-icon">✗</span> New SAP entity per acquisition</td>
-                <td class="loser"><span class="x-icon">~</span> Reconfiguration per brand</td>
-                <td class="loser"><span class="x-icon">✗</span> Full rebuild every time</td>
-              </tr>
-              <tr>
-                <td><strong>Real-Time Price Validation in Order Flow</strong></td>
-                <td class="winner"><span class="check-icon">✓</span> API call at checkout — sub-200ms response</td>
-                <td class="loser"><span class="x-icon">~</span> Requires full SAP ecosystem alignment</td>
-                <td class="loser"><span class="x-icon">~</span> Real-time possible but complex</td>
-                <td class="loser"><span class="x-icon">✗</span> Not supported</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="three-col" style="margin-bottom:16px;">
+      <!-- FOUR CORE ADVANTAGES -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
         <div class="card">
-          <div class="card-header" style="background:#f0f9f4;border-color:#a8d5b5;color:#1a5c2a;">✓ &nbsp;The IPS-Specific Fit</div>
+          <div class="card-header" style="background:#f0f9f4;border-color:#a8d5b5;color:#1a5c2a;">⚡ &nbsp;Pricing Speed IPS Needs</div>
           <div class="card-body">
-            <p style="font-size:12px;color:#2d6a3f;line-height:1.6;">IPS's Centerbridge-backed growth mandate means another 2–3 acquisitions are likely in the next 36 months. PriceFx is the only option that absorbs M&A at commercial speed — a new brand means a new pricing rule set, not a new implementation project.</p>
+            <p style="font-size:12px;color:#2d6a3f;line-height:1.6;">PriceFx gives IPS's commercial team direct ownership of every pricing rule — contracts, volume tiers, customer programs, discount structures. A pricing update that today takes weeks inside J.D. Edwards becomes a change your team makes in minutes, live immediately in order management. Every day of speed to market is margin recovered.</p>
           </div>
         </div>
         <div class="card">
-          <div class="card-header" style="background:#e8f4ff;border-color:#c0d8f0;color:#032D60;">⚡ &nbsp;The JDE Preservation Story</div>
+          <div class="card-header" style="background:#f0f9f4;border-color:#a8d5b5;color:#1a5c2a;">🔗 &nbsp;J.D. Edwards Stays. Nothing Gets Replaced.</div>
           <div class="card-body">
-            <p style="font-size:12px;color:#1a3a5c;line-height:1.6;">PriceFx was designed to complement JDE, not replace it. Its pre-built JDE connector means IPS's ERP team isn't building middleware — they're configuring a certified integration. This is the path of least resistance for Dave's IT organization.</p>
+            <p style="font-size:12px;color:#2d6a3f;line-height:1.6;">J.D. Edwards remains the system of record for inventory, fulfillment, and financials. Salesforce Order Management integrates with it — it doesn't replace it. The inventory checks, order commitment logic, and back-order handling all stay in J.D. Edwards. The integration handles the handoff cleanly.</p>
           </div>
         </div>
         <div class="card">
-          <div class="card-header" style="background:#fffbf0;border-color:#f5d87a;color:#7d4e00;">★ &nbsp;The Salesforce Synergy</div>
+          <div class="card-header" style="background:#e8f4ff;border-color:#c0d8f0;color:#032D60;">🏢 &nbsp;Built for IPS's Acquisition Pace</div>
           <div class="card-body">
-            <p style="font-size:12px;color:#5a3a00;line-height:1.6;">PriceFx is a certified Salesforce ISV. The integration to Salesforce OMS is documented, supported, and used by manufacturers in production today. There is no competing standard — it's the architecture that wins.</p>
+            <p style="font-size:12px;color:#1a3a5c;line-height:1.6;">Fifteen acquisitions in five years means the architecture has to absorb new brands without a new implementation each time. PriceFx handles multi-brand, multi-entity pricing natively. A new brand's pricing is a rule set configuration — not a J.D. Edwards project. Salesforce Order Management routes orders to the right J.D. Edwards entity automatically.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="background:#fffbf0;border-color:#f5d87a;color:#7d4e00;">🤖 &nbsp;The Agentforce Opportunity</div>
+          <div class="card-body">
+            <p style="font-size:12px;color:#5a3a00;line-height:1.6;">Once pricing constructs are in PriceFx and order flow is in Salesforce Order Management, Agentforce can automate the operational work — run a pricing update across a product line, flag order anomalies before they escalate, route exceptions automatically. This is the architecture that makes that possible.</p>
           </div>
         </div>
       </div>
 
+      <!-- CLOSING CARD -->
       <div class="card" style="background:linear-gradient(135deg,#032D60,#0070D2);border-color:#0070D2;">
         <div class="card-body" style="padding:24px 28px;text-align:center;">
-          <div style="font-size:20px;font-weight:800;color:#fff;margin-bottom:8px;">This was a glimpse. The live environment is built around IPS.</div>
-          <div style="font-size:14px;color:rgba(255,255,255,.8);margin-bottom:20px;max-width:480px;margin-left:auto;margin-right:auto;">When the broader IPS team sees the live environment, they won't be looking at a demo — they'll be looking at their own product catalog, their own distributors, and their own pricing structure running end to end. We're ready when you are.</div>
+          <div style="font-size:20px;font-weight:800;color:#fff;margin-bottom:8px;">This is built around IPS — not a generic demo.</div>
+          <div style="font-size:14px;color:rgba(255,255,255,.8);margin-bottom:20px;max-width:520px;margin-left:auto;margin-right:auto;">When the broader IPS team sees the live environment, they will not be looking at a demo. They will be looking at their own product catalog, their own pricing structure, and their own order flow running end to end. We are ready when you are.</div>
           <div style="font-size:12px;color:rgba(255,255,255,.6);">Sam Holz · sam.holz@salesforce.com · Digital Specialist AE, Salesforce<br>Working alongside Chris Hillier, IPS Account Executive</div>
         </div>
       </div>
@@ -1170,8 +1031,8 @@ const screenAudio = [
   new Audio('audio-screen-2.mp3'),
   new Audio('narr-portal.mp3'),
   new Audio('audio-screen-4.mp3'),
-  new Audio('audio-screen-5.mp3'),
-  new Audio('audio-screen-6.mp3'),
+  new Audio('narr-why-arch.mp3'),
+  new Audio('narr-why-pfx-oms.mp3'),
 ];
 screenAudio.forEach(a => { a.preload = 'auto'; });
 
