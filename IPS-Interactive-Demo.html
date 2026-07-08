@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPS Corporation — Interactive Order Management Demo v2</title>
+<style>
+/* ── RESET & BASE ── */
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#f3f4f6; color:#111; font-size:13px; }
+
+/* ── SHELL ── */
+.shell { display:grid; grid-template-rows:56px 48px 1fr; height:100vh; max-width:1200px; margin:0 auto; background:#fff; box-shadow:0 0 40px rgba(0,0,0,.12); }
+
+/* ── TOP NAV ── */
+.topnav { background:linear-gradient(90deg,#032D60,#0070D2); display:flex; align-items:center; padding:0 24px; gap:16px; }
+.topnav-logo { color:#fff; font-weight:800; font-size:16px; letter-spacing:-.3px; }
+.topnav-logo span { opacity:.6; font-weight:400; font-size:13px; margin-left:8px; }
+.topnav-badge { margin-left:auto; background:rgba(255,255,255,.15); color:#fff; font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:4px 10px; border-radius:12px; }
+
+/* ── STEP NAV ── */
+.stepnav { background:#f8faff; border-bottom:2px solid #e0e8f5; display:flex; align-items:stretch; padding:0 16px; gap:4px; }
+.step-btn { padding:0 18px; font-size:12px; font-weight:600; color:#7a8ea8; border:none; background:none; cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; transition:all .15s; white-space:nowrap; display:flex; align-items:center; gap:7px; }
+.step-btn .num { width:18px; height:18px; border-radius:50%; background:#d0dcea; color:#4a6080; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.step-btn.active { color:#0070D2; border-bottom-color:#0070D2; }
+.step-btn.active .num { background:#0070D2; color:#fff; }
+.step-btn:hover:not(.active) { color:#032D60; }
+
+/* ── MAIN CANVAS ── */
+.canvas { overflow:auto; position:relative; }
+.screen { display:none; padding:24px 28px; animation:fadeIn .2s ease; }
+.screen.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── SCREEN HEADER ── */
+.screen-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:20px; }
+.screen-header h2 { font-size:18px; font-weight:700; color:#032D60; line-height:1.3; }
+.screen-header p { font-size:13px; color:#6b7a90; margin-top:4px; }
+.screen-tag { background:#e8f4ff; color:#0070D2; font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:4px 10px; border-radius:12px; white-space:nowrap; margin-left:16px; margin-top:2px; flex-shrink:0; }
+
+/* ── SHARED CARD ── */
+.card { background:#fff; border:1.5px solid #e0e8f5; border-radius:10px; overflow:hidden; }
+.card-header { background:#f4f7fb; border-bottom:1.5px solid #e0e8f5; padding:10px 16px; display:flex; align-items:center; gap:8px; font-weight:700; font-size:12px; color:#032D60; }
+.card-header .dot { width:8px; height:8px; border-radius:50%; }
+.dot-red { background:#e74c3c; }
+.dot-yellow { background:#f39c12; }
+.dot-green { background:#27ae60; }
+.card-body { padding:16px; }
+
+/* ── 2-COL LAYOUT ── */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+
+/* ── SCREEN 1: BEFORE/AFTER ── */
+.before-after { display:grid; grid-template-columns:1fr 40px 1fr; gap:0; align-items:start; }
+.ba-side { border-radius:10px; overflow:hidden; border:1.5px solid #e0e8f5; }
+.ba-side.before { border-color:#f5c6c6; }
+.ba-side.after { border-color:#a8d5b5; }
+.ba-head { padding:12px 16px; font-weight:700; font-size:12px; display:flex; align-items:center; gap:8px; }
+.ba-head.before-head { background:#fff3f3; color:#c0392b; border-bottom:1.5px solid #f5c6c6; }
+.ba-head.after-head { background:#f0f9f4; color:#1a5c2a; border-bottom:1.5px solid #a8d5b5; }
+.ba-body { padding:16px; background:#fff; }
+.ba-arrow { display:flex; align-items:center; justify-content:center; font-size:22px; color:#0070D2; padding-top:60px; }
+.pain-item { display:flex; gap:10px; align-items:flex-start; margin-bottom:14px; }
+.pain-item:last-child { margin-bottom:0; }
+.pain-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
+.pain-text strong { display:block; font-size:12px; font-weight:700; color:#c0392b; margin-bottom:2px; }
+.pain-text p { font-size:12px; color:#7a4040; line-height:1.4; }
+.gain-item { display:flex; gap:10px; align-items:flex-start; margin-bottom:14px; }
+.gain-item:last-child { margin-bottom:0; }
+.gain-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
+.gain-text strong { display:block; font-size:12px; font-weight:700; color:#1a5c2a; margin-bottom:2px; }
+.gain-text p { font-size:12px; color:#2d6a3f; line-height:1.4; }
+
+/* ── PRICEFX DEMO ── */
+.pfx-toolbar { background:#1a1a2e; color:#fff; padding:8px 16px; display:flex; align-items:center; gap:10px; border-radius:8px 8px 0 0; font-size:11px; }
+.pfx-logo { font-weight:800; font-size:13px; color:#4ade80; }
+.pfx-nav-item { color:rgba(255,255,255,.6); cursor:pointer; padding:4px 10px; border-radius:4px; }
+.pfx-nav-item.active { background:rgba(255,255,255,.1); color:#fff; }
+.pfx-body { background:#f9fafb; border:1.5px solid #e0e8f5; border-top:none; border-radius:0 0 8px 8px; padding:16px; }
+
+.rule-table { width:100%; border-collapse:collapse; font-size:12px; }
+.rule-table th { background:#f0f4fa; color:#4a6080; font-weight:700; text-align:left; padding:8px 12px; border-bottom:2px solid #d0dcea; font-size:11px; text-transform:uppercase; letter-spacing:.5px; }
+.rule-table td { padding:9px 12px; border-bottom:1px solid #edf0f5; color:#1a1a2e; }
+.rule-table tr:last-child td { border-bottom:none; }
+.rule-table tr:hover td { background:#f4f8ff; }
+.rule-table .tag { display:inline-block; font-size:10px; font-weight:700; padding:2px 7px; border-radius:10px; }
+.tag-active { background:#d4edda; color:#155724; }
+.tag-draft { background:#fff3cd; color:#856404; }
+.tag-global { background:#e3f2fd; color:#0070D2; }
+.edit-btn { background:#0070D2; color:#fff; border:none; padding:4px 10px; border-radius:4px; font-size:11px; font-weight:600; cursor:pointer; }
+.edit-btn:hover { background:#005bb0; }
+
+/* Rule editor panel */
+.rule-editor { background:#fff; border:1.5px solid #d0e4f7; border-radius:8px; padding:16px; margin-top:14px; }
+.rule-editor-title { font-weight:700; font-size:13px; color:#032D60; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.rule-editor-title .badge { background:#0070D2; color:#fff; font-size:9px; font-weight:700; padding:2px 7px; border-radius:4px; }
+.field-row { display:grid; grid-template-columns:130px 1fr; gap:8px; align-items:center; margin-bottom:10px; }
+.field-label { font-size:11px; font-weight:600; color:#6b7a90; }
+.field-val { background:#f4f7fb; border:1.5px solid #d0dcea; border-radius:5px; padding:6px 10px; font-size:12px; color:#1a1a2e; font-weight:500; }
+.field-val.highlight { background:#e8f4ff; border-color:#0070D2; color:#0070D2; font-weight:700; }
+.field-val.green { background:#f0f9f4; border-color:#27ae60; color:#1a5c2a; font-weight:700; }
+
+/* ── SCREEN 3: DISTRIBUTOR PORTAL ── */
+.portal-shell { border:1.5px solid #d0dcea; border-radius:10px; overflow:hidden; }
+.portal-topbar { background:#032D60; color:#fff; padding:10px 16px; display:flex; align-items:center; gap:12px; }
+.portal-topbar .brand { font-weight:800; font-size:14px; }
+.portal-topbar .brand span { font-weight:400; opacity:.6; font-size:11px; }
+.portal-user { margin-left:auto; font-size:11px; opacity:.7; }
+
+.portal-body { display:grid; grid-template-columns:200px 1fr; }
+.portal-sidebar { background:#f4f7fb; border-right:1.5px solid #e0e8f5; padding:12px 0; }
+.sidebar-item { padding:9px 16px; font-size:12px; color:#4a6080; cursor:pointer; display:flex; align-items:center; gap:8px; border-left:3px solid transparent; }
+.sidebar-item.active { background:#e8f4ff; color:#0070D2; font-weight:700; border-left-color:#0070D2; }
+.sidebar-item:hover:not(.active) { background:#edf2f8; }
+
+.portal-content { padding:16px; background:#fff; }
+.order-form-section { margin-bottom:20px; }
+.form-section-title { font-size:12px; font-weight:700; color:#032D60; margin-bottom:10px; padding-bottom:6px; border-bottom:1.5px solid #e0e8f5; display:flex; align-items:center; gap:8px; }
+
+.product-line { display:grid; grid-template-columns:2fr 80px 100px 90px 28px; gap:8px; align-items:center; margin-bottom:8px; }
+.product-line.header { font-size:11px; font-weight:700; color:#6b7a90; text-transform:uppercase; letter-spacing:.5px; }
+.input-sm { background:#f4f7fb; border:1.5px solid #d0dcea; border-radius:5px; padding:6px 8px; font-size:12px; width:100%; }
+.input-sm:focus { outline:none; border-color:#0070D2; background:#fff; }
+.price-display { font-weight:700; color:#032D60; font-size:12px; padding:6px 8px; }
+.price-display.contract { color:#1a5c2a; }
+.remove-btn { background:none; border:none; color:#c0392b; cursor:pointer; font-size:14px; padding:4px; }
+
+.pricing-callout { background:#f0f9f4; border:1.5px solid #a8d5b5; border-radius:7px; padding:12px 14px; margin:10px 0; display:flex; gap:10px; align-items:flex-start; }
+.pricing-callout .icon { font-size:18px; flex-shrink:0; }
+.pricing-callout strong { display:block; font-size:12px; font-weight:700; color:#1a5c2a; }
+.pricing-callout p { font-size:11.5px; color:#2d6a3f; margin-top:2px; line-height:1.4; }
+
+.order-summary { background:#f4f7fb; border:1.5px solid #d0dcea; border-radius:8px; padding:14px; }
+.summary-row { display:flex; justify-content:space-between; font-size:12px; padding:4px 0; color:#4a6080; }
+.summary-row.total { font-weight:700; font-size:14px; color:#032D60; border-top:2px solid #d0dcea; margin-top:6px; padding-top:8px; }
+.summary-row.savings { color:#1a5c2a; font-weight:600; }
+
+.submit-btn { width:100%; background:#0070D2; color:#fff; border:none; padding:12px; border-radius:7px; font-size:14px; font-weight:700; cursor:pointer; margin-top:12px; transition:background .15s; }
+.submit-btn:hover { background:#005bb0; }
+
+/* ── SCREEN 4: OMS PIPELINE ── */
+.oms-header-bar { background:#032D60; color:#fff; padding:10px 16px; display:flex; align-items:center; gap:12px; border-radius:8px 8px 0 0; }
+.oms-header-bar .brand { font-weight:800; font-size:13px; }
+.oms-header-bar .sub { opacity:.6; font-size:11px; }
+.oms-metric { margin-left:auto; display:flex; gap:20px; }
+.oms-metric-item { text-align:center; }
+.oms-metric-item .val { font-size:16px; font-weight:800; }
+.oms-metric-item .lbl { font-size:9px; opacity:.6; text-transform:uppercase; letter-spacing:.5px; }
+
+.pipeline-track { border:1.5px solid #e0e8f5; border-top:none; border-radius:0 0 8px 8px; padding:16px; background:#f8faff; }
+.pipeline-stages { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:16px; }
+.stage { background:#fff; border:1.5px solid #e0e8f5; border-radius:8px; padding:12px; }
+.stage-title { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.8px; color:#7a8ea8; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
+.stage-count { background:#e8edf5; color:#4a6080; font-size:10px; font-weight:700; padding:1px 6px; border-radius:8px; }
+
+.order-card { background:#fff; border:1.5px solid #d0dcea; border-radius:6px; padding:10px; margin-bottom:8px; cursor:pointer; transition:all .15s; }
+.order-card:hover { border-color:#0070D2; box-shadow:0 2px 8px rgba(0,112,210,.1); transform:translateY(-1px); }
+.order-card.highlight { border-color:#0070D2; background:#f0f7ff; }
+.order-card .oc-id { font-size:10px; font-weight:700; color:#0070D2; }
+.order-card .oc-acct { font-size:12px; font-weight:700; color:#032D60; margin:2px 0; }
+.order-card .oc-detail { font-size:11px; color:#6b7a90; }
+.order-card .oc-amount { font-size:12px; font-weight:700; color:#1a5c2a; margin-top:4px; }
+.order-card .oc-brand-tag { display:inline-block; font-size:9px; font-weight:700; padding:1px 5px; border-radius:3px; margin-right:3px; }
+.brand-weldon { background:#fff3e0; color:#7d4e00; }
+.brand-studor { background:#e8f4ff; color:#032D60; }
+.brand-champion { background:#f3e5f5; color:#4a1a6b; }
+
+/* Animated progress */
+.progress-bar-wrap { height:5px; background:#e0e8f5; border-radius:3px; margin-top:6px; }
+.progress-bar { height:100%; border-radius:3px; background:#0070D2; }
+
+/* Order detail panel */
+.order-detail-panel { background:#fff; border:1.5px solid #d0e4f7; border-radius:8px; padding:16px; margin-top:14px; }
+.odp-title { font-weight:700; font-size:14px; color:#032D60; margin-bottom:12px; display:flex; align-items:center; gap:8px; justify-content:space-between; }
+.status-pill { font-size:10px; font-weight:700; padding:3px 10px; border-radius:10px; }
+.pill-routing { background:#fff3cd; color:#856404; }
+.pill-validated { background:#d4edda; color:#155724; }
+.pill-sent-jde { background:#d1ecf1; color:#0c5460; }
+
+.timeline { position:relative; padding-left:20px; }
+.timeline::before { content:''; position:absolute; left:5px; top:4px; bottom:4px; width:2px; background:#d0dcea; }
+.tl-item { position:relative; margin-bottom:14px; }
+.tl-item:last-child { margin-bottom:0; }
+.tl-dot { position:absolute; left:-18px; top:2px; width:10px; height:10px; border-radius:50%; border:2px solid #fff; flex-shrink:0; }
+.tl-dot.done { background:#27ae60; }
+.tl-dot.active { background:#0070D2; box-shadow:0 0 0 3px rgba(0,112,210,.2); }
+.tl-dot.pending { background:#d0dcea; }
+.tl-time { font-size:10px; color:#7a8ea8; margin-bottom:2px; }
+.tl-event { font-size:12px; font-weight:600; color:#1a1a2e; }
+.tl-sub { font-size:11px; color:#6b7a90; margin-top:1px; line-height:1.4; }
+
+/* ── SCREEN 5: SYNERGY ── */
+.synergy-grid { display:grid; grid-template-columns:1fr 24px 1fr; gap:0; align-items:start; }
+.syn-side { border-radius:10px; overflow:hidden; border:1.5px solid #e0e8f5; }
+.syn-head { padding:12px 16px; font-weight:700; font-size:13px; display:flex; align-items:center; gap:8px; border-bottom:1.5px solid #e0e8f5; }
+.syn-head.pfx { background:#f0f9f4; color:#1a5c2a; border-color:#a8d5b5; }
+.syn-head.sfoms { background:#e8f4ff; color:#032D60; border-color:#c0d8f0; }
+.syn-body { padding:14px; background:#fff; }
+.syn-arrow-col { display:flex; align-items:center; justify-content:center; font-size:20px; color:#7a8ea8; padding-top:50px; }
+.compare-table { width:100%; border-collapse:collapse; font-size:12px; margin-top:8px; }
+.compare-table th { background:#f0f4fa; padding:7px 10px; text-align:left; font-size:11px; font-weight:700; color:#4a6080; text-transform:uppercase; letter-spacing:.5px; border-bottom:2px solid #d0dcea; }
+.compare-table td { padding:8px 10px; border-bottom:1px solid #edf0f5; vertical-align:top; }
+.compare-table tr:last-child td { border-bottom:none; }
+.compare-table .winner { color:#1a5c2a; font-weight:700; }
+.compare-table .loser { color:#7a8ea8; }
+.compare-table .check-icon { color:#27ae60; font-weight:700; }
+.compare-table .x-icon { color:#bbb; }
+
+.bottom-nav { display:flex; justify-content:space-between; align-items:center; padding:16px 28px; border-top:1.5px solid #e0e8f5; background:#f8faff; }
+.nav-btn { background:#0070D2; color:#fff; border:none; padding:9px 20px; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px; }
+.nav-btn:hover { background:#005bb0; }
+.nav-btn.outline { background:#fff; color:#0070D2; border:2px solid #0070D2; }
+.nav-btn.outline:hover { background:#f0f7ff; }
+.nav-btn:disabled { background:#d0dcea; color:#7a8ea8; cursor:not-allowed; }
+.step-indicator { font-size:12px; color:#7a8ea8; font-weight:600; }
+
+/* ── NARRATION BAR ── */
+.narration-bar { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+.narration-replay { background:none; border:1.5px solid #d0dcea; color:#7a8ea8; padding:5px 12px; border-radius:5px; font-size:11px; font-weight:600; cursor:pointer; transition:all .15s; white-space:nowrap; display:none; }
+.narration-replay:hover { border-color:#0070D2; color:#0070D2; }
+.narration-replay.visible { display:inline-flex; align-items:center; gap:5px; }
+.narration-progress { flex:1; height:3px; background:#e0e8f5; border-radius:2px; overflow:hidden; }
+.narration-progress-fill { height:100%; background:#0070D2; border-radius:2px; width:0%; transition:width .25s linear; }
+
+/* ── CONTINUE PROMPT ── */
+.continue-prompt { display:none; align-items:center; gap:8px; font-size:12px; font-weight:700; color:#0070D2; }
+.continue-prompt.visible { display:flex; animation:fadeIn .3s ease; }
+
+/* ── MODAL / TOAST ── */
+.toast { position:fixed; bottom:28px; right:28px; background:#032D60; color:#fff; padding:14px 20px; border-radius:8px; font-size:13px; font-weight:600; box-shadow:0 6px 24px rgba(0,0,0,.2); display:none; z-index:999; max-width:320px; }
+.toast.show { display:block; animation:slideUp .2s ease; }
+@keyframes slideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.toast .toast-title { font-size:14px; font-weight:800; margin-bottom:4px; color:#4adecc; }
+
+/* ── ANIMATED STATUS ── */
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.pulsing { animation:pulse 1.2s infinite; }
+
+/* ── NEXT BUTTON PULSE ── */
+@keyframes nextPulse { 0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(0,112,210,0.4)} 50%{transform:scale(1.04);box-shadow:0 0 0 8px rgba(0,112,210,0)} }
+
+/* ── START OVERLAY ── */
+.start-overlay { position:fixed; inset:0; background:rgba(3,45,96,.92); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; }
+.start-overlay h1 { color:#fff; font-size:26px; font-weight:800; margin-bottom:8px; }
+.start-overlay p { color:rgba(255,255,255,.7); font-size:14px; margin-bottom:32px; }
+.start-btn { background:#0070D2; color:#fff; border:none; padding:16px 40px; border-radius:8px; font-size:16px; font-weight:800; cursor:pointer; letter-spacing:.3px; transition:background .15s; }
+.start-btn:hover { background:#005bb0; }
+</style>
+</head>
+<body>
+<!-- START OVERLAY -->
+<div class="start-overlay" id="start-overlay">
+  <h1>IPS Corporation — Order Intelligence Demo</h1>
+  <p>Prepared for the IPS team · Salesforce + PriceFx</p>
+  <button class="start-btn" onclick="startDemo()">▶ Begin Demo</button>
+</div>
+
+<div class="shell">
+
+  <!-- TOP NAV -->
+  <div class="topnav">
+    <div class="topnav-logo">⚡ IPS Order Intelligence <span>Interactive Demo — Salesforce + PriceFx</span></div>
+    <div class="topnav-badge">Prepared for IPS Corporation</div>
+  </div>
+
+  <!-- STEP NAV -->
+  <div class="stepnav">
+    <button class="step-btn active" onclick="goTo(0)"><span class="num">1</span> What We Heard</button>
+    <button class="step-btn" onclick="goTo(1)"><span class="num">2</span> The Problem Today</button>
+    <button class="step-btn" onclick="goTo(2)"><span class="num">3</span> PriceFx — Pricing Engine</button>
+    <button class="step-btn" onclick="goTo(3)"><span class="num">4</span> Distributor Portal</button>
+    <button class="step-btn" onclick="goTo(4)"><span class="num">5</span> Salesforce OMS Live</button>
+    <button class="step-btn" onclick="goTo(5)"><span class="num">6</span> Why Salesforce OMS Wins</button>
+    <button class="step-btn" onclick="goTo(6)"><span class="num">7</span> Why PriceFx Wins</button>
+  </div>
+
+  <!-- CANVAS -->
+  <div class="canvas">
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 0: WHAT WE HEARD -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="screen active" id="screen-wh">
+      <div class="screen-header">
+        <div>
+          <h2>What IPS Told Us</h2>
+          <p>We built this demonstration specifically around the challenges your team articulated. Here's what we heard — and what we're here to solve.</p>
+        </div>
+        <div class="screen-tag">Discovery Recap</div>
+      </div>
+
+      <div class="narration-bar">
+        <div class="narration-progress"><div class="narration-progress-fill" id="narr-fill-0"></div></div>
+        <button class="narration-replay" id="narr-replay-0" onclick="replayNarration(0)">↺ Replay</button>
+      </div>
+
+      <!-- DAVE'S EXACT WORDS — FROM TRANSCRIPT -->
+      <div style="background:linear-gradient(135deg,#032D60 0%,#0a4a8c 100%);border-radius:10px;padding:24px 28px;margin-bottom:18px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-10px;left:20px;font-size:80px;color:rgba(255,255,255,.08);font-family:Georgia,serif;line-height:1;">"</div>
+        <div style="position:relative;">
+          <div style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:12px;">From IPS's First Call With Salesforce</div>
+          <div style="font-size:15px;font-weight:600;color:#fff;line-height:1.7;font-style:italic;">"If I want to do a price increase, it's a six-week project. We have 50,000 customers and it could take up to a minute per customer to print a new price sheet. It takes days and days and days on the production system. It's not scalable — it's barely sustainable."</div>
+          <div style="margin-top:16px;font-size:12px;color:rgba(255,255,255,.6);">— IPS Leadership, Discovery Call</div>
+        </div>
+      </div>
+
+      <!-- THREE PILLARS -->
+      <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#7a8ea8;margin-bottom:10px;">Three Things You Were Direct About</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;">
+        <div style="background:#fff;border:1.5px solid #f5c6c6;border-radius:9px;padding:18px;">
+          <div style="font-size:24px;margin-bottom:8px;">⏱️</div>
+          <div style="font-weight:800;font-size:13px;color:#c0392b;margin-bottom:8px;">A Price Increase is a Six-Week Project</div>
+          <div style="font-size:12px;color:#7a4040;line-height:1.6;margin-bottom:10px;">One minute per customer to generate a price sheet. Fifty thousand customers. Days of production system time — because JDE simulates a sales order for every single customer-item combination to produce a price sheet.</div>
+          <div style="background:#fff3f3;border-radius:6px;padding:10px 12px;font-size:11.5px;color:#c0392b;font-style:italic;line-height:1.5;">"If you want a June 1 price increase, you have to start your work in February — just to get through the system work."</div>
+        </div>
+        <div style="background:#fff;border:1.5px solid #f5c6c6;border-radius:9px;padding:18px;">
+          <div style="font-size:24px;margin-bottom:8px;">📉</div>
+          <div style="font-weight:800;font-size:13px;color:#c0392b;margin-bottom:8px;">Every Day You Wait, You're Eating Margin</div>
+          <div style="font-size:12px;color:#7a4040;line-height:1.6;margin-bottom:10px;">Global raw materials. Tariffs. Closed shipping lanes. Oil prices. Some years three or four price increases needed in a single product line. The market moves faster than JDE can respond.</div>
+          <div style="background:#fff3f3;border-radius:6px;padding:10px 12px;font-size:11.5px;color:#c0392b;font-style:italic;line-height:1.5;">"Every day that you don't increase your price, you're eating into your margins. Speed to market becomes paramount."</div>
+        </div>
+        <div style="background:#fff;border:1.5px solid #f5c6c6;border-radius:9px;padding:18px;">
+          <div style="font-size:24px;margin-bottom:8px;">📈</div>
+          <div style="font-weight:800;font-size:13px;color:#c0392b;margin-bottom:8px;">The Problem Gets Worse With Every Acquisition</div>
+          <div style="font-size:12px;color:#7a4040;line-height:1.6;margin-bottom:10px;">Fifteen acquisitions in five years. More items, more customers, more locations, more discount programs — all loading into a pricing engine that was already customized in a way that makes it harder to scale, not easier.</div>
+          <div style="background:#fff3f3;border-radius:6px;padding:10px 12px;font-size:11.5px;color:#c0392b;font-style:italic;line-height:1.5;">"It only gets worse as we continue to grow as a company."</div>
+        </div>
+      </div>
+
+      <!-- SKEPTICISM ACKNOWLEDGMENT -->
+      <div style="background:#fffbf0;border:1.5px solid #f5d87a;border-radius:9px;padding:16px 20px;margin-bottom:14px;display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;">
+        <div style="font-size:28px;">🤔</div>
+        <div>
+          <div style="font-weight:800;font-size:13px;color:#7d4e00;margin-bottom:5px;">You Also Said: "I've Never Seen This Done. I'm Skeptical It Can Be."</div>
+          <div style="font-size:12px;color:#5a3a00;line-height:1.6;">You were honest that you've never seen pricing successfully pulled out of a core ERP — that integrating pricing and order management outside of JDE is something you're skeptical anyone can actually pull off. That's a fair read. The following screens are built specifically to address that skepticism, with a proof point from a manufacturer running this exact architecture in production today.</div>
+        </div>
+      </div>
+
+      <!-- TRANSITION STATEMENT -->
+      <div style="background:#f0f7ff;border:1.5px solid #c0d8f0;border-radius:10px;padding:18px 22px;display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;">
+        <div style="font-size:28px;">⚡</div>
+        <div>
+          <div style="font-size:14px;font-weight:800;color:#032D60;margin-bottom:5px;">This is designed for the IPS team — built to answer those three challenges and that skepticism directly.</div>
+          <div style="font-size:12px;color:#4a6080;line-height:1.6;"><strong>Salesforce Order Management</strong> and <strong>PriceFx</strong> working together — with JDE staying exactly where it is. Here's what it looks like running live.</div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <button class="nav-btn outline" disabled>← Back</button>
+        <span class="step-indicator">Step 1 of 7</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="continue-prompt" id="prompt-0">👆 Click to continue</span>
+          <button class="nav-btn" id="next-btn-0" onclick="goTo(1)">See the Architecture →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 1: THE PROBLEM -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-0">
+      <div class="screen-header">
+        <div>
+          <h2>Where IPS Is Today — and Where It's Headed</h2>
+          <p>The pricing flexibility challenge, made visual. Click through to see each component in action.</p>
+        </div>
+        <div class="screen-tag">Current State → Future State</div>
+      </div>
+
+      <div class="narration-bar">
+        <div class="narration-progress"><div class="narration-progress-fill" id="narr-fill-1"></div></div>
+        <button class="narration-replay" id="narr-replay-1" onclick="replayNarration(1)">↺ Replay</button>
+      </div>
+
+      <div class="before-after">
+        <div class="ba-side before">
+          <div class="ba-head before-head">❌ &nbsp;Today — Pricing Locked Inside JD Edwards</div>
+          <div class="ba-body">
+            <div class="pain-item">
+              <div class="pain-icon">🔒</div>
+              <div class="pain-text">
+                <strong>Pricing changes require ERP tickets</strong>
+                <p>Every adjustment to a customer contract price, volume tier, or brand-specific rule means an IT request, a JDE specialist, and days of wait time — if there are no other priorities in queue.</p>
+              </div>
+            </div>
+            <div class="pain-item">
+              <div class="pain-icon">🧩</div>
+              <div class="pain-text">
+                <strong>Multi-brand pricing is inconsistent</strong>
+                <p>Weld-On, Studor, and Champion Pump each have different pricing models. JDE handles them through a patchwork of workarounds — creating errors and manual reconciliation cycles.</p>
+              </div>
+            </div>
+            <div class="pain-item">
+              <div class="pain-icon">📞</div>
+              <div class="pain-text">
+                <strong>Distributors call to place orders</strong>
+                <p>Ferguson, Grainger, and other channel partners have no self-service option. Every order goes through IPS's internal team — creating a bottleneck that grows with each acquisition.</p>
+              </div>
+            </div>
+            <div class="pain-item">
+              <div class="pain-icon">🕐</div>
+              <div class="pain-text">
+                <strong>Order status is a black box</strong>
+                <p>Once an order enters JDE, distributors have no visibility until it ships. Returns, adjustments, and split shipments require calls and email chains.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ba-arrow">→</div>
+
+        <div class="ba-side after">
+          <div class="ba-head after-head">✅ &nbsp;Future State — Flexible, Intelligent, Self-Service</div>
+          <div class="ba-body">
+            <div class="gain-item">
+              <div class="gain-icon">⚡</div>
+              <div class="gain-text">
+                <strong>Pricing rules owned by commercial teams</strong>
+                <p>PriceFx puts contract pricing, volume tiers, and brand-specific rules into a UI that sales and ops teams can manage directly — no IT ticket, no JDE specialist, changes live in minutes.</p>
+              </div>
+            </div>
+            <div class="gain-item">
+              <div class="gain-icon">🎯</div>
+              <div class="gain-text">
+                <strong>One pricing engine. All brands. Any acquisition.</strong>
+                <p>Weld-On, Studor, Champion Pump, and every future brand added through M&A plug into the same pricing layer. Post-acquisition onboarding drops from months to days.</p>
+              </div>
+            </div>
+            <div class="gain-item">
+              <div class="gain-icon">🛒</div>
+              <div class="gain-text">
+                <strong>Distributors order 24/7 without calling IPS</strong>
+                <p>A branded self-service portal lets distributors browse IPS's catalog, see their contract pricing in real time, place and track orders — with Salesforce OMS routing every transaction to JDE.</p>
+              </div>
+            </div>
+            <div class="gain-item">
+              <div class="gain-icon">📡</div>
+              <div class="gain-text">
+                <strong>Full order visibility — portal to fulfillment</strong>
+                <p>Distributors track order status, manage returns, and see split shipments across brands — in one place. IPS's ops team sees the same live view, no more status calls.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <button class="nav-btn outline" onclick="goTo(0)">← Back</button>
+        <span class="step-indicator">Step 2 of 7</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="continue-prompt" id="prompt-1">👆 Click to continue</span>
+          <button class="nav-btn" id="next-btn-1" onclick="goTo(2)">See PriceFx in Action →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 2: PRICEFX -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-1">
+      <div class="screen-header">
+        <div>
+          <h2>PriceFx — Pricing Engine Demo</h2>
+          <p>IPS's commercial team manages all pricing rules directly. No ERP tickets. Changes live in minutes.</p>
+        </div>
+        <div class="screen-tag">PriceFx Platform</div>
+      </div>
+
+      <div class="narration-bar">
+        <div class="narration-progress"><div class="narration-progress-fill" id="narr-fill-2"></div></div>
+        <button class="narration-replay" id="narr-replay-2" onclick="replayNarration(2)">↺ Replay</button>
+      </div>
+
+      <div class="pfx-toolbar">
+        <span class="pfx-logo">PriceFx</span>
+        <span class="pfx-nav-item active">Price Setting</span>
+        <span class="pfx-nav-item">Contracts</span>
+        <span class="pfx-nav-item">Analytics</span>
+        <span class="pfx-nav-item">Approvals</span>
+        <span style="margin-left:auto;opacity:.5;font-size:11px;">IPS Corporation — Commercial Pricing Admin</span>
+      </div>
+      <div class="pfx-body">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="font-weight:700;font-size:13px;color:#032D60;">Active Pricing Rules — All Brands</div>
+          <button class="edit-btn" onclick="showRuleEditor()">+ New Rule</button>
+        </div>
+
+        <table class="rule-table">
+          <thead>
+            <tr>
+              <th>Rule Name</th>
+              <th>Brand</th>
+              <th>Customer / Segment</th>
+              <th>Product Group</th>
+              <th>Discount Logic</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Ferguson — Volume Tier Q3</strong></td>
+              <td><span class="tag tag-global">All Brands</span></td>
+              <td>Ferguson Enterprises</td>
+              <td>Cements & Adhesives</td>
+              <td>5% @ $10K+ / 8% @ $25K+ / 12% @ $50K+</td>
+              <td><span class="tag tag-active">Active</span></td>
+              <td><button class="edit-btn" onclick="loadRule('ferguson')">Edit</button></td>
+            </tr>
+            <tr>
+              <td><strong>Grainger — Contract Pricing</strong></td>
+              <td><span class="tag" style="background:#fff3e0;color:#7d4e00;">Weld-On</span></td>
+              <td>Grainger Industrial</td>
+              <td>PVC / CPVC Cement</td>
+              <td>Fixed contract: $18.40/unit (list: $22.00)</td>
+              <td><span class="tag tag-active">Active</span></td>
+              <td><button class="edit-btn" onclick="loadRule('grainger')">Edit</button></td>
+            </tr>
+            <tr>
+              <td><strong>HD Supply — Studor Promo</strong></td>
+              <td><span class="tag" style="background:#e8f4ff;color:#032D60;">Studor</span></td>
+              <td>HD Supply</td>
+              <td>Air Admittance Valves</td>
+              <td>10% promo Jul–Sep 2026, min qty 50</td>
+              <td><span class="tag tag-active">Active</span></td>
+              <td><button class="edit-btn" onclick="loadRule('hd')">Edit</button></td>
+            </tr>
+            <tr>
+              <td><strong>European Distributor Base</strong></td>
+              <td><span class="tag tag-global">All Brands</span></td>
+              <td>EU Channel Partners</td>
+              <td>All</td>
+              <td>EUR list pricing + 3% logistics adder</td>
+              <td><span class="tag tag-draft">Draft</span></td>
+              <td><button class="edit-btn" onclick="loadRule('eu')">Edit</button></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="rule-editor" id="rule-editor" style="display:none;">
+          <div class="rule-editor-title">
+            <span id="rule-editor-title-text">Editing Rule</span>
+            <span class="badge">Live Edit — No IT Ticket Required</span>
+          </div>
+          <div class="two-col">
+            <div>
+              <div class="field-row">
+                <div class="field-label">Customer</div>
+                <div class="field-val" id="re-customer">—</div>
+              </div>
+              <div class="field-row">
+                <div class="field-label">Brand</div>
+                <div class="field-val" id="re-brand">—</div>
+              </div>
+              <div class="field-row">
+                <div class="field-label">Product Group</div>
+                <div class="field-val" id="re-product">—</div>
+              </div>
+            </div>
+            <div>
+              <div class="field-row">
+                <div class="field-label">Discount Type</div>
+                <div class="field-val" id="re-type">—</div>
+              </div>
+              <div class="field-row">
+                <div class="field-label">Rate / Logic</div>
+                <div class="field-val highlight" id="re-rate">—</div>
+              </div>
+              <div class="field-row">
+                <div class="field-label">JDE Sync</div>
+                <div class="field-val green">✓ Automatic — pushes to OMS on save</div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:12px;">
+            <button class="edit-btn" style="background:#27ae60;" onclick="saveRule()">Save & Publish to OMS</button>
+            <button class="edit-btn" style="background:#7a8ea8;" onclick="closeEditor()">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;" class="card">
+        <div class="card-header"><span class="dot dot-green"></span><span class="dot dot-yellow"></span><span class="dot dot-red"></span>&nbsp; Why This Matters for IPS</div>
+        <div class="card-body three-col">
+          <div>
+            <div style="font-size:18px;margin-bottom:6px;">⏱️</div>
+            <div style="font-weight:700;font-size:12px;color:#032D60;margin-bottom:4px;">Minutes, not days</div>
+            <div style="font-size:12px;color:#4a6080;">A pricing change that previously required an IT ticket and a JDE specialist is now a form save. Average time to update: under 5 minutes.</div>
+          </div>
+          <div>
+            <div style="font-size:18px;margin-bottom:6px;">🏢</div>
+            <div style="font-weight:700;font-size:12px;color:#032D60;margin-bottom:4px;">Acquisition-ready</div>
+            <div style="font-size:12px;color:#4a6080;">When IPS adds a new brand, pricing onboarding is a rule setup — not a JDE configuration project. The architecture absorbs M&A at commercial speed.</div>
+          </div>
+          <div>
+            <div style="font-size:18px;margin-bottom:6px;">🔗</div>
+            <div style="font-weight:700;font-size:12px;color:#032D60;margin-bottom:4px;">Syncs to OMS automatically</div>
+            <div style="font-size:12px;color:#4a6080;">Every published rule feeds directly into Salesforce OMS. When a distributor places an order, PriceFx validates the price in real time — before it ever touches JDE.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <button class="nav-btn outline" onclick="goTo(1)">← Back</button>
+        <span class="step-indicator">Step 3 of 7</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="continue-prompt" id="prompt-2">👆 Click to continue</span>
+          <button class="nav-btn" id="next-btn-2" onclick="goTo(3)">See Distributor Portal →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 3: DISTRIBUTOR PORTAL -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-2">
+      <div class="screen-header">
+        <div>
+          <h2>Distributor Self-Service Portal</h2>
+          <p>What Ferguson's purchasing team sees — IPS-branded, live contract pricing, no phone call required.</p>
+        </div>
+        <div class="screen-tag">Salesforce B2B Commerce</div>
+      </div>
+
+      <div class="narration-bar">
+        <div class="narration-progress"><div class="narration-progress-fill" id="narr-fill-3"></div></div>
+        <button class="narration-replay" id="narr-replay-3" onclick="replayNarration(3)">↺ Replay</button>
+      </div>
+
+      <div class="portal-shell">
+        <div class="portal-topbar">
+          <div class="brand">IPS Corporation <span>Distributor Portal</span></div>
+          <div style="display:flex;gap:12px;margin-left:16px;">
+            <span style="font-size:11px;opacity:.7;cursor:pointer;">Catalog</span>
+            <span style="font-size:11px;opacity:.7;cursor:pointer;">Orders</span>
+            <span style="font-size:11px;opacity:.7;cursor:pointer;">Returns</span>
+            <span style="font-size:11px;opacity:.7;cursor:pointer;">Invoices</span>
+          </div>
+          <div class="portal-user">Ferguson Enterprises — Purchasing Mgr · Contract #FE-2024-IPS-017</div>
+        </div>
+        <div class="portal-body">
+          <div class="portal-sidebar">
+            <div class="sidebar-item active">🛒 New Order</div>
+            <div class="sidebar-item">📦 Order History</div>
+            <div class="sidebar-item">🔍 Track Shipment</div>
+            <div class="sidebar-item">↩️ Returns</div>
+            <div class="sidebar-item">📄 Invoices</div>
+            <div class="sidebar-item">📋 Contract Pricing</div>
+          </div>
+          <div class="portal-content">
+            <div class="order-form-section">
+              <div class="form-section-title">📦 Order Lines <span style="font-size:11px;font-weight:400;color:#6b7a90;margin-left:4px;">— Contract pricing applied automatically</span></div>
+
+              <div class="product-line header">
+                <span>Product</span><span>Qty</span><span>Unit Price</span><span>Line Total</span><span></span>
+              </div>
+              <div class="product-line" id="line1">
+                <div>
+                  <div style="font-weight:700;font-size:12px;color:#032D60;">Weld-On 705 PVC Cement — 1 Qt</div>
+                  <div style="font-size:11px;color:#6b7a90;">SKU: WO-705-QT &nbsp;·&nbsp; Brand: Weld-On</div>
+                </div>
+                <input class="input-sm" type="number" value="200" min="1" oninput="recalc()">
+                <div class="price-display contract">$18.40 <span style="font-size:10px;font-weight:400;color:#27ae60;">▼ Contract</span></div>
+                <div class="price-display" id="lt1">$3,680.00</div>
+                <button class="remove-btn" onclick="removeLine(1)">×</button>
+              </div>
+              <div class="product-line" id="line2">
+                <div>
+                  <div style="font-weight:700;font-size:12px;color:#032D60;">Studor Mini-Vent AAV — 1.5"</div>
+                  <div style="font-size:11px;color:#6b7a90;">SKU: ST-MV-15 &nbsp;·&nbsp; Brand: Studor</div>
+                </div>
+                <input class="input-sm" type="number" value="75" min="1" oninput="recalc()">
+                <div class="price-display contract">$14.22 <span style="font-size:10px;font-weight:400;color:#27ae60;">▼ Contract</span></div>
+                <div class="price-display" id="lt2">$1,066.50</div>
+                <button class="remove-btn" onclick="removeLine(2)">×</button>
+              </div>
+              <div class="product-line" id="line3">
+                <div>
+                  <div style="font-weight:700;font-size:12px;color:#032D60;">Champion 3/4 HP Cast Iron Sump Pump</div>
+                  <div style="font-size:11px;color:#6b7a90;">SKU: CH-SUMP-75CI &nbsp;·&nbsp; Brand: Champion</div>
+                </div>
+                <input class="input-sm" type="number" value="12" min="1" oninput="recalc()">
+                <div class="price-display">$148.00 <span style="font-size:10px;font-weight:400;color:#6b7a90;">List</span></div>
+                <div class="price-display" id="lt3">$1,776.00</div>
+                <button class="remove-btn" onclick="removeLine(3)">×</button>
+              </div>
+            </div>
+
+            <div class="pricing-callout">
+              <div class="icon">⚡</div>
+              <div>
+                <strong>Live pricing validated via PriceFx — Ferguson Contract #FE-2024-IPS-017</strong>
+                <p>Weld-On and Studor lines reflect your negotiated contract rates. Champion Pump is at current list — contact your IPS rep to add Champion to your contract. Volume threshold: order total exceeds $5K, Ferguson Q3 tier applies — <strong>5% volume discount applied automatically at checkout.</strong></p>
+              </div>
+            </div>
+
+            <div class="order-summary">
+              <div class="summary-row"><span>Subtotal (3 lines)</span><span id="subtotal">$6,522.50</span></div>
+              <div class="summary-row savings"><span>Volume Discount — Ferguson Tier (5%)</span><span id="discount">−$326.13</span></div>
+              <div class="summary-row"><span>Est. Freight</span><span>$84.00</span></div>
+              <div class="summary-row total"><span>Order Total</span><span id="total">$6,280.37</span></div>
+            </div>
+
+            <button class="submit-btn" onclick="submitOrder()">Place Order → Route to Salesforce OMS</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <button class="nav-btn outline" onclick="goTo(2)">← Back</button>
+        <span class="step-indicator">Step 4 of 7</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="continue-prompt" id="prompt-3">👆 Click to continue</span>
+          <button class="nav-btn" id="next-btn-3" onclick="goTo(4)">See OMS Pipeline →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 4: SALESFORCE OMS -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-3">
+      <div class="screen-header">
+        <div>
+          <h2>Salesforce Order Management — Live Pipeline</h2>
+          <p>Every IPS order orchestrated in real time. Click any order card to see the full flow.</p>
+        </div>
+        <div class="screen-tag">Salesforce OMS</div>
+      </div>
+
+      <div class="narration-bar">
+        <div class="narration-progress"><div class="narration-progress-fill" id="narr-fill-4"></div></div>
+        <button class="narration-replay" id="narr-replay-4" onclick="replayNarration(4)">↺ Replay</button>
+      </div>
+
+      <div class="oms-header-bar">
+        <div>
+          <div class="brand">IPS Corporation — Order Management Console</div>
+          <div class="sub">All Brands · All Channels · JDE Integration Active ✓</div>
+        </div>
+        <div class="oms-metric">
+          <div class="oms-metric-item"><div class="val">47</div><div class="lbl">Open Today</div></div>
+          <div class="oms-metric-item"><div class="val">$184K</div><div class="lbl">Today's ACV</div></div>
+          <div class="oms-metric-item"><div class="val">99.2%</div><div class="lbl">On-Time Rate</div></div>
+          <div class="oms-metric-item"><div class="val pulsing" style="color:#4adecc;">Live</div><div class="lbl">JDE Sync</div></div>
+        </div>
+      </div>
+
+      <div class="pipeline-track">
+        <div class="pipeline-stages">
+          <!-- Stage: New -->
+          <div class="stage">
+            <div class="stage-title">New <span class="stage-count">3</span></div>
+            <div class="order-card highlight" onclick="showDetail('ferguson-new')">
+              <div class="oc-id">#ORD-2026-4471</div>
+              <div class="oc-acct">Ferguson Enterprises</div>
+              <div class="oc-detail">Placed 2 min ago · Self-service portal</div>
+              <div style="margin-top:5px;">
+                <span class="oc-brand-tag brand-weldon">Weld-On</span>
+                <span class="oc-brand-tag brand-studor">Studor</span>
+                <span class="oc-brand-tag" style="background:#f3e5f5;color:#4a1a6b;">Champion</span>
+              </div>
+              <div class="oc-amount">$6,280.37</div>
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:15%;background:#f39c12;"></div></div>
+            </div>
+            <div class="order-card" onclick="showDetail('standard1')">
+              <div class="oc-id">#ORD-2026-4469</div>
+              <div class="oc-acct">HD Supply</div>
+              <div class="oc-detail">Placed 18 min ago</div>
+              <div style="margin-top:5px;"><span class="oc-brand-tag brand-studor">Studor</span></div>
+              <div class="oc-amount">$2,140.00</div>
+            </div>
+          </div>
+          <!-- Stage: PriceFx Validated -->
+          <div class="stage">
+            <div class="stage-title">Pricing Validated <span class="stage-count">5</span></div>
+            <div class="order-card" onclick="showDetail('grainger-val')">
+              <div class="oc-id">#ORD-2026-4465</div>
+              <div class="oc-acct">Grainger Industrial</div>
+              <div class="oc-detail">Contract price confirmed</div>
+              <div style="margin-top:5px;"><span class="oc-brand-tag brand-weldon">Weld-On</span></div>
+              <div class="oc-amount">$9,200.00</div>
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:35%;"></div></div>
+            </div>
+            <div class="order-card" onclick="showDetail('standard2')">
+              <div class="oc-id">#ORD-2026-4463</div>
+              <div class="oc-acct">ABC Supply Co.</div>
+              <div class="oc-detail">Volume tier applied</div>
+              <div style="margin-top:5px;"><span class="oc-brand-tag brand-weldon">Weld-On</span><span class="oc-brand-tag brand-champion">Champion</span></div>
+              <div class="oc-amount">$14,850.00</div>
+            </div>
+          </div>
+          <!-- Stage: Routing to JDE -->
+          <div class="stage">
+            <div class="stage-title">Routing → JDE <span class="stage-count">4</span></div>
+            <div class="order-card" onclick="showDetail('national-routing')">
+              <div class="oc-id">#ORD-2026-4458</div>
+              <div class="oc-acct">National Plumbing Supply</div>
+              <div class="oc-detail">Split: 2 brands → 2 JDE lines</div>
+              <div style="margin-top:5px;"><span class="oc-brand-tag brand-weldon">Weld-On</span><span class="oc-brand-tag brand-studor">Studor</span></div>
+              <div class="oc-amount">$7,620.00</div>
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:60%;"></div></div>
+            </div>
+          </div>
+          <!-- Stage: JDE Confirmed -->
+          <div class="stage">
+            <div class="stage-title">JDE Confirmed <span class="stage-count">8</span></div>
+            <div class="order-card" onclick="showDetail('standard3')">
+              <div class="oc-id">#ORD-2026-4451</div>
+              <div class="oc-acct">Hajoca Corporation</div>
+              <div class="oc-detail">Confirmed in JDE · Picking</div>
+              <div style="margin-top:5px;"><span class="oc-brand-tag brand-champion">Champion</span></div>
+              <div class="oc-amount">$3,996.00</div>
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:80%;background:#27ae60;"></div></div>
+            </div>
+          </div>
+          <!-- Stage: Shipped -->
+          <div class="stage">
+            <div class="stage-title">Shipped <span class="stage-count">27</span></div>
+            <div class="order-card" onclick="showDetail('standard4')">
+              <div class="oc-id">#ORD-2026-4440</div>
+              <div class="oc-acct">Ferguson Enterprises</div>
+              <div class="oc-detail">Delivered Jul 5 · 2-day</div>
+              <div style="margin-top:5px;"><span class="oc-brand-tag brand-weldon">Weld-On</span></div>
+              <div class="oc-amount">$18,240.00</div>
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%;background:#27ae60;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ORDER DETAIL -->
+        <div class="order-detail-panel" id="order-detail" style="display:none;">
+          <div class="odp-title">
+            <span id="detail-title">Order Detail</span>
+            <span class="status-pill" id="detail-status-pill">—</span>
+          </div>
+          <div class="two-col">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#6b7a90;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Order Timeline</div>
+              <div class="timeline" id="detail-timeline"></div>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#6b7a90;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Order Lines</div>
+              <div id="detail-lines"></div>
+              <div style="margin-top:12px;padding:10px;background:#f0f9f4;border-radius:6px;border:1px solid #a8d5b5;">
+                <div style="font-size:11px;font-weight:700;color:#1a5c2a;margin-bottom:4px;">✓ PriceFx Validation Note</div>
+                <div style="font-size:11px;color:#2d6a3f;" id="detail-pfx-note">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <button class="nav-btn outline" onclick="goTo(3)">← Back</button>
+        <span class="step-indicator">Step 5 of 7</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="continue-prompt" id="prompt-4">👆 Click to continue</span>
+          <button class="nav-btn" id="next-btn-4" onclick="goTo(5)">Why Salesforce OMS Wins →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 5: WHY SALESFORCE OMS WINS -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-4">
+      <div class="screen-header">
+        <div>
+          <h2>Why Salesforce Order Management — Not NetSuite, SAP, or a JDE Extension</h2>
+          <p>OMS is the irreplaceable center of this architecture. The pricing engine only works as well as the order layer it feeds into.</p>
+        </div>
+        <div class="screen-tag">Salesforce OMS — Competitive Analysis</div>
+      </div>
+
+      <div class="narration-bar">
+        <div class="narration-progress"><div class="narration-progress-fill" id="narr-fill-5"></div></div>
+        <button class="narration-replay" id="narr-replay-5" onclick="replayNarration(5)">↺ Replay</button>
+      </div>
+
+      <!-- THE CENTRAL POINT BOX -->
+      <div style="background:linear-gradient(135deg,#032D60 0%,#0070D2 100%);border-radius:10px;padding:22px 28px;margin-bottom:18px;display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center;">
+        <div style="font-size:40px;">⚙️</div>
+        <div>
+          <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:6px;">PriceFx makes the price. Salesforce OMS makes the order happen.</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.6;">Getting the right price is only half the problem. The order still has to be validated, split across IPS's brands, routed to the right JDE entity, tracked end-to-end, and surfaced to the distributor in real time. That orchestration layer — the one that sits between your distributors and JDE — is exactly what Salesforce OMS was built for. Without it, a pricing engine has nowhere to send the order.</div>
+        </div>
+      </div>
+
+      <!-- WHAT OMS ACTUALLY DOES FOR IPS -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header"><span class="dot dot-green"></span><span class="dot dot-yellow"></span><span class="dot dot-red"></span>&nbsp; What Salesforce OMS Does That No Other Option Matches for IPS</div>
+        <div class="card-body">
+          <div class="three-col" style="margin-bottom:0;">
+            <div style="border-right:1.5px solid #e0e8f5;padding-right:16px;">
+              <div style="font-size:22px;margin-bottom:8px;">🔀</div>
+              <div style="font-weight:700;font-size:13px;color:#032D60;margin-bottom:6px;">Multi-Brand Order Splitting</div>
+              <div style="font-size:12px;color:#4a6080;line-height:1.6;">When Ferguson orders Weld-On cement <em>and</em> Studor valves in a single cart, OMS automatically splits the order into separate JDE entities (WO-US and ST-US) with the correct routing logic per brand — and presents it to Ferguson as one unified order with one tracking number. No other platform handles this without custom code.</div>
+            </div>
+            <div style="border-right:1.5px solid #e0e8f5;padding-right:16px;padding-left:16px;">
+              <div style="font-size:22px;margin-bottom:8px;">🔗</div>
+              <div style="font-weight:700;font-size:13px;color:#032D60;margin-bottom:6px;">Native PriceFx + JDE Bridge</div>
+              <div style="font-size:12px;color:#4a6080;line-height:1.6;">Salesforce OMS is the only order layer with certified integrations to <em>both</em> PriceFx <em>and</em> JDE simultaneously. It calls PriceFx for price validation at the moment of order submission, then passes a clean, price-confirmed record to JDE — no manual reconciliation, no middleware build, no batch sync delay.</div>
+            </div>
+            <div style="padding-left:16px;">
+              <div style="font-size:22px;margin-bottom:8px;">📡</div>
+              <div style="font-weight:700;font-size:13px;color:#032D60;margin-bottom:6px;">Distributor Visibility Layer</div>
+              <div style="font-size:12px;color:#4a6080;line-height:1.6;">Once an order enters JDE, it's a black box. OMS creates a live visibility layer on top — distributors see real-time status, split shipment tracking, return management, and invoice history through the portal. This is the experience your distributors benchmark you against. JDE alone cannot surface this.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPETITIVE TABLE -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header"><span class="dot dot-green"></span><span class="dot dot-yellow"></span><span class="dot dot-red"></span>&nbsp; Head-to-Head: Order Management Options for a Multi-Brand JDE Manufacturer</div>
+        <div class="card-body">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Salesforce OMS <span style="color:#27ae60;">★ Recommended</span></th>
+                <th>Extend JDE Natively</th>
+                <th>NetSuite OMS</th>
+                <th>SAP Order Mgmt</th>
+                <th>Custom Build</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Multi-brand order splitting per JDE entity</strong></td>
+                <td class="winner"><span class="check-icon">✓</span> Native — configurable rules, no code</td>
+                <td class="loser"><span class="x-icon">✗</span> Not natively supported in JDE</td>
+                <td class="loser"><span class="x-icon">~</span> Possible but requires customization</td>
+                <td class="loser"><span class="x-icon">~</span> Available but SAP-ecosystem-only</td>
+                <td class="loser"><span class="x-icon">✗</span> Full build — 12–18 months</td>
+              </tr>
+              <tr>
+                <td><strong>Real-time PriceFx price validation at checkout</strong></td>
+                <td class="winner"><span class="check-icon">✓</span> Certified ISV integration — sub-200ms API call</td>
+                <td class="loser"><span class="x-icon">✗</span> JDE has no PriceFx connector</td>
+                <td class="loser"><span class="x-icon">~</span> Custom integration required</td>
+                <td class="loser"><span class="x-icon">~</span> Custom integration required</td>
+                <td class="loser"><span class="x-icon">✗</span> Build from scratch</td>
+              </tr>
+              <tr>
+                <td><strong>Distributor self-service portal (B2B Commerce)</strong></td>
+                <td class="winner"><span class="check-icon">✓</span> Native — same platform, one data model</td>
+                <td class="loser"><span class="x-icon">✗</span> JDE has no front-end distributor portal</td>
+                <td class="loser"><span class="x-icon">~</span> Separate product, separate data model</td>
+                <td class="loser"><span class="x-icon">~</span> SAP Commerce — separate product, high cost</td>
+                <td class="loser"><span class="x-icon">✗</span> Full UI build required</td>
+              </tr>
+              <tr>
+                <td><strong>JDE as back-end system of record (no ERP replace)</strong></td>
+                <td class="winner"><span class="check-icon">✓</span> Designed for this — JDE stays authoritative</td>
+                <td class="winner"><span class="check-icon">✓</span> JDE remains ERP</td>
+                <td class="loser"><span class="x-icon">✗</span> NetSuite wants to become your ERP</td>
+                <td class="loser"><span class="x-icon">~</span> SAP often pushes full ERP migration</td>
+                <td class="winner"><span class="check-icon">✓</span> Possible but risky</td>
+              </tr>
+              <tr>
+                <td><strong>Post-acquisition brand onboarding</strong></td>
+                <td class="winner"><span class="check-icon">✓</span> New routing rule + catalog — days to configure</td>
+                <td class="loser"><span class="x-icon">✗</span> New JDE entity = months of ERP config</td>
+                <td class="loser"><span class="x-icon">~</span> Complex subsidiary setup in NetSuite</td>
+                <td class="loser"><span class="x-icon">~</span> SAP org expansion — high cost</td>
+                <td class="loser"><span class="x-icon">✗</span> Rebuild per brand</td>
+              </tr>
+              <tr>
+                <td><strong>CRM + Sales data in the same platform</strong></td>
+                <td class="winner"><span class="check-icon">✓</span> Same Salesforce org — account, contact, order unified</td>
+                <td class="loser"><span class="x-icon">✗</span> No CRM in JDE</td>
+                <td class="loser"><span class="x-icon">~</span> Separate Salesforce integration needed anyway</td>
+                <td class="loser"><span class="x-icon">~</span> SAP CRM separate product</td>
+                <td class="loser"><span class="x-icon">✗</span> No CRM layer</td>
+              </tr>
+              <tr>
+                <td><strong>Agentforce / AI on order workflows</strong></td>
+                <td class="winner"><span class="check-icon">✓</span> Native — proactive order alerts, anomaly detection, AI routing</td>
+                <td class="loser"><span class="x-icon">✗</span> Not available</td>
+                <td class="loser"><span class="x-icon">~</span> Limited AI, separate tooling</td>
+                <td class="loser"><span class="x-icon">~</span> SAP AI — separate licensing, complex</td>
+                <td class="loser"><span class="x-icon">✗</span> Not available</td>
+              </tr>
+              <tr>
+                <td><strong>Time to first production order</strong></td>
+                <td class="winner"><span class="check-icon">✓</span> 10–16 weeks for initial deployment</td>
+                <td class="loser"><span class="x-icon">✗</span> 12–24 months for meaningful capability</td>
+                <td class="loser"><span class="x-icon">~</span> 6–12 months + ERP migration risk</td>
+                <td class="loser"><span class="x-icon">✗</span> 12–18 months minimum</td>
+                <td class="loser"><span class="x-icon">✗</span> 18–36 months, highest risk</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- THE LOCKED-IN VALUE MOMENT -->
+      <div class="three-col" style="margin-bottom:4px;">
+        <div class="card">
+          <div class="card-header" style="background:#f0f9f4;border-color:#a8d5b5;color:#1a5c2a;">✓ &nbsp;The JDE Story Dave Needs to Hear</div>
+          <div class="card-body">
+            <p style="font-size:12px;color:#2d6a3f;line-height:1.6;">Extending JDE to do what OMS does natively is the option that looks cheapest on paper and costs the most in practice. It means custom development every time a new brand is added, no distributor portal without a separate build, and a pricing integration that has to be hand-coded and maintained. OMS eliminates all three.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="background:#e8f4ff;border-color:#c0d8f0;color:#032D60;">⚡ &nbsp;The NetSuite Displacement Risk</div>
+          <div class="card-body">
+            <p style="font-size:12px;color:#1a3a5c;line-height:1.6;">NetSuite's OMS pitch to IPS will include a quiet suggestion that IPS should consider NetSuite as the ERP too. That's a JDE replacement conversation wrapped in an OMS conversation. Salesforce OMS has no interest in replacing JDE — it's designed to work alongside it. That's a material difference for an IT organization that has years invested in JDE.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="background:#fffbf0;border-color:#f5d87a;color:#7d4e00;">★ &nbsp;The Future: Agentforce on Orders</div>
+          <div class="card-body">
+            <p style="font-size:12px;color:#5a3a00;line-height:1.6;">Only Salesforce OMS opens the door to Agentforce — proactive order anomaly alerts, AI-driven inventory routing, automated distributor communications when a shipment is delayed. No other order layer in this comparison has a credible AI roadmap that's in production today.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <button class="nav-btn outline" onclick="goTo(4)">← Back</button>
+        <span class="step-indicator">Step 6 of 7</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="continue-prompt" id="prompt-5">👆 Click to continue</span>
+          <button class="nav-btn" id="next-btn-5" onclick="goTo(6)">See Why PriceFx Wins →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 6: WHY PRICEFX WINS -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-5">
+      <div class="screen-header">
+        <div>
+          <h2>Why PriceFx — Not SAP, Oracle, or a Custom Build</h2>
+          <p>The pricing engine choice that makes the entire architecture work for IPS specifically.</p>
+        </div>
+        <div class="screen-tag">Competitive Analysis</div>
+      </div>
+
+      <div class="narration-bar">
+        <div class="narration-progress"><div class="narration-progress-fill" id="narr-fill-6"></div></div>
+        <button class="narration-replay" id="narr-replay-6" onclick="replayNarration(6)">↺ Replay</button>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header"><span class="dot dot-green"></span><span class="dot dot-yellow"></span><span class="dot dot-red"></span>&nbsp; Head-to-Head: Pricing Engine Options for a JDE-Based Multi-Brand Manufacturer</div>
+        <div class="card-body">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>PriceFx <span style="color:#27ae60;">★ Recommended</span></th>
+                <th>SAP Pricing</th>
+                <th>Oracle CPQ</th>
+                <th>Custom JDE Extension</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Native JDE Integration</strong></td>
+                <td class="winner"><span class="check-icon">✓</span> Pre-built JDE connector, live in weeks</td>
+                <td class="loser"><span class="x-icon">~</span> Requires SAP ecosystem alignment</td>
+                <td class="loser"><span class="x-icon">~</span> Middleware required, complex</td>
+                <td class="loser"><span class="x-icon">✗</span> Manual build, high IT cost</td>
+              </tr>
+              <tr>
+                <td><strong>Salesforce OMS Connector</strong></td>
+                <td class="winner"><span class="check-icon">✓</span> Certified Salesforce ISV partner, API-ready</td>
+                <td class="loser"><span class="x-icon">~</span> Custom integration needed</td>
+                <td class="loser"><span class="x-icon">~</span> Salesforce CPQ overlap, conflict risk</td>
+                <td class="loser"><span class="x-icon">✗</span> Not applicable</td>
+              </tr>
+              <tr>
+                <td><strong>Multi-Brand / Multi-Entity Pricing</strong></td>
+                <td class="winner"><span class="check-icon">✓</span> Native — unlimited brands, independent rules per entity</td>
+                <td class="loser"><span class="x-icon">~</span> Org-dependent, requires separate instances</td>
+                <td class="loser"><span class="x-icon">~</span> Possible but complex configuration</td>
+                <td class="loser"><span class="x-icon">✗</span> Rebuild per acquisition</td>
+              </tr>
+              <tr>
+                <td><strong>Commercial Team Ownership</strong></td>
+                <td class="winner"><span class="check-icon">✓</span> No-code UI, sales ops can manage rules directly</td>
+                <td class="loser"><span class="x-icon">✗</span> SAP admin required for changes</td>
+                <td class="loser"><span class="x-icon">~</span> Admin-heavy configuration</td>
+                <td class="loser"><span class="x-icon">✗</span> IT ticket every time</td>
+              </tr>
+              <tr>
+                <td><strong>Time to First Value</strong></td>
+                <td class="winner"><span class="check-icon">✓</span> 8–12 weeks for initial deployment</td>
+                <td class="loser"><span class="x-icon">✗</span> 6–18 months typical</td>
+                <td class="loser"><span class="x-icon">✗</span> 6–12 months typical</td>
+                <td class="loser"><span class="x-icon">✗</span> 12–24 months, highest risk</td>
+              </tr>
+              <tr>
+                <td><strong>M&A / Acquisition Onboarding</strong></td>
+                <td class="winner"><span class="check-icon">✓</span> New brand = new rule set, days not months</td>
+                <td class="loser"><span class="x-icon">✗</span> New SAP entity per acquisition</td>
+                <td class="loser"><span class="x-icon">~</span> Reconfiguration per brand</td>
+                <td class="loser"><span class="x-icon">✗</span> Full rebuild every time</td>
+              </tr>
+              <tr>
+                <td><strong>Real-Time Price Validation in Order Flow</strong></td>
+                <td class="winner"><span class="check-icon">✓</span> API call at checkout — sub-200ms response</td>
+                <td class="loser"><span class="x-icon">~</span> Requires full SAP ecosystem alignment</td>
+                <td class="loser"><span class="x-icon">~</span> Real-time possible but complex</td>
+                <td class="loser"><span class="x-icon">✗</span> Not supported</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="three-col" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-header" style="background:#f0f9f4;border-color:#a8d5b5;color:#1a5c2a;">✓ &nbsp;The IPS-Specific Fit</div>
+          <div class="card-body">
+            <p style="font-size:12px;color:#2d6a3f;line-height:1.6;">IPS's Centerbridge-backed growth mandate means another 2–3 acquisitions are likely in the next 36 months. PriceFx is the only option that absorbs M&A at commercial speed — a new brand means a new pricing rule set, not a new implementation project.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="background:#e8f4ff;border-color:#c0d8f0;color:#032D60;">⚡ &nbsp;The JDE Preservation Story</div>
+          <div class="card-body">
+            <p style="font-size:12px;color:#1a3a5c;line-height:1.6;">PriceFx was designed to complement JDE, not replace it. Its pre-built JDE connector means IPS's ERP team isn't building middleware — they're configuring a certified integration. This is the path of least resistance for Dave's IT organization.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="background:#fffbf0;border-color:#f5d87a;color:#7d4e00;">★ &nbsp;The Salesforce Synergy</div>
+          <div class="card-body">
+            <p style="font-size:12px;color:#5a3a00;line-height:1.6;">PriceFx is a certified Salesforce ISV. The integration to Salesforce OMS is documented, supported, and used by manufacturers in production today. There is no competing standard — it's the architecture that wins.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="background:linear-gradient(135deg,#032D60,#0070D2);border-color:#0070D2;">
+        <div class="card-body" style="padding:24px 28px;text-align:center;">
+          <div style="font-size:20px;font-weight:800;color:#fff;margin-bottom:8px;">This was a glimpse. The live environment is built around IPS.</div>
+          <div style="font-size:14px;color:rgba(255,255,255,.8);margin-bottom:20px;max-width:480px;margin-left:auto;margin-right:auto;">When the broader IPS team sees the live environment, they won't be looking at a demo — they'll be looking at their own product catalog, their own distributors, and their own pricing structure running end to end. We're ready when you are.</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.6);">Sam Holz · sam.holz@salesforce.com · Digital Specialist AE, Salesforce<br>Working alongside Chris Hillier, IPS Account Executive</div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <button class="nav-btn outline" onclick="goTo(5)">← Back</button>
+        <span class="step-indicator">Step 7 of 7</span>
+        <button class="nav-btn" onclick="goTo(0)">↩ Restart Demo</button>
+      </div>
+    </div>
+
+  </div><!-- /canvas -->
+</div><!-- /shell -->
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-title" id="toast-title">—</div>
+  <div id="toast-body">—</div>
+</div>
+
+<script>
+// ── PER-SCREEN NARRATION (Adam voice, ElevenLabs) ──
+const screenAudio = [
+  new Audio('audio-screen-0.mp3'),
+  new Audio('audio-screen-1.mp3'),
+  new Audio('audio-screen-2.mp3'),
+  new Audio('audio-screen-3.mp3'),
+  new Audio('audio-screen-4.mp3'),
+  new Audio('audio-screen-5.mp3'),
+  new Audio('audio-screen-6.mp3'),
+];
+screenAudio.forEach(a => { a.preload = 'auto'; });
+
+function stopAllAudio() {
+  screenAudio.forEach((a, i) => {
+    a.pause();
+    a.currentTime = 0;
+    const fill   = document.getElementById('narr-fill-'   + i);
+    const replay = document.getElementById('narr-replay-' + i);
+    if (fill)   fill.style.width = '0%';
+    if (replay) replay.classList.remove('visible');
+  });
+}
+
+function resetPrompts() {
+  for (let i = 0; i < screenAudio.length; i++) {
+    const p = document.getElementById('prompt-'   + i);
+    const b = document.getElementById('next-btn-' + i);
+    if (p) p.classList.remove('visible');
+    if (b) b.style.animation = '';
+  }
+}
+
+function playScreenAudio(n) {
+  stopAllAudio();
+  resetPrompts();
+
+  const audio  = screenAudio[n];
+  const fill   = document.getElementById('narr-fill-'   + n);
+  const replay = document.getElementById('narr-replay-' + n);
+
+  audio.ontimeupdate = () => {
+    if (audio.duration && fill)
+      fill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+  };
+
+  audio.onended = () => {
+    if (fill)   fill.style.width = '100%';
+    if (replay) replay.classList.add('visible');
+    const prompt  = document.getElementById('prompt-'   + n);
+    const nextBtn = document.getElementById('next-btn-' + n);
+    if (prompt)  prompt.classList.add('visible');
+    if (nextBtn) nextBtn.style.animation = 'nextPulse 1.2s ease-in-out infinite';
+  };
+
+  audio.play().catch(() => {
+    if (replay) replay.classList.add('visible');
+  });
+}
+
+function replayNarration(n) {
+  const prompt  = document.getElementById('prompt-'   + n);
+  const nextBtn = document.getElementById('next-btn-' + n);
+  if (prompt)  prompt.classList.remove('visible');
+  if (nextBtn) nextBtn.style.animation = '';
+  const audio = screenAudio[n];
+  audio.currentTime = 0;
+  const fill = document.getElementById('narr-fill-' + n);
+  if (fill) fill.style.width = '0%';
+  audio.play().catch(() => {});
+}
+
+function startDemo() {
+  document.getElementById('start-overlay').style.display = 'none';
+  playScreenAudio(0);
+}
+
+// ── NAV ──
+function goTo(n) {
+  stopAllAudio();
+  resetPrompts();
+  document.querySelectorAll('.screen').forEach((s, i) => s.classList.toggle('active', i === n));
+  document.querySelectorAll('.step-btn').forEach((b, i) => b.classList.toggle('active', i === n));
+  document.querySelector('.canvas').scrollTop = 0;
+  playScreenAudio(n);
+}
+
+// ── TOAST ──
+function showToast(title, body, duration=3200) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-title').textContent = title;
+  document.getElementById('toast-body').textContent = body;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ── SCREEN 2: RULE EDITOR ──
+const rules = {
+  ferguson: { title:'Ferguson Enterprises — Volume Tier Q3', customer:'Ferguson Enterprises', brand:'All IPS Brands', product:'Cements & Adhesives', type:'Volume Tiered', rate:'5% @ $10K+ / 8% @ $25K+ / 12% @ $50K+' },
+  grainger:  { title:'Grainger — Contract Pricing', customer:'Grainger Industrial Supply', brand:'Weld-On', product:'PVC / CPVC Cement', type:'Fixed Contract Price', rate:'$18.40/unit (list: $22.00) — 16.4% off list' },
+  hd:        { title:'HD Supply — Studor Promo', customer:'HD Supply', brand:'Studor', product:'Air Admittance Valves', type:'Promotional Discount', rate:'10% off Jul–Sep 2026 · Min qty: 50 units' },
+  eu:        { title:'European Distributor Base Pricing', customer:'All EU Channel Partners', brand:'All IPS Brands', product:'All Products', type:'List + Adder', rate:'EUR list price + 3% logistics adder · FX rate locked monthly' },
+};
+function loadRule(key) {
+  const r = rules[key];
+  document.getElementById('rule-editor-title-text').textContent = 'Editing: ' + r.title;
+  document.getElementById('re-customer').textContent = r.customer;
+  document.getElementById('re-brand').textContent = r.brand;
+  document.getElementById('re-product').textContent = r.product;
+  document.getElementById('re-type').textContent = r.type;
+  document.getElementById('re-rate').textContent = r.rate;
+  document.getElementById('rule-editor').style.display = 'block';
+}
+function showRuleEditor() {
+  loadRule('eu');
+  document.getElementById('rule-editor-title-text').textContent = 'New Rule — European Distributor Base';
+}
+function closeEditor() { document.getElementById('rule-editor').style.display = 'none'; }
+function saveRule() {
+  closeEditor();
+  showToast('✓ Rule Published to OMS', 'Pricing rule is now live in Salesforce OMS. New orders will use updated logic immediately.');
+}
+
+// ── SCREEN 3: ORDER CALC ──
+function recalc() {
+  const q1 = +document.querySelector('#line1 input').value || 0;
+  const q2 = +document.querySelector('#line2 input').value || 0;
+  const q3 = +document.querySelector('#line3 input').value || 0;
+  const lt1 = q1 * 18.40, lt2 = q2 * 14.22, lt3 = q3 * 148.00;
+  const sub = lt1 + lt2 + lt3;
+  const disc = sub >= 10000 ? sub * 0.08 : sub >= 5000 ? sub * 0.05 : 0;
+  const total = sub - disc + 84;
+  document.getElementById('lt1').textContent = '$' + lt1.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  document.getElementById('lt2').textContent = '$' + lt2.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  document.getElementById('lt3').textContent = '$' + lt3.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  document.getElementById('subtotal').textContent = '$' + sub.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  document.getElementById('discount').textContent = disc > 0 ? '−$' + disc.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',') : '$0.00';
+  document.getElementById('total').textContent = '$' + total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+}
+function removeLine(n) {
+  document.getElementById('line'+n).style.display = 'none';
+  recalc();
+}
+function submitOrder() {
+  showToast('🛒 Order Submitted to Salesforce OMS', 'ORD-2026-4471 created. PriceFx validating pricing now. You\'ll see it appear in the OMS pipeline on the next screen.');
+  setTimeout(() => goTo(4), 2800);
+}
+
+// ── SCREEN 4: ORDER DETAIL ──
+const details = {
+  'ferguson-new': {
+    title: '#ORD-2026-4471 — Ferguson Enterprises',
+    pill: 'New', pillClass: 'pill-routing',
+    pfx: 'Contract #FE-2024-IPS-017 applied: Weld-On at $18.40/unit. Studor at contract rate $14.22. Champion at list. Ferguson Q3 volume tier (5%) applied on $6,522 subtotal. Total validated in 140ms.',
+    timeline: [
+      { t:'10:42:18', e:'Order placed via self-service portal', s:'Ferguson purchasing team — 3 line items', cls:'done' },
+      { t:'10:42:19', e:'PriceFx validation initiated', s:'Checking Contract #FE-2024-IPS-017 for Weld-On, Studor, Champion lines', cls:'done' },
+      { t:'10:42:19', e:'Pricing validated — 140ms', s:'Contract rates confirmed. Volume tier 5% applied on $6,522 order total.', cls:'active' },
+      { t:'Pending', e:'Route to JDE Edwards', s:'Splitting: Weld-On → JDE entity WO-US / Studor → ST-US / Champion → CH-US', cls:'pending' },
+      { t:'Pending', e:'JDE Order Confirmation', s:'ERP order numbers assigned, inventory reserved', cls:'pending' },
+    ],
+    lines: [
+      { sku:'WO-705-QT', brand:'Weld-On', qty:200, price:'$18.40', total:'$3,680.00', type:'Contract' },
+      { sku:'ST-MV-15', brand:'Studor', qty:75, price:'$14.22', total:'$1,066.50', type:'Contract' },
+      { sku:'CH-SUMP-75CI', brand:'Champion', qty:12, price:'$148.00', total:'$1,776.00', type:'List' },
+    ]
+  },
+  'national-routing': {
+    title: '#ORD-2026-4458 — National Plumbing Supply',
+    pill: 'Routing → JDE', pillClass: 'pill-routing',
+    pfx: 'Standard distributor pricing applied. Two brands present — order will split into two JDE line records: WO-US entity for Weld-On lines, ST-US entity for Studor lines. Both confirmed at contract rates.',
+    timeline: [
+      { t:'10:11:04', e:'Order placed via portal', s:'2 brands, 4 line items', cls:'done' },
+      { t:'10:11:05', e:'PriceFx validated — 122ms', s:'Standard distributor rates confirmed for both brands', cls:'done' },
+      { t:'10:11:06', e:'OMS routing logic applied', s:'Multi-brand split: Weld-On → JDE/WO-US, Studor → JDE/ST-US', cls:'active' },
+      { t:'Pending', e:'JDE Confirmation', s:'Awaiting ERP order numbers from both entities', cls:'pending' },
+    ],
+    lines: [
+      { sku:'WO-700-GL', brand:'Weld-On', qty:48, price:'$38.50', total:'$1,848.00', type:'Distributor' },
+      { sku:'ST-REDI-2', brand:'Studor', qty:100, price:'$57.20', total:'$5,720.00', type:'Contract' },
+    ]
+  },
+  'grainger-val': {
+    title: '#ORD-2026-4465 — Grainger Industrial',
+    pill: 'Pricing Validated', pillClass: 'pill-validated',
+    pfx: 'Grainger fixed contract rate applied: $18.40/unit for all Weld-On PVC cement SKUs (Contract GR-WO-2025). 500-unit order exceeds minimum. Validation completed in 98ms.',
+    timeline: [
+      { t:'09:58:31', e:'Order received — EDI via Celigo', s:'500 units Weld-On 705-QT', cls:'done' },
+      { t:'09:58:32', e:'PriceFx validated — 98ms', s:'Grainger contract rate $18.40/unit confirmed', cls:'done' },
+      { t:'09:58:33', e:'Routed to JDE — awaiting confirmation', s:'JDE order #JDE-88421 created, inventory check pending', cls:'active' },
+      { t:'Pending', e:'Fulfillment', s:'Warehouse pick + pack', cls:'pending' },
+    ],
+    lines: [
+      { sku:'WO-705-QT', brand:'Weld-On', qty:500, price:'$18.40', total:'$9,200.00', type:'Contract' },
+    ]
+  },
+};
+// generic fallback
+['standard1','standard2','standard3','standard4'].forEach(k => {
+  details[k] = {
+    title:'Order Detail', pill:'In Progress', pillClass:'pill-validated',
+    pfx:'Pricing validated against applicable customer contract or list pricing. No exceptions flagged.',
+    timeline:[
+      {t:'Earlier',e:'Order placed',s:'Via distributor portal or EDI',cls:'done'},
+      {t:'Earlier',e:'PriceFx validated',s:'Contract or list pricing confirmed',cls:'done'},
+      {t:'Active',e:'In fulfillment',s:'JDE processing',cls:'active'},
+    ],
+    lines:[{sku:'(multiple)',brand:'IPS Brand',qty:'—',price:'—',total:'See full order',type:'—'}]
+  };
+});
+
+function showDetail(key) {
+  const d = details[key] || details['standard1'];
+  document.getElementById('order-detail').style.display = 'block';
+  document.getElementById('detail-title').textContent = d.title;
+  const pill = document.getElementById('detail-status-pill');
+  pill.textContent = d.pill; pill.className = 'status-pill ' + d.pillClass;
+  document.getElementById('detail-pfx-note').textContent = d.pfx;
+
+  // Timeline
+  let tlHTML = '';
+  d.timeline.forEach(item => {
+    tlHTML += `<div class="tl-item">
+      <div class="tl-dot ${item.cls}"></div>
+      <div class="tl-time">${item.t}</div>
+      <div class="tl-event">${item.e}</div>
+      <div class="tl-sub">${item.s}</div>
+    </div>`;
+  });
+  document.getElementById('detail-timeline').innerHTML = tlHTML;
+
+  // Lines
+  let lHTML = '';
+  d.lines.forEach(l => {
+    lHTML += `<div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;padding:6px 0;border-bottom:1px solid #edf0f5;font-size:12px;">
+      <div><strong>${l.sku}</strong><br><span style="color:#6b7a90;">${l.brand}</span></div>
+      <div style="color:#4a6080;">Qty: ${l.qty}<br><span style="font-size:10px;">${l.type} price</span></div>
+      <div style="text-align:right;font-weight:700;color:#032D60;">${l.total}<br><span style="font-size:11px;font-weight:400;color:#6b7a90;">@ ${l.price}</span></div>
+    </div>`;
+  });
+  document.getElementById('detail-lines').innerHTML = lHTML;
+  document.getElementById('order-detail').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+</script>
+</body>
+</html>
