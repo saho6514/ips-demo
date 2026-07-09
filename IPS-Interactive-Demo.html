@@ -252,8 +252,34 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 </style>
 </head>
 <body>
+
+<!-- PASSWORD GATE -->
+<div id="pw-gate" style="position:fixed;inset:0;background:#032D60;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;padding:24px;">
+  <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#0070D2;"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:#0070D2;"></div>
+  <div style="text-align:center;margin-bottom:32px;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:12px;">IPS Corporation</div>
+    <div style="font-size:32px;font-weight:900;letter-spacing:2px;color:#fff;margin-bottom:6px;">IPS</div>
+    <div style="width:40px;height:3px;background:#0070D2;margin:0 auto 14px;"></div>
+    <div style="font-size:13px;color:rgba(255,255,255,.45);letter-spacing:.5px;">Salesforce · Order Intelligence Demo</div>
+  </div>
+  <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:28px 32px;width:100%;max-width:380px;text-align:center;">
+    <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:16px;letter-spacing:.3px;">This asset is private. Enter the access code to continue.</div>
+    <input
+      id="pw-input"
+      type="password"
+      placeholder="Enter access code"
+      onkeydown="if(event.key==='Enter')checkPW()"
+      style="width:100%;padding:11px 16px;border-radius:4px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font-size:14px;font-weight:600;outline:none;margin-bottom:10px;letter-spacing:.5px;text-align:center;"
+    />
+    <div id="pw-error" style="font-size:11px;color:#e74c3c;font-weight:700;height:16px;margin-bottom:8px;"></div>
+    <button onclick="checkPW()" style="width:100%;padding:12px;background:#0070D2;color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:800;cursor:pointer;letter-spacing:1px;text-transform:uppercase;">Access Demo →</button>
+  </div>
+  <div style="margin-top:24px;font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.5px;">Prepared exclusively for IPS Corporation</div>
+</div>
+
 <!-- START OVERLAY -->
-<div class="start-overlay" id="start-overlay">
+<div class="start-overlay" id="start-overlay" style="display:none;">
   <h1>IPS Corporation — Order Intelligence Demo</h1>
   <p>Prepared for the IPS team · Salesforce + PriceFx</p>
   <button class="start-btn" onclick="startDemo()">▶ Begin Demo</button>
@@ -1033,6 +1059,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 </div>
 
 <script>
+function checkPW() {
+  const val = document.getElementById('pw-input').value;
+  if (val === 'IPS&SALESFORCE875*!') {
+    document.getElementById('pw-gate').style.display = 'none';
+    document.getElementById('start-overlay').style.display = 'flex';
+  } else {
+    const err = document.getElementById('pw-error');
+    err.textContent = 'Incorrect access code. Please try again.';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+    setTimeout(() => { err.textContent = ''; }, 3000);
+  }
+}
+
 // ── PER-SCREEN NARRATION (Adam voice, ElevenLabs) ──
 const screenAudio = [
   new Audio('nv-intro.mp3'),
