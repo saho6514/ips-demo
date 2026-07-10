@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Trojan Battery — Salesforce Account Brief</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#f4f5f7; color:#111; font-size:13px; }
+
+/* PASSWORD GATE */
+#pw-gate { position:fixed; inset:0; background:#1a1a2e; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:99999; padding:24px; }
+#pw-gate .logo { font-size:28px; font-weight:900; color:#fff; letter-spacing:2px; margin-bottom:6px; }
+#pw-gate .sub { font-size:12px; color:rgba(255,255,255,.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:40px; }
+#pw-gate .box { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:10px; padding:32px; width:100%; max-width:380px; text-align:center; }
+#pw-gate .hint { font-size:11px; color:rgba(255,255,255,.4); margin-bottom:16px; letter-spacing:.3px; }
+#pw-gate input { width:100%; padding:12px 16px; border-radius:5px; border:1.5px solid rgba(255,255,255,.15); background:rgba(255,255,255,.08); color:#fff; font-size:14px; font-weight:600; outline:none; margin-bottom:10px; letter-spacing:.5px; text-align:center; }
+#pw-gate button { width:100%; padding:12px; background:#0070D2; color:#fff; border:none; border-radius:5px; font-size:13px; font-weight:800; cursor:pointer; letter-spacing:1px; text-transform:uppercase; }
+#pw-error { font-size:11px; color:#e74c3c; font-weight:700; height:16px; margin-bottom:8px; }
+
+/* LAYOUT */
+.page { max-width:900px; margin:0 auto; padding:32px 24px 60px; }
+
+/* HEADER */
+.header { background:linear-gradient(135deg,#1a1a2e 0%,#16213e 60%,#0f3460 100%); border-radius:12px; padding:32px 36px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; }
+.header-left .eyebrow { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:8px; }
+.header-left h1 { font-size:26px; font-weight:900; color:#fff; line-height:1.2; margin-bottom:6px; }
+.header-left .tagline { font-size:13px; color:rgba(255,255,255,.55); max-width:480px; line-height:1.6; }
+.header-right { text-align:right; flex-shrink:0; margin-left:32px; }
+.header-right .label { font-size:10px; color:rgba(255,255,255,.3); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
+.header-right .ae { font-size:13px; font-weight:700; color:#fff; }
+.header-right .product-badge { margin-top:12px; display:inline-block; background:rgba(0,112,210,.3); border:1px solid rgba(0,112,210,.6); color:#7ec8f7; font-size:10px; font-weight:700; letter-spacing:1px; padding:4px 10px; border-radius:4px; text-transform:uppercase; }
+
+/* SECTIONS */
+.section-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+.card { background:#fff; border:1.5px solid #e0e4ec; border-radius:10px; overflow:hidden; }
+.card-head { padding:12px 16px; font-weight:800; font-size:11px; letter-spacing:.5px; text-transform:uppercase; display:flex; align-items:center; gap:8px; }
+.card-body { padding:16px; }
+
+/* SITUATION */
+.situation { background:#fff; border:1.5px solid #e0e4ec; border-radius:10px; overflow:hidden; margin-bottom:16px; }
+.situation .card-head { background:#f8f9fc; border-bottom:1.5px solid #e0e4ec; color:#032D60; }
+.situation .card-body p { font-size:12.5px; color:#3a4a5c; line-height:1.7; }
+.situation .card-body strong { color:#032D60; }
+
+/* INTELLIGENCE CARDS */
+.intel-card .card-head { background:#fff8e1; border-bottom:1.5px solid #ffe082; color:#7d4e00; }
+.intel-card .card-body ul { list-style:none; }
+.intel-card .card-body li { font-size:12px; color:#3a4a5c; line-height:1.6; padding:6px 0; border-bottom:1px solid #f4f5f7; display:flex; gap:8px; align-items:flex-start; }
+.intel-card .card-body li:last-child { border-bottom:none; }
+.intel-card .card-body li .dot { width:6px; height:6px; border-radius:50%; background:#f39c12; flex-shrink:0; margin-top:5px; }
+
+/* RISK CARD */
+.risk-card { margin-bottom:16px; background:#fff; border:1.5px solid #f5c6c6; border-radius:10px; overflow:hidden; }
+.risk-card .card-head { background:#fff3f3; border-bottom:1.5px solid #f5c6c6; color:#c0392b; }
+.risk-card .risk-body { padding:18px 20px; }
+.risk-quote { background:#fff3f3; border-left:4px solid #e74c3c; padding:14px 18px; border-radius:0 6px 6px 0; margin-bottom:14px; font-size:12.5px; color:#7a2020; line-height:1.7; font-style:italic; }
+.risk-body p { font-size:12px; color:#3a4a5c; line-height:1.7; }
+
+/* THREE PLAYS */
+.plays { margin-bottom:16px; }
+.plays-head { font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:#6b7a90; margin-bottom:10px; padding-left:2px; }
+.play-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.play { background:#fff; border:1.5px solid #e0e4ec; border-radius:10px; padding:16px; }
+.play-num { width:24px; height:24px; border-radius:50%; background:#0070D2; color:#fff; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
+.play h4 { font-size:12px; font-weight:800; color:#032D60; margin-bottom:6px; line-height:1.4; }
+.play p { font-size:11.5px; color:#5a6a7c; line-height:1.6; }
+
+/* AGENTIC DEMO */
+.demo-section { background:linear-gradient(135deg,#032D60,#0070D2); border-radius:12px; padding:28px 32px; margin-bottom:16px; }
+.demo-section .demo-eyebrow { font-size:10px; font-weight:700; letter-spacing:2px; color:rgba(255,255,255,.5); text-transform:uppercase; margin-bottom:8px; }
+.demo-section h2 { font-size:18px; font-weight:900; color:#fff; margin-bottom:6px; }
+.demo-section .demo-sub { font-size:12px; color:rgba(255,255,255,.6); margin-bottom:24px; }
+.demo-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
+.demo-step { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:8px; padding:14px; }
+.demo-step .step-num { font-size:10px; font-weight:700; color:rgba(255,255,255,.4); margin-bottom:6px; letter-spacing:1px; text-transform:uppercase; }
+.demo-step .step-text { font-size:11.5px; color:#fff; line-height:1.5; font-weight:600; }
+.demo-step .step-source { font-size:10px; color:rgba(255,255,255,.4); margin-top:4px; }
+.demo-wow { background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:8px; padding:16px 20px; text-align:center; }
+.demo-wow .wow-label { font-size:10px; font-weight:700; color:rgba(255,255,255,.5); letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; }
+.demo-wow .wow-text { font-size:14px; font-weight:800; color:#fff; line-height:1.5; }
+
+/* FOOTER */
+.footer { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:#fff; border:1.5px solid #e0e4ec; border-radius:10px; }
+.footer-left { font-size:12px; color:#3a4a5c; }
+.footer-left strong { color:#032D60; display:block; font-size:13px; margin-bottom:2px; }
+.footer-right { display:flex; gap:8px; }
+.badge { background:#e8f4ff; color:#0070D2; font-size:10px; font-weight:700; letter-spacing:.5px; padding:4px 10px; border-radius:4px; text-transform:uppercase; }
+.badge.green { background:#e8f8ef; color:#1a5c2a; }
+.badge.red { background:#fff0f0; color:#c0392b; }
+
+/* FULL WIDTH */
+.full { grid-column:1 / -1; }
+</style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="pw-gate">
+  <div class="logo">TROJAN BATTERY</div>
+  <div class="sub">Salesforce Account Brief — Confidential</div>
+  <div class="box">
+    <div class="hint">Enter access code to continue</div>
+    <input id="pw-input" type="password" placeholder="Access code" onkeydown="if(event.key==='Enter')checkPW()" />
+    <div id="pw-error"></div>
+    <button onclick="checkPW()">Access Brief →</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="eyebrow">Account Pursuit Brief · July 2026</div>
+      <h1>Trojan Battery Company</h1>
+      <div class="tagline">100 years of powering movement across 8 markets — with a marketing stack that can't see any of it. Here's what's possible.</div>
+    </div>
+    <div class="header-right">
+      <div class="label">Account Executive</div>
+      <div class="ae">Mike Caliguri</div>
+      <div class="label" style="margin-top:8px;">Key Contact</div>
+      <div class="ae">Keith Overbay</div>
+      <div class="product-badge">Marketing Cloud Next</div>
+    </div>
+  </div>
+
+  <!-- SITUATION -->
+  <div class="situation">
+    <div class="card-head">📍 &nbsp;The Situation</div>
+    <div class="card-body">
+      <p>Trojan Battery is a 100-year-old manufacturer serving <strong>8 distinct markets</strong> — golf, aerial work platforms, material handling, floor cleaning, RV, marine, transportation, and solar. They are already a <strong>happy Salesforce customer</strong>, with Revenue Cloud and Commerce Cloud running their commercial operations. But their marketing runs on HubSpot — completely disconnected from the rich customer data already living in Salesforce. The result: every campaign decision is made without knowing what customers actually bought, browsed, or are about to need. And with <strong>no dedicated marketing leader</strong> currently in place, no one is protecting the status quo.</p>
+    </div>
+  </div>
+
+  <!-- INTEL CARDS -->
+  <div class="section-grid" style="margin-bottom:16px;">
+    <div class="card intel-card">
+      <div class="card-head">🔍 &nbsp;What We Know</div>
+      <div class="card-body">
+        <ul>
+          <li><span class="dot"></span>No CMO or VP of Marketing — CCO Laurie Oswald owns marketing by title, but her entire career is in enterprise sales (Vertiv, CommScope). She thinks in pipeline and revenue.</li>
+          <li><span class="dot"></span>PE-backed (C&D Technologies / KPS Capital Partners) — financial discipline and ROI scrutiny are built into every technology decision.</li>
+          <li><span class="dot"></span>Centennial year in 2025 — leadership is publicly talking about transformation and the next 100 years. Oswald appeared on multiple podcasts on "leadership & transformation."</li>
+          <li><span class="dot"></span>8 markets, 8 buyer personas, 8 distributor networks — all receiving the same undifferentiated HubSpot communications.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card intel-card">
+      <div class="card-head">⚡ &nbsp;The Opening</div>
+      <div class="card-body">
+        <ul>
+          <li><span class="dot"></span>No marketing executive to defend HubSpot — the internal blocker doesn't exist right now.</li>
+          <li><span class="dot"></span>Revenue Cloud + Commerce Cloud already in place — this is a "complete the platform" conversation, not a rip-and-replace.</li>
+          <li><span class="dot"></span>Marketing Cloud Next shares Data Cloud with their existing products — the integration is native, not a project.</li>
+          <li><span class="dot"></span>The pitch is a revenue and efficiency story — frame everything in pipeline contribution and distributor activation, not brand or demand-gen.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- RISK CARD -->
+  <div class="risk-card">
+    <div class="card-head">⚠️ &nbsp;The HubSpot Data Risk — Share This With Keith</div>
+    <div class="risk-body">
+      <div class="risk-quote">"On August 4, 2026, HubSpot is expanding its data discovery and intelligence features to bring more robust and reliable data to our customers. To power these tools, enrichment data such as business contact details, employer information, and email deliverability signals, may be shared with other customers."</div>
+      <p>HubSpot quietly opted all customers in to cross-customer data sharing effective July 1st. Trojan Battery's distributor contacts, dealer relationships, and channel partner data — built over 100 years — may now be enriching HubSpot's broader network. This isn't a scare tactic. It's something a trusted advisor makes sure their customer knows about, especially during a marketing leadership transition when no one is actively watching the account settings.</p>
+    </div>
+  </div>
+
+  <!-- THREE PLAYS -->
+  <div class="plays">
+    <div class="plays-head">The Three-Point Revenue Narrative</div>
+    <div class="play-grid">
+      <div class="play">
+        <div class="play-num">1</div>
+        <h4>Your marketing is blind to the data you already own</h4>
+        <p>Commerce Cloud and Revenue Cloud hold Trojan's richest customer picture — what distributors bought, when they reorder, what they're browsing. HubSpot sees none of it. Marketing Cloud Next runs on the same Data Cloud layer already powering both products. Connect it and every campaign is driven by actual buying behavior, not guesswork.</p>
+      </div>
+      <div class="play">
+        <div class="play-num">2</div>
+        <h4>8 markets need 8 conversations — not one generic email</h4>
+        <p>A golf course operator and a solar contractor have nothing in common. Marketing Cloud Next's journey orchestration lets Trojan run segment-specific campaigns across all 8 verticals from one platform, by the same small team. More revenue per distributor. No additional headcount. That's the efficiency story Laurie Oswald will respond to.</p>
+      </div>
+      <div class="play">
+        <div class="play-num">3</div>
+        <h4>Consolidate on a platform that proves ROI</h4>
+        <p>PE-backed companies consolidate technology spend. Trojan already trusts Salesforce with their commercial operations. Adding Marketing Cloud Next isn't adding a vendor — it's removing one (HubSpot) and getting a platform where marketing, sales, and commerce data finally speak the same language. The ROI case writes itself.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- AGENTIC DEMO -->
+  <div class="demo-section">
+    <div class="demo-eyebrow">Agentic Use Case · Live Demo Scenario</div>
+    <h2>What "Marketing + Commerce + Revenue" Looks Like in Action</h2>
+    <div class="demo-sub">A distributor sales rep. A Slack notification. Zero manual steps. This is what Agentforce makes possible when all three clouds share one data model.</div>
+    <div class="demo-steps">
+      <div class="demo-step">
+        <div class="step-num">Step 1</div>
+        <div class="step-text">Agentforce detects 3 golf course accounts 15 days past their typical reorder window</div>
+        <div class="step-source">← Commerce Cloud purchase history</div>
+      </div>
+      <div class="demo-step">
+        <div class="step-num">Step 2</div>
+        <div class="step-text">Agent drafts a personalized reorder outreach — correct product, contract pricing, account name</div>
+        <div class="step-source">← Revenue Cloud contract terms</div>
+      </div>
+      <div class="demo-step">
+        <div class="step-num">Step 3</div>
+        <div class="step-text">Notification surfaces in the rep's Slack with full context — one tap to review and approve</div>
+        <div class="step-source">← Marketing Cloud Next delivery</div>
+      </div>
+      <div class="demo-step">
+        <div class="step-num">Step 4</div>
+        <div class="step-text">Message sent. Opportunity logged. Rep never left Slack. Total time: 8 seconds.</div>
+        <div class="step-source">← Agentforce orchestration</div>
+      </div>
+    </div>
+    <div class="demo-wow">
+      <div class="wow-label">The value statement</div>
+      <div class="wow-text">"Trojan's revenue data is already in Salesforce. Marketing Cloud Next is what makes it work for you — automatically, across every market, without adding headcount."</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-left">
+      <strong>Sam Holz · Salesforce Digital Specialist AE</strong>
+      sam.holz@salesforce.com · Working alongside Mike Caliguri
+    </div>
+    <div class="footer-right">
+      <span class="badge green">Existing Customer ✓</span>
+      <span class="badge">Revenue Cloud</span>
+      <span class="badge">Commerce Cloud</span>
+      <span class="badge" style="background:#f0e8ff;color:#6b21a8;">Marketing Cloud Next</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function checkPW() {
+  const val = document.getElementById('pw-input').value;
+  if (val === 'Trojan&Salesforce2026!') {
+    document.getElementById('pw-gate').style.display = 'none';
+  } else {
+    const err = document.getElementById('pw-error');
+    err.textContent = 'Incorrect access code. Please try again.';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+    setTimeout(() => { err.textContent = ''; }, 3000);
+  }
+}
+</script>
+</body>
+</html>
