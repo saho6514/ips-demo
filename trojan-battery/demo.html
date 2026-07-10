@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Trojan Battery — Agentic Demo</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#0a0f1e; color:#fff; font-size:13px; height:100vh; overflow:hidden; }
+
+/* SCREENS */
+.screen { display:none; height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:40px 24px; text-align:center; animation:fadeIn .3s ease; }
+.screen.active { display:flex; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* INTRO SCREEN */
+.intro-badge { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:20px; }
+.intro h1 { font-size:32px; font-weight:900; line-height:1.25; max-width:640px; margin:0 auto 16px; }
+.intro h1 em { color:#7ec8f7; font-style:normal; }
+.intro .deck { font-size:14px; color:rgba(255,255,255,.55); max-width:500px; margin:0 auto 36px; line-height:1.75; }
+.btn-primary { background:#0070D2; color:#fff; border:none; padding:14px 32px; border-radius:6px; font-size:13px; font-weight:800; cursor:pointer; letter-spacing:1px; text-transform:uppercase; transition:background .2s; }
+.btn-primary:hover { background:#005bb0; }
+.btn-outline { background:transparent; color:rgba(255,255,255,.5); border:1.5px solid rgba(255,255,255,.15); padding:12px 24px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; margin-left:12px; transition:all .2s; }
+.btn-outline:hover { color:#fff; border-color:rgba(255,255,255,.35); }
+
+/* AGENT SCREEN */
+.agent-screen { background:#0d1526; max-width:780px; width:100%; border-radius:16px; border:1px solid rgba(255,255,255,.08); overflow:hidden; box-shadow:0 24px 80px rgba(0,0,0,.6); }
+.agent-topbar { background:#111827; padding:14px 20px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.06); }
+.agent-dot { width:10px; height:10px; border-radius:50%; }
+.dot-r { background:#e74c3c; }
+.dot-y { background:#f39c12; }
+.dot-g { background:#27ae60; }
+.agent-title { margin-left:8px; font-size:12px; color:rgba(255,255,255,.4); letter-spacing:.3px; }
+.agent-title strong { color:rgba(255,255,255,.7); }
+.agent-body { padding:24px; }
+
+/* THINKING INDICATOR */
+.thinking { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+.thinking-dots { display:flex; gap:4px; }
+.thinking-dots span { width:6px; height:6px; border-radius:50%; background:#0070D2; animation:pulse 1.2s ease-in-out infinite; }
+.thinking-dots span:nth-child(2) { animation-delay:.2s; }
+.thinking-dots span:nth-child(3) { animation-delay:.4s; }
+@keyframes pulse { 0%,80%,100%{opacity:.2} 40%{opacity:1} }
+.thinking-label { font-size:12px; color:rgba(255,255,255,.4); }
+
+/* AGENT ACTION */
+.agent-action { background:rgba(0,112,210,.08); border:1px solid rgba(0,112,210,.2); border-radius:8px; padding:14px 16px; margin-bottom:12px; }
+.action-source { font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#7ec8f7; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+.action-source .dot2 { width:6px; height:6px; border-radius:50%; background:#7ec8f7; }
+.action-text { font-size:12.5px; color:rgba(255,255,255,.8); line-height:1.65; }
+.action-text strong { color:#fff; }
+
+/* DRAFT EMAIL */
+.draft-email { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:8px; padding:16px 18px; margin-bottom:16px; }
+.email-field { display:flex; gap:10px; margin-bottom:6px; font-size:12px; }
+.email-field .lbl { color:rgba(255,255,255,.3); width:44px; flex-shrink:0; }
+.email-field .val { color:rgba(255,255,255,.7); }
+.email-divider { height:1px; background:rgba(255,255,255,.06); margin:10px 0; }
+.email-body { font-size:12px; color:rgba(255,255,255,.7); line-height:1.75; }
+.email-body strong { color:#fff; }
+
+/* APPROVE BAR */
+.approve-bar { display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:12px 16px; }
+.approve-label { font-size:12px; color:rgba(255,255,255,.5); }
+.approve-label strong { color:#fff; display:block; font-size:13px; margin-bottom:1px; }
+.approve-btns { display:flex; gap:8px; }
+.btn-approve { background:#27ae60; color:#fff; border:none; padding:8px 20px; border-radius:5px; font-size:12px; font-weight:700; cursor:pointer; }
+.btn-skip { background:transparent; color:rgba(255,255,255,.4); border:1px solid rgba(255,255,255,.1); padding:8px 16px; border-radius:5px; font-size:12px; cursor:pointer; }
+
+/* RESULT SCREEN */
+.result-screen { max-width:640px; width:100%; }
+.result-icon { font-size:48px; margin-bottom:16px; }
+.result-screen h2 { font-size:24px; font-weight:900; margin-bottom:10px; }
+.result-screen .result-deck { font-size:13px; color:rgba(255,255,255,.55); line-height:1.75; margin-bottom:28px; max-width:480px; }
+.result-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:32px; width:100%; }
+.rs { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:8px; padding:14px; text-align:center; }
+.rs-num { font-size:24px; font-weight:900; color:#7ec8f7; }
+.rs-label { font-size:11px; color:rgba(255,255,255,.45); margin-top:3px; }
+.result-cta { font-size:12px; color:rgba(255,255,255,.35); }
+
+/* PROGRESS */
+.progress { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); display:flex; gap:6px; }
+.progress-dot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.15); transition:background .3s; }
+.progress-dot.active { background:#0070D2; }
+
+/* BACK LINK */
+.back-link { position:fixed; top:20px; left:24px; font-size:11px; color:rgba(255,255,255,.3); text-decoration:none; letter-spacing:.3px; transition:color .2s; }
+.back-link:hover { color:rgba(255,255,255,.7); }
+
+/* SCREEN LABEL */
+.screen-tag { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.25); margin-bottom:16px; }
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back-link">← Back to Brief</a>
+
+<!-- SCREEN 0: INTRO -->
+<div class="screen active" id="s0">
+  <div class="intro-badge">Agentic Use Case Demo · Trojan Battery</div>
+  <h1 class="intro">What happens when Agentforce can see <em>what your distributors actually buy</em></h1>
+  <div class="intro deck">A distributor rep. A Slack notification. Three market segments. Zero manual steps. This is what Marketing Cloud Next makes possible when it runs on the same data as Commerce Cloud and Revenue Cloud.</div>
+  <div>
+    <button class="btn-primary" onclick="goTo(1)">▶ &nbsp;See It In Action</button>
+    <button class="btn-outline" onclick="goTo(1)">60 seconds</button>
+  </div>
+</div>
+
+<!-- SCREEN 1: AGENT DETECTS -->
+<div class="screen" id="s1">
+  <div class="screen-tag">Step 1 of 4 — Agent Detects</div>
+  <div class="agent-screen">
+    <div class="agent-topbar">
+      <span class="agent-dot dot-r"></span>
+      <span class="agent-dot dot-y"></span>
+      <span class="agent-dot dot-g"></span>
+      <span class="agent-title"><strong>Agentforce Marketing</strong> · Distributor Reorder Monitor</span>
+    </div>
+    <div class="agent-body">
+      <div class="thinking">
+        <div class="thinking-dots"><span></span><span></span><span></span></div>
+        <div class="thinking-label">Scanning Commerce Cloud purchase history across all active accounts…</div>
+      </div>
+      <div class="agent-action">
+        <div class="action-source"><span class="dot2"></span>Commerce Cloud · Purchase History</div>
+        <div class="action-text">Identified <strong>3 distributor accounts</strong> approaching typical reorder window with no new order in the last <strong>18 days</strong>:</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:12px;">
+          <div style="font-size:10px;color:#7ec8f7;font-weight:700;letter-spacing:1px;margin-bottom:5px;">GOLF SEGMENT</div>
+          <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:2px;">Sunbelt Golf Supply</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.45);">Last order: 22 days ago</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.45);">Avg cycle: 21 days</div>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:12px;">
+          <div style="font-size:10px;color:#4ade80;font-weight:700;letter-spacing:1px;margin-bottom:5px;">SOLAR SEGMENT</div>
+          <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:2px;">Pacific Green Energy</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.45);">Last order: 19 days ago</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.45);">Avg cycle: 18 days</div>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:12px;">
+          <div style="font-size:10px;color:#fb923c;font-weight:700;letter-spacing:1px;margin-bottom:5px;">MATERIAL HANDLING</div>
+          <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:2px;">Midwest Fleet Solutions</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.45);">Last order: 25 days ago</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.45);">Avg cycle: 22 days</div>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <button class="btn-primary" onclick="goTo(2)">Draft Outreach →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 2: AGENT DRAFTS -->
+<div class="screen" id="s2">
+  <div class="screen-tag">Step 2 of 4 — Agent Drafts</div>
+  <div class="agent-screen">
+    <div class="agent-topbar">
+      <span class="agent-dot dot-r"></span>
+      <span class="agent-dot dot-y"></span>
+      <span class="agent-dot dot-g"></span>
+      <span class="agent-title"><strong>Agentforce Marketing</strong> · Drafting personalized outreach</span>
+    </div>
+    <div class="agent-body">
+      <div class="agent-action" style="margin-bottom:12px;">
+        <div class="action-source"><span class="dot2"></span>Revenue Cloud · Contract Terms</div>
+        <div class="action-text">Retrieved contract pricing for Sunbelt Golf Supply: <strong>T-105 6V @ $142.50/unit</strong> (Tier 2 distributor rate). Drafting outreach for golf segment.</div>
+      </div>
+      <div class="draft-email">
+        <div class="email-field"><span class="lbl">To:</span><span class="val">Marcus Webb · Sunbelt Golf Supply</span></div>
+        <div class="email-field"><span class="lbl">From:</span><span class="val">Trojan Battery · Distributor Team</span></div>
+        <div class="email-field"><span class="lbl">Subj:</span><span class="val">Your T-105 inventory — ready when you are</span></div>
+        <div class="email-divider"></div>
+        <div class="email-body">
+          Hi Marcus,<br><br>
+          Noticed it's been about three weeks since your last T-105 order — wanted to make sure you're stocked heading into the back nine of summer peak season.<br><br>
+          Your current contract rate: <strong>$142.50/unit (Tier 2)</strong>. Same-day dispatch available on orders placed before 2pm CT.<br><br>
+          <span style="color:#7ec8f7;">→ Reorder now</span> &nbsp;|&nbsp; <span style="color:rgba(255,255,255,.4);">Not ready yet</span><br><br>
+          Trojan Battery Distributor Team
+        </div>
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:14px;">+ 2 similar drafts generated for Pacific Green Energy (solar) and Midwest Fleet Solutions (material handling) — each with correct product lines and contract rates.</div>
+      <div style="text-align:right;">
+        <button class="btn-primary" onclick="goTo(3)">Review in Slack →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3: REP APPROVES -->
+<div class="screen" id="s3">
+  <div class="screen-tag">Step 3 of 4 — Rep Approves in Slack</div>
+  <div style="max-width:680px;width:100%;">
+    <div style="background:#1a1d21;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.08);">
+      <!-- Slack topbar -->
+      <div style="background:#111215;padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.06);">
+        <div style="width:24px;height:24px;background:#4a154b;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px;">⚡</div>
+        <span style="font-size:13px;font-weight:700;color:#fff;">Slack</span>
+        <span style="font-size:12px;color:rgba(255,255,255,.35);">#agentforce-notifications</span>
+      </div>
+      <!-- Message -->
+      <div style="padding:20px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:36px;height:36px;background:linear-gradient(135deg,#0070D2,#032D60);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🤖</div>
+          <div style="flex:1;">
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;">
+              <span style="font-size:13px;font-weight:700;color:#fff;">Agentforce</span>
+              <span style="font-size:10px;background:#0070D2;color:#fff;padding:1px 6px;border-radius:3px;font-weight:700;">APP</span>
+              <span style="font-size:11px;color:rgba(255,255,255,.3);">2:14 PM</span>
+            </div>
+            <div style="font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.7;margin-bottom:14px;">
+              I've identified <strong style="color:#fff;">3 distributor accounts</strong> past their reorder window and drafted personalized outreach for each — using their live contract pricing from Revenue Cloud.<br><br>
+              <strong style="color:#7ec8f7;">Sunbelt Golf Supply</strong> · T-105 @ $142.50 · Golf segment<br>
+              <strong style="color:#4ade80;">Pacific Green Energy</strong> · AGM-200 @ $218.00 · Solar segment<br>
+              <strong style="color:#fb923c;">Midwest Fleet Solutions</strong> · IND-145 @ $167.00 · Material handling
+            </div>
+            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:14px;margin-bottom:12px;">
+              <div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:8px;">Estimated reorder value if all 3 convert:</div>
+              <div style="font-size:22px;font-weight:900;color:#fff;">$18,450</div>
+            </div>
+            <div class="approve-bar">
+              <div class="approve-label">
+                <strong>Send all 3 — ready to go</strong>
+                Personalized. Contract-accurate. One tap.
+              </div>
+              <div class="approve-btns">
+                <button class="btn-approve" onclick="goTo(4)">✓ &nbsp;Send All</button>
+                <button class="btn-skip" onclick="goTo(4)">Review first</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:rgba(255,255,255,.25);">The rep never left Slack. No CRM login. No spreadsheet. No manual drafting.</div>
+  </div>
+</div>
+
+<!-- SCREEN 4: RESULT -->
+<div class="screen" id="s4">
+  <div class="result-screen">
+    <div class="result-icon">✅</div>
+    <h2>Sent. Logged. Done.</h2>
+    <div class="result-deck">Three personalized reorder emails — correct product, live contract pricing, right segment — delivered in under 8 seconds. The rep approved in Slack. Everything else was Agentforce.</div>
+    <div class="result-stats">
+      <div class="rs">
+        <div class="rs-num">8s</div>
+        <div class="rs-label">Total time for rep</div>
+      </div>
+      <div class="rs">
+        <div class="rs-num">$18k</div>
+        <div class="rs-label">Potential reorder value</div>
+      </div>
+      <div class="rs">
+        <div class="rs-num">0</div>
+        <div class="rs-label">Manual steps required</div>
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:18px 22px;margin-bottom:28px;text-align:left;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px;">The Capability Gap</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.75;">This use case is <strong style="color:#fff;">only possible</strong> when marketing can see Commerce Cloud purchase history and Revenue Cloud contract terms in real time. A disconnected marketing tool sees none of this. It cannot know a distributor is approaching a reorder window. It cannot pull live contract pricing. It cannot connect an email send to downstream revenue. <strong style="color:#7ec8f7;">This is the gap.</strong></div>
+    </div>
+    <button class="btn-primary" onclick="window.location.href='index.html'">← Back to Full Brief</button>
+    <button class="btn-outline" onclick="goTo(0)">Restart Demo</button>
+  </div>
+</div>
+
+<!-- PROGRESS DOTS -->
+<div class="progress">
+  <div class="progress-dot active" id="pd0"></div>
+  <div class="progress-dot" id="pd1"></div>
+  <div class="progress-dot" id="pd2"></div>
+  <div class="progress-dot" id="pd3"></div>
+  <div class="progress-dot" id="pd4"></div>
+</div>
+
+<script>
+let current = 0;
+function goTo(n) {
+  document.getElementById('s' + current).classList.remove('active');
+  document.getElementById('pd' + current).classList.remove('active');
+  current = n;
+  document.getElementById('s' + current).classList.add('active');
+  document.getElementById('pd' + current).classList.add('active');
+}
+</script>
+</body>
+</html>
