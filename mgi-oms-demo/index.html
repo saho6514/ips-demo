@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Morris Group International — Order Management</title>
+<style>
+/* ── RESET & BASE ── */
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#f0f1f3; color:#111; font-size:13px; }
+
+/* ── MGI BRAND TOKENS ── */
+:root {
+  --mgi-navy:    #1a2133;
+  --mgi-navy-mid:#243047;
+  --mgi-red:     #c0392b;
+  --mgi-red-dark:#9b2d22;
+  --mgi-steel:   #5a6478;
+  --mgi-silver:  #e4e8ef;
+  --mgi-white:   #ffffff;
+  --sf-blue:     #0070D2;
+  --sf-navy:     #032D60;
+}
+
+/* ── SHELL ── */
+.shell { display:grid; grid-template-rows:58px 48px 1fr; height:100vh; max-width:1260px; margin:0 auto; background:#fff; box-shadow:0 0 40px rgba(0,0,0,.15); }
+
+/* ── TOP NAV ── */
+.topnav { background:var(--mgi-navy); display:flex; align-items:center; padding:0 24px; gap:16px; border-bottom:3px solid var(--mgi-red); }
+.topnav-left { display:flex; align-items:center; gap:14px; }
+.mgi-wordmark { color:#fff; font-weight:900; font-size:17px; letter-spacing:1.5px; text-transform:uppercase; }
+.topnav-divider { width:1px; height:22px; background:rgba(255,255,255,.2); }
+.topnav-sub { color:rgba(255,255,255,.5); font-size:12px; font-weight:500; letter-spacing:.3px; }
+.topnav-badge { margin-left:auto; background:var(--mgi-red); color:#fff; font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:4px 12px; border-radius:2px; }
+.mute-btn { background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); color:rgba(255,255,255,.8); font-size:11px; font-weight:600; padding:5px 12px; border-radius:4px; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all .15s; white-space:nowrap; }
+.mute-btn:hover { background:rgba(255,255,255,.2); }
+.mute-btn.muted { background:rgba(192,57,43,.25); border-color:var(--mgi-red); color:#fff; }
+
+/* ── STEP NAV ── */
+.stepnav { background:#f5f6f8; border-bottom:2px solid var(--mgi-silver); display:flex; align-items:stretch; padding:0 16px; gap:2px; }
+.step-btn { padding:0 14px; font-size:11.5px; font-weight:600; color:var(--mgi-steel); border:none; background:none; cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; transition:all .15s; white-space:nowrap; display:flex; align-items:center; gap:6px; }
+.step-btn .num { width:18px; height:18px; border-radius:50%; background:#d0d6e0; color:#4a5a70; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.step-btn.active { color:var(--mgi-navy); border-bottom-color:var(--mgi-red); }
+.step-btn.active .num { background:var(--mgi-red); color:#fff; }
+.step-btn:hover:not(.active) { color:var(--mgi-navy); }
+
+/* ── MAIN CANVAS ── */
+.canvas { overflow:auto; position:relative; }
+.screen { display:none; padding:22px 28px; animation:fadeIn .2s ease; }
+.screen.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── SCREEN HEADER ── */
+.screen-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:16px; }
+.screen-header h2 { font-size:18px; font-weight:700; color:var(--mgi-navy); line-height:1.3; }
+.screen-header p { font-size:12.5px; color:var(--mgi-steel); margin-top:4px; }
+.screen-tag { background:#e8edf5; color:var(--mgi-navy-mid); font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:4px 10px; border-radius:2px; white-space:nowrap; margin-left:16px; margin-top:2px; flex-shrink:0; }
+.screen-tag.red { background:#fce8e6; color:var(--mgi-red-dark); }
+.screen-tag.green { background:#e8f5f0; color:#1a5c3a; }
+
+/* ── SHARED CARD ── */
+.card { background:#fff; border:1.5px solid var(--mgi-silver); border-radius:6px; overflow:hidden; }
+.card-header { background:#f5f6f8; border-bottom:1.5px solid var(--mgi-silver); padding:10px 16px; display:flex; align-items:center; gap:8px; font-weight:700; font-size:12px; color:var(--mgi-navy); }
+.card-body { padding:16px; }
+
+/* ── GRIDS ── */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+
+/* ── NARRATION BAR ── */
+.narration-bar { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.narration-replay { background:none; border:1.5px solid #d0d6e0; color:var(--mgi-steel); padding:5px 12px; border-radius:4px; font-size:11px; font-weight:600; cursor:pointer; transition:all .15s; white-space:nowrap; display:none; }
+.narration-replay:hover { border-color:var(--mgi-red); color:var(--mgi-red); }
+.narration-replay.visible { display:inline-flex; align-items:center; gap:5px; }
+.narration-progress { flex:1; height:3px; background:var(--mgi-silver); border-radius:2px; overflow:hidden; }
+.narration-progress-fill { height:100%; background:var(--mgi-red); border-radius:2px; width:0%; transition:width .25s linear; }
+
+/* ── CONTINUE PROMPT ── */
+.continue-prompt { display:none; align-items:center; gap:8px; font-size:12px; font-weight:700; color:var(--mgi-red); }
+.continue-prompt.visible { display:flex; animation:fadeIn .3s ease; }
+
+/* ── CLICK HINT ── */
+.click-hint { font-size:11px; color:var(--mgi-steel); font-weight:600; opacity:0; transition:opacity .4s ease; }
+.click-hint.visible { opacity:1; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav { display:flex; justify-content:space-between; align-items:center; padding:14px 28px; border-top:1.5px solid var(--mgi-silver); background:#f5f6f8; }
+.nav-btn { background:var(--mgi-red); color:#fff; border:none; padding:9px 20px; border-radius:4px; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px; transition:background .15s; }
+.nav-btn:hover { background:var(--mgi-red-dark); }
+.nav-btn.outline { background:#fff; color:var(--mgi-navy); border:2px solid #c0c8d6; }
+.nav-btn.outline:hover { background:#f5f6f8; }
+.nav-btn:disabled { background:#d0d6e0; color:#8a94a6; cursor:not-allowed; border:none; }
+.step-indicator { font-size:12px; color:var(--mgi-steel); font-weight:600; }
+
+/* ── START OVERLAY ── */
+.start-overlay { position:fixed; inset:0; background:rgba(20,26,42,.96); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; padding:24px; }
+.start-overlay::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--mgi-red); }
+.overlay-mgi { color:rgba(255,255,255,.35); font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; margin-bottom:10px; }
+.start-overlay h1 { color:#fff; font-size:22px; font-weight:800; margin-bottom:6px; text-align:center; letter-spacing:.3px; }
+.start-overlay .sub { color:rgba(255,255,255,.5); font-size:13px; margin-bottom:24px; text-align:center; }
+.start-context { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:6px; padding:18px 24px; max-width:560px; margin:0 auto 28px; }
+.start-context p { color:rgba(255,255,255,.75); font-size:13px; line-height:1.7; margin:0; }
+.start-btn { background:var(--mgi-red); color:#fff; border:none; padding:14px 44px; border-radius:4px; font-size:15px; font-weight:800; cursor:pointer; letter-spacing:.5px; text-transform:uppercase; transition:background .15s; }
+.start-btn:hover { background:var(--mgi-red-dark); }
+
+/* ── PORTAL CHROME ── */
+.portal-chrome { border:1.5px solid #c8d0dc; border-radius:6px; overflow:hidden; margin-bottom:14px; }
+.portal-topbar { background:var(--mgi-navy); color:#fff; padding:10px 16px; display:flex; align-items:center; gap:12px; }
+.portal-topbar .brand { font-weight:800; font-size:13px; letter-spacing:.5px; }
+.portal-topbar .brand-sub { opacity:.45; font-size:11px; margin-left:4px; }
+.portal-topbar .tabs { display:flex; gap:6px; margin-left:16px; }
+.portal-topbar .tab { background:rgba(255,255,255,.1); color:rgba(255,255,255,.65); font-size:10px; padding:3px 10px; border-radius:2px; cursor:pointer; font-weight:600; }
+.portal-topbar .tab.active { background:var(--mgi-red); color:#fff; }
+.portal-topbar .right { margin-left:auto; font-size:11px; opacity:.4; }
+.portal-subnav { background:#f5f6f8; border-bottom:1.5px solid var(--mgi-silver); padding:0 16px; display:flex; gap:0; }
+.portal-subnav-item { padding:9px 14px; font-size:11.5px; font-weight:600; color:var(--mgi-steel); cursor:pointer; border-bottom:2.5px solid transparent; }
+.portal-subnav-item.active { color:var(--mgi-navy); border-bottom-color:var(--mgi-red); }
+.portal-body { padding:16px; background:#fff; }
+
+/* ── KPI ROW ── */
+.kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
+.kpi-card { background:#fff; border:1.5px solid var(--mgi-silver); border-radius:6px; padding:12px 14px; }
+.kpi-card .kpi-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--mgi-steel); margin-bottom:5px; }
+.kpi-card .kpi-val { font-size:22px; font-weight:800; color:var(--mgi-navy); line-height:1; }
+.kpi-card .kpi-sub { font-size:11px; color:var(--mgi-steel); margin-top:4px; }
+.kpi-card.highlight { border-color:var(--mgi-red); background:#fef8f7; }
+.kpi-card.highlight .kpi-val { color:var(--mgi-red); }
+
+/* ── SOURCE TABLE ── */
+.data-table { width:100%; border-collapse:collapse; font-size:12px; }
+.data-table th { background:#f5f6f8; color:#4a5a70; font-weight:700; text-align:left; padding:7px 12px; border-bottom:2px solid #d0d6e0; font-size:10px; text-transform:uppercase; letter-spacing:.5px; }
+.data-table td { padding:8px 12px; border-bottom:1px solid #edf0f5; color:#1a1a2e; vertical-align:middle; }
+.data-table tr:last-child td { border-bottom:none; }
+.data-table tr:hover td { background:#f8f9fb; }
+
+/* ── STATUS BADGES ── */
+.badge { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; padding:2px 8px; border-radius:2px; }
+.badge-green { background:#d4edda; color:#155724; }
+.badge-blue  { background:#d4e8f8; color:#0a4a8c; }
+.badge-gold  { background:#fff3cd; color:#7d5200; }
+.badge-red   { background:#fce8e6; color:var(--mgi-red-dark); }
+
+/* ── ERP DIAGRAM CARDS ── */
+.erp-card { border-radius:6px; overflow:hidden; border:1.5px solid var(--mgi-silver); }
+.erp-card-head { padding:10px 14px; font-weight:700; font-size:12px; display:flex; align-items:center; gap:8px; border-bottom:1.5px solid var(--mgi-silver); }
+.erp-card-body { padding:12px 14px; background:#fff; font-size:12px; color:var(--mgi-steel); line-height:1.6; }
+
+/* ── CHAT MOCK ── */
+.chat-wrap { border:1.5px solid #c8d0dc; border-radius:6px; overflow:hidden; }
+.chat-topbar { background:var(--mgi-navy-mid); color:#fff; padding:9px 16px; font-size:12px; font-weight:700; display:flex; align-items:center; gap:10px; }
+.chat-topbar .status { width:8px; height:8px; border-radius:50%; background:#2ecc71; flex-shrink:0; }
+.chat-body { background:#f8f9fb; padding:16px; display:flex; flex-direction:column; gap:10px; }
+.chat-msg { max-width:75%; }
+.chat-msg.rep { align-self:flex-end; }
+.chat-msg.agent { align-self:flex-start; }
+.chat-bubble { padding:10px 14px; border-radius:6px; font-size:12.5px; line-height:1.6; }
+.chat-msg.rep .chat-bubble { background:var(--mgi-navy); color:#fff; border-radius:6px 6px 0 6px; }
+.chat-msg.agent .chat-bubble { background:#fff; border:1.5px solid var(--mgi-silver); color:#1a2133; border-radius:6px 6px 6px 0; }
+.chat-label { font-size:10px; font-weight:700; color:var(--mgi-steel); margin-bottom:4px; letter-spacing:.3px; text-transform:uppercase; }
+.chat-msg.rep .chat-label { text-align:right; }
+.agent-typing { display:flex; align-items:center; gap:5px; padding:8px 14px; background:#fff; border:1.5px solid var(--mgi-silver); border-radius:6px; font-size:11px; color:var(--mgi-steel); width:fit-content; }
+.typing-dot { width:6px; height:6px; border-radius:50%; background:var(--mgi-steel); animation:typingPulse 1.2s infinite; }
+.typing-dot:nth-child(2) { animation-delay:.2s; }
+.typing-dot:nth-child(3) { animation-delay:.4s; }
+@keyframes typingPulse { 0%,100%{opacity:.3} 50%{opacity:1} }
+
+/* ── ROUTING RULES ── */
+.rule-row { display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:1px solid #edf0f5; font-size:12px; }
+.rule-row:last-child { border-bottom:none; }
+.rule-if { background:#e8edf5; color:var(--mgi-navy-mid); padding:3px 9px; border-radius:2px; font-size:10px; font-weight:700; flex-shrink:0; text-transform:uppercase; letter-spacing:.5px; }
+.rule-then { background:var(--mgi-red); color:#fff; padding:3px 9px; border-radius:2px; font-size:10px; font-weight:700; flex-shrink:0; text-transform:uppercase; letter-spacing:.5px; }
+.rule-arrow { color:#c0c8d6; font-size:16px; flex-shrink:0; }
+.rule-desc { color:#4a5a70; }
+
+/* ── ANIMATING PULSE ── */
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.pulsing { animation:pulse 1.4s infinite; }
+
+/* ── NEXT BTN PULSE ── */
+@keyframes nextPulse { 0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(192,57,43,.4)} 50%{transform:scale(1.04);box-shadow:0 0 0 8px rgba(192,57,43,0)} }
+
+/* ── ADV CARD ── */
+.adv-card { border-radius:6px; border:1.5px solid var(--mgi-silver); overflow:hidden; }
+.adv-card-head { padding:11px 16px; font-weight:700; font-size:12px; display:flex; align-items:center; gap:8px; border-bottom:1.5px solid var(--mgi-silver); }
+.adv-card-body { padding:14px 16px; background:#fff; font-size:12px; color:#4a5a70; line-height:1.6; }
+
+/* ── TOAST ── */
+.toast { position:fixed; bottom:24px; right:24px; background:var(--mgi-navy); color:#fff; padding:12px 18px; border-radius:4px; font-size:13px; font-weight:600; box-shadow:0 6px 24px rgba(0,0,0,.2); display:none; z-index:999; max-width:300px; }
+.toast.show { display:block; animation:slideUp .2s ease; }
+@keyframes slideUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── ARCHITECTURE FLOW ── */
+.arch-flow { display:flex; align-items:center; gap:0; margin-bottom:14px; }
+.arch-box { flex:1; text-align:center; padding:14px 10px; border-radius:6px; font-size:11.5px; font-weight:700; }
+.arch-arrow { color:#c0c8d6; font-size:22px; padding:0 6px; flex-shrink:0; }
+.arch-label { font-size:9px; font-weight:600; text-transform:uppercase; letter-spacing:.8px; margin-bottom:4px; opacity:.6; }
+.arch-name { font-size:12px; font-weight:800; line-height:1.2; }
+</style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="pw-gate" style="position:fixed;inset:0;background:#0f1520;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;padding:24px;">
+  <div style="position:absolute;top:0;left:0;right:0;height:4px;background:var(--mgi-red);"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--mgi-red);"></div>
+  <div style="text-align:center;margin-bottom:32px;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:12px;">Morris Group International</div>
+    <div style="font-size:32px;font-weight:900;letter-spacing:3px;color:#fff;text-transform:uppercase;margin-bottom:6px;">MGI</div>
+    <div style="width:40px;height:3px;background:var(--mgi-red);margin:0 auto 14px;"></div>
+    <div style="font-size:13px;color:rgba(255,255,255,.45);letter-spacing:.5px;">Salesforce · Order Management Overview</div>
+  </div>
+  <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:28px 32px;width:100%;max-width:380px;text-align:center;">
+    <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:16px;letter-spacing:.3px;">This asset is private. Enter the access code to continue.</div>
+    <input
+      id="pw-input"
+      type="password"
+      placeholder="Enter access code"
+      onkeydown="if(event.key==='Enter')checkPW()"
+      style="width:100%;padding:11px 16px;border-radius:4px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font-size:14px;font-weight:600;outline:none;margin-bottom:10px;letter-spacing:.5px;text-align:center;"
+    />
+    <div id="pw-error" style="font-size:11px;color:var(--mgi-red);font-weight:700;height:16px;margin-bottom:8px;"></div>
+    <button onclick="checkPW()" style="width:100%;padding:12px;background:var(--mgi-red);color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:800;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:background .15s;" onmouseover="this.style.background='#9b2d22'" onmouseout="this.style.background='var(--mgi-red)'">Access Demo →</button>
+  </div>
+  <div style="margin-top:24px;font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.5px;">Prepared exclusively for Morris Group International</div>
+</div>
+
+<!-- START OVERLAY -->
+<div class="start-overlay" id="start-overlay" style="display:none;">
+  <div class="overlay-mgi">Morris Group International</div>
+  <h1>Order Management — Built Around Your Infrastructure</h1>
+  <div class="sub">Prepared by Salesforce for Hoyt and the MGI team</div>
+  <div class="start-context">
+    <p>Based on what we heard from your team — outside reps with no order visibility, two separate ERP systems, and a community portal already in progress — here's a 4-step walkthrough of what Order Management looks like for MGI's specific situation.</p>
+  </div>
+  <button class="start-btn" onclick="startDemo()">▶ Begin Walkthrough</button>
+</div>
+
+<div class="shell">
+
+  <!-- TOP NAV -->
+  <div class="topnav">
+    <div class="topnav-left">
+      <div class="mgi-wordmark">MGI</div>
+      <div class="topnav-divider"></div>
+      <div class="topnav-sub">Order Management — Salesforce</div>
+    </div>
+    <button class="mute-btn" id="mute-btn" onclick="toggleMute()">🔊 Narration On</button>
+    <div class="topnav-badge">Prepared for Morris Group</div>
+  </div>
+
+  <!-- STEP NAV -->
+  <div class="stepnav">
+    <button class="step-btn active" onclick="goTo(0)"><span class="num">1</span> The Problem</button>
+    <button class="step-btn" onclick="goTo(1)"><span class="num">2</span> One Window, Both ERPs</button>
+    <button class="step-btn" onclick="goTo(2)"><span class="num">3</span> Where's My Order?</button>
+    <button class="step-btn" onclick="goTo(3)"><span class="num">4</span> How It Routes</button>
+  </div>
+
+  <!-- CANVAS -->
+  <div class="canvas">
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 0: THE PROBLEM -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="screen active" id="screen-0">
+      <div class="screen-header">
+        <div>
+          <h2>The Problem As Hoyt Described It</h2>
+          <p>Outside reps have no visibility. Two ERPs. No single portal. Every order status check is a phone call.</p>
+        </div>
+        <div class="screen-tag red">Field Friction · Current State</div>
+      </div>
+
+      <div class="narration-bar">
+        <div class="narration-progress"><div class="narration-progress-fill" id="narr-fill-0"></div></div>
+        <button class="narration-replay visible" id="narr-replay-0" onclick="replayNarration(0)">↺ Replay</button>
+      </div>
+
+      <!-- HOYT QUOTE -->
+      <div style="background:linear-gradient(135deg,var(--mgi-navy),var(--mgi-navy-mid));border-radius:6px;padding:20px 24px;margin-bottom:16px;position:relative;overflow:hidden;border-left:4px solid var(--mgi-red);">
+        <div style="position:absolute;top:-4px;left:20px;font-size:72px;color:rgba(255,255,255,.06);font-family:Georgia,serif;">"</div>
+        <div style="position:relative;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:10px;">What We Heard from the MGI Team</div>
+          <div style="font-size:14px;font-weight:600;color:#fff;line-height:1.75;font-style:italic;">"Our outside reps have no visibility into order status — they're calling the office. And when they submit a new order, they're often entering it in Salesforce and then separately in the ERP. We've thought about just giving them SAP access, but that only handles Acorn. Smith Drain runs on Progress."</div>
+          <div style="margin-top:12px;font-size:11px;color:rgba(255,255,255,.4);">— Discovery call, Morris Group International</div>
+        </div>
+      </div>
+
+      <!-- THE GAP -->
+      <div class="two-col" style="margin-bottom:14px;">
+        <div style="background:#fff;border:1.5px solid #f5c6c0;border-radius:6px;padding:16px;">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--mgi-red);margin-bottom:10px;">Current State — Field Rep Experience</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:20px;height:20px;background:#fce8e6;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px;">✗</div>
+              <div style="font-size:12px;color:#4a5a70;line-height:1.5;"><strong style="color:var(--mgi-navy);">No order visibility</strong> — rep calls office, waits for someone to look up status in SAP or EIS</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:20px;height:20px;background:#fce8e6;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px;">✗</div>
+              <div style="font-size:12px;color:#4a5a70;line-height:1.5;"><strong style="color:var(--mgi-navy);">Double entry</strong> — order entered in Salesforce, then again in the ERP</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:20px;height:20px;background:#fce8e6;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px;">✗</div>
+              <div style="font-size:12px;color:#4a5a70;line-height:1.5;"><strong style="color:var(--mgi-navy);">SAP access solves only half</strong> — Acorn runs SAP, Smith Drain runs Progress/EIS. Two systems, two logins, still no single view.</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1.5px solid #a8d5b5;border-radius:6px;padding:16px;">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#1a5c3a;margin-bottom:10px;">What OMS Adds — Without Replacing Anything</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:20px;height:20px;background:#d4edda;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px;">✓</div>
+              <div style="font-size:12px;color:#4a5a70;line-height:1.5;"><strong style="color:var(--mgi-navy);">One window</strong> — Acorn orders and Smith orders in a single view, from Thomas's community portal</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:20px;height:20px;background:#d4edda;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px;">✓</div>
+              <div style="font-size:12px;color:#4a5a70;line-height:1.5;"><strong style="color:var(--mgi-navy);">Single order entry</strong> — OMS routes to the right ERP automatically. No double entry, no rep deciding which system.</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:20px;height:20px;background:#d4edda;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px;">✓</div>
+              <div style="font-size:12px;color:#4a5a70;line-height:1.5;"><strong style="color:var(--mgi-navy);">SAP stays SAP</strong> — OMS sits in front of the ERPs. Source of record unchanged. Thomas's team works in Salesforce tools they already know.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ARCHITECTURE OVERVIEW -->
+      <div style="background:#f5f6f8;border:1.5px solid var(--mgi-silver);border-radius:6px;padding:16px 20px;">
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--mgi-steel);margin-bottom:12px;">MGI Architecture — OMS as the Front Door</div>
+        <div class="arch-flow">
+          <div class="arch-box" style="background:var(--mgi-navy);color:#fff;">
+            <div class="arch-label" style="opacity:.5;">Entry point</div>
+            <div class="arch-name">Rep Portal<br><span style="font-size:9px;font-weight:500;opacity:.7;">Thomas's community POC</span></div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box" style="background:var(--mgi-red);color:#fff;">
+            <div class="arch-label" style="opacity:.7;">New layer</div>
+            <div class="arch-name">Salesforce OMS<br><span style="font-size:9px;font-weight:500;opacity:.8;">Routes + orchestrates</span></div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box" style="background:#1a5c3a;color:#fff;">
+            <div class="arch-label" style="opacity:.6;">Unchanged</div>
+            <div class="arch-name">SAP (Acorn)<br><span style="font-size:9px;font-weight:500;opacity:.7;">Source of record</span></div>
+          </div>
+          <div class="arch-arrow" style="color:#e0e8f5;font-size:14px;">+</div>
+          <div class="arch-box" style="background:#1a5c3a;color:#fff;">
+            <div class="arch-label" style="opacity:.6;">Unchanged</div>
+            <div class="arch-name">EIS / Progress<br><span style="font-size:9px;font-weight:500;opacity:.7;">(Smith Drain)</span></div>
+          </div>
+        </div>
+        <div style="font-size:11.5px;color:var(--mgi-steel);line-height:1.6;border-top:1px solid var(--mgi-silver);padding-top:10px;margin-top:2px;">OMS is not a replacement for either ERP. It is the orchestration and visibility layer that sits between your reps and your ERPs — so every rep sees everything, in one place, without touching SAP directly.</div>
+      </div>
+
+      <div class="bottom-nav">
+        <button class="nav-btn outline" disabled>← Back</button>
+        <span class="step-indicator">Step 1 of 4</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="click-hint" id="hint-0">👆 Click "One Window, Both ERPs" to continue</span>
+          <span class="continue-prompt" id="prompt-0">👆 Click to continue</span>
+          <button class="nav-btn" id="next-btn-0" onclick="goTo(1)">One Window, Both ERPs →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 1: ONE WINDOW, BOTH ERPs -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-1">
+      <div class="screen-header">
+        <div>
+          <h2>One Window, Both ERPs</h2>
+          <p>Acorn orders (SAP) and Smith Drain orders (EIS) in a single rep portal. Same ERPs. New front door.</p>
+        </div>
+        <div class="screen-tag">OMS Order Visibility</div>
+      </div>
+
+      <div class="narration-bar">
+        <div class="narration-progress"><div class="narration-progress-fill" id="narr-fill-1"></div></div>
+        <button class="narration-replay" id="narr-replay-1" onclick="replayNarration(1)">↺ Replay</button>
+      </div>
+
+      <!-- REP PORTAL MOCK -->
+      <div class="portal-chrome">
+        <div class="portal-topbar">
+          <div class="brand">MGI Rep Portal <span class="brand-sub">— powered by Salesforce</span></div>
+          <div class="tabs">
+            <span class="tab active">My Orders</span>
+            <span class="tab">My Accounts</span>
+            <span class="tab">New Order</span>
+            <span class="tab">Rebate Tracker</span>
+          </div>
+          <div class="right">Jordan Mitchell · Outside Sales · NE Region</div>
+        </div>
+        <div class="portal-subnav">
+          <div class="portal-subnav-item active">All Orders</div>
+          <div class="portal-subnav-item">Acorn (SAP)</div>
+          <div class="portal-subnav-item">Smith Drain (EIS)</div>
+          <div class="portal-subnav-item">In Transit</div>
+          <div class="portal-subnav-item">Needs Attention</div>
+        </div>
+        <div class="portal-body">
+          <div class="kpi-row" style="margin-bottom:12px;">
+            <div class="kpi-card highlight">
+              <div class="kpi-label">Open Orders</div>
+              <div class="kpi-val">34</div>
+              <div class="kpi-sub">Both divisions · all ERPs</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">In Transit</div>
+              <div class="kpi-val">18</div>
+              <div class="kpi-sub">On schedule</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Needs Attention</div>
+              <div class="kpi-val" style="color:#c0392b;">3</div>
+              <div class="kpi-sub">Delay or action required</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Delivered (30d)</div>
+              <div class="kpi-val">47</div>
+              <div class="kpi-sub">No outstanding issues</div>
+            </div>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Division / ERP</th>
+                <th>Product</th>
+                <th>Order Date</th>
+                <th>Est. Ship</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>AC-2024-8847</strong></td>
+                <td>Fisher Controls</td>
+                <td><span class="badge badge-blue">Acorn · SAP</span></td>
+                <td>Valve Bodies — 6" CS Gate</td>
+                <td>Jun 28</td>
+                <td>Jul 14</td>
+                <td><span class="badge badge-blue">In Production</span></td>
+              </tr>
+              <tr>
+                <td><strong>SD-2024-3312</strong></td>
+                <td>Emerson Process</td>
+                <td><span class="badge badge-gold">Smith · EIS</span></td>
+                <td>Floor Drain — HD Industrial</td>
+                <td>Jun 24</td>
+                <td>Jul 11</td>
+                <td><span class="badge badge-green">In Transit</span></td>
+              </tr>
+              <tr style="background:#fffaf9;">
+                <td><strong>AC-2024-8901</strong></td>
+                <td>Parker Hannifin</td>
+                <td><span class="badge badge-blue">Acorn · SAP</span></td>
+                <td>Globe Valves — 2" Stainless</td>
+                <td>Jul 2</td>
+                <td>Jul 18</td>
+                <td><span class="badge badge-red">⚠ Delay — 3 days</span></td>
+              </tr>
+              <tr>
+                <td><strong>SD-2024-3401</strong></td>
+                <td>Tyco Fire Products</td>
+                <td><span class="badge badge-gold">Smith · EIS</span></td>
+                <td>Cleanout Drain — Stainless</td>
+                <td>Jul 5</td>
+                <td>Jul 22</td>
+                <td><span class="badge badge-blue">Order Confirmed</span></td>
+              </tr>
+              <tr>
+                <td><strong>AC-2024-8923</strong></td>
+                <td>Crane Co.</td>
+                <td><span class="badge badge-blue">Acorn · SAP</span></td>
+                <td>Butterfly Valves — 8" Lined</td>
+                <td>Jul 7</td>
+                <td>Jul 24</td>
+                <td><span class="badge badge-blue">In Production</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- WAVIN REFERENCE -->
+      <div style="background:#f5f6f8;border:1.5px solid var(--mgi-silver);border-radius:6px;padding:14px 18px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:flex-start;">
+        <div style="width:32px;height:32px;background:var(--mgi-navy);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:11px;margin-top:1px;">ref</div>
+        <div>
+          <div style="font-weight:700;font-size:12.5px;color:var(--mgi-navy);margin-bottom:4px;">Same architecture, proven in manufacturing</div>
+          <div style="font-size:12px;color:var(--mgi-steel);line-height:1.6;">Another large manufacturer running multiple ERP instances across divisions used Salesforce OMS as the central routing layer — exactly what MGI would be building. Each ERP remained the source of record for its division. OMS abstracted the complexity. <strong style="color:var(--mgi-navy);">The architecture is ERP-agnostic by design.</strong></div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <button class="nav-btn outline" onclick="goTo(0)">← Back</button>
+        <span class="step-indicator">Step 2 of 4</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="click-hint" id="hint-1">👆 Click "Where's My Order?" to continue</span>
+          <span class="continue-prompt" id="prompt-1">👆 Click to continue</span>
+          <button class="nav-btn" id="next-btn-1" onclick="goTo(2)">Where's My Order? →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 2: WHERE'S MY ORDER (WISMO) -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-2">
+      <div class="screen-header">
+        <div>
+          <h2>"Where's My Order?" — Without a Phone Call</h2>
+          <p>A rep in the field gets an answer in seconds. No office call. No swivel between SAP and EIS.</p>
+        </div>
+        <div class="screen-tag green">Agentic · WISMO</div>
+      </div>
+
+      <div class="narration-bar">
+        <div class="narration-progress"><div class="narration-progress-fill" id="narr-fill-2"></div></div>
+        <button class="narration-replay" id="narr-replay-2" onclick="replayNarration(2)">↺ Replay</button>
+      </div>
+
+      <div class="two-col" style="margin-bottom:14px;">
+        <!-- CHAT MOCK -->
+        <div>
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--mgi-steel);margin-bottom:8px;">Live field interaction — via SMS, chat, or portal</div>
+          <div class="chat-wrap">
+            <div class="chat-topbar">
+              <div class="status"></div>
+              <span>MGI Agentforce — Order Assistant</span>
+              <span style="margin-left:auto;font-size:10px;opacity:.5;">Powered by Salesforce OMS</span>
+            </div>
+            <div class="chat-body">
+              <div class="chat-msg rep">
+                <div class="chat-label">Jordan Mitchell · Field Rep</div>
+                <div class="chat-bubble">Where's the Fisher Controls order?</div>
+              </div>
+              <div class="chat-msg agent">
+                <div class="chat-label">Agentforce</div>
+                <div class="agent-typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div><span style="margin-left:4px;">Looking up across all divisions…</span></div>
+              </div>
+              <div class="chat-msg agent">
+                <div class="chat-bubble">
+                  <strong>AC-2024-8847 — Fisher Controls</strong><br>
+                  Valve Bodies (6" CS Gate) — Acorn division<br>
+                  Status: <strong>In Production</strong> · Est. ship July 14<br>
+                  <span style="color:#5a6478;">Currently on schedule. No delays flagged.</span><br><br>
+                  Would you like me to send Fisher Controls a shipping confirmation when it ships?
+                </div>
+              </div>
+              <div class="chat-msg rep">
+                <div class="chat-bubble">Yes, and also — can we move the Parker Hannifin order to expedited?</div>
+              </div>
+              <div class="chat-msg agent">
+                <div class="chat-bubble">
+                  <strong>AC-2024-8901 — Parker Hannifin</strong> is showing a 3-day delay.<br>
+                  I can flag it for expedited review with your ops team — they'll confirm if production can accelerate.<br><br>
+                  <span style="color:#1a5c3a;font-weight:600;">Escalation submitted. You'll get a confirmation within 2 hours.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WHAT MAKES THIS POSSIBLE -->
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="background:#fff;border:1.5px solid var(--mgi-silver);border-radius:6px;padding:14px 16px;">
+            <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--mgi-steel);margin-bottom:10px;">What's happening behind the scenes</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="width:22px;height:22px;background:var(--mgi-red);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800;margin-top:1px;">1</div>
+                <div style="font-size:12px;color:#4a5a70;line-height:1.5;">Rep sends natural language message — no ERP knowledge required</div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="width:22px;height:22px;background:var(--mgi-red);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800;margin-top:1px;">2</div>
+                <div style="font-size:12px;color:#4a5a70;line-height:1.5;">Agentforce resolves order via OMS — searches both SAP and EIS in one call</div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="width:22px;height:22px;background:var(--mgi-red);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800;margin-top:1px;">3</div>
+                <div style="font-size:12px;color:#4a5a70;line-height:1.5;">Response delivered in seconds. Rep stays on-site with the customer.</div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="width:22px;height:22px;background:var(--mgi-red);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800;margin-top:1px;">4</div>
+                <div style="font-size:12px;color:#4a5a70;line-height:1.5;">Actions (expedite, reroute, notify customer) are submitted as flows — ops team confirms before anything changes in ERP</div>
+              </div>
+            </div>
+          </div>
+          <div style="background:#f5f6f8;border:1.5px solid var(--mgi-silver);border-radius:6px;padding:14px 16px;">
+            <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--mgi-steel);margin-bottom:8px;">Available via AppExchange — additive, not a rebuild</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="font-size:12px;color:#4a5a70;display:flex;align-items:center;gap:8px;"><span style="color:var(--mgi-red);font-weight:700;">✓</span> WISMO (Where Is My Order) — status + reroute</div>
+              <div style="font-size:12px;color:#4a5a70;display:flex;align-items:center;gap:8px;"><span style="color:var(--mgi-red);font-weight:700;">✓</span> Cancellations — with ERP-write-back rules</div>
+              <div style="font-size:12px;color:#4a5a70;display:flex;align-items:center;gap:8px;"><span style="color:var(--mgi-red);font-weight:700;">✓</span> Returns / RMA initiation</div>
+              <div style="font-size:12px;color:#4a5a70;display:flex;align-items:center;gap:8px;"><span style="color:var(--mgi-red);font-weight:700;">✓</span> Proactive delay alerts — push to rep before customer calls</div>
+            </div>
+            <div style="margin-top:10px;font-size:11.5px;color:var(--mgi-navy);font-weight:600;line-height:1.5;">Thomas's team installs the package on the existing Salesforce org. Configuration, not construction.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <button class="nav-btn outline" onclick="goTo(1)">← Back</button>
+        <span class="step-indicator">Step 3 of 4</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="click-hint" id="hint-2">👆 Click "How It Routes" to continue</span>
+          <span class="continue-prompt" id="prompt-2">👆 Click to continue</span>
+          <button class="nav-btn" id="next-btn-2" onclick="goTo(3)">How It Routes →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 3: HOW IT ROUTES -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-3">
+      <div class="screen-header">
+        <div>
+          <h2>How It Routes — Without Touching SAP</h2>
+          <p>Business rules sit on Salesforce. ERPs stay unchanged. Thomas's team owns the configuration.</p>
+        </div>
+        <div class="screen-tag">OMS Routing Rules Engine</div>
+      </div>
+
+      <div class="narration-bar">
+        <div class="narration-progress"><div class="narration-progress-fill" id="narr-fill-3"></div></div>
+        <button class="narration-replay" id="narr-replay-3" onclick="replayNarration(3)">↺ Replay</button>
+      </div>
+
+      <!-- ROUTING RULES TABLE -->
+      <div class="portal-chrome" style="margin-bottom:14px;">
+        <div class="portal-topbar">
+          <div class="brand">OMS Routing Rules <span class="brand-sub">— MGI Configuration</span></div>
+          <div style="margin-left:auto;font-size:11px;opacity:.4;">Salesforce Flows · No ERP development required</div>
+        </div>
+        <div class="portal-body" style="padding:0;">
+          <div class="rule-row" style="background:#f9fafb;">
+            <div style="width:28px;height:28px;background:var(--mgi-navy);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800;">R1</div>
+            <span class="rule-if">IF</span>
+            <span class="rule-desc" style="flex:1;">Product line = Valve Bodies, Gate Valves, Globe Valves, Butterfly Valves, Ball Valves</span>
+            <span class="rule-arrow">→</span>
+            <span class="rule-then">Route to SAP</span>
+            <span style="font-size:11px;color:var(--mgi-steel);white-space:nowrap;">(Acorn division)</span>
+          </div>
+          <div class="rule-row">
+            <div style="width:28px;height:28px;background:var(--mgi-navy);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800;">R2</div>
+            <span class="rule-if">IF</span>
+            <span class="rule-desc" style="flex:1;">Product line = Floor Drains, Cleanout Drains, Roof Drains, Trench Drains</span>
+            <span class="rule-arrow">→</span>
+            <span class="rule-then">Route to EIS</span>
+            <span style="font-size:11px;color:var(--mgi-steel);white-space:nowrap;">(Smith Drain)</span>
+          </div>
+          <div class="rule-row" style="background:#f9fafb;">
+            <div style="width:28px;height:28px;background:var(--mgi-navy);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800;">R3</div>
+            <span class="rule-if">IF</span>
+            <span class="rule-desc" style="flex:1;">Order contains items from multiple divisions</span>
+            <span class="rule-arrow">→</span>
+            <span class="rule-then">Split Order</span>
+            <span style="font-size:11px;color:var(--mgi-steel);white-space:nowrap;">Route each line to correct ERP</span>
+          </div>
+          <div class="rule-row">
+            <div style="width:28px;height:28px;background:var(--mgi-navy);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800;">R4</div>
+            <span class="rule-if">IF</span>
+            <span class="rule-desc" style="flex:1;">Fulfillment location flagged as delayed (&gt;2 days)</span>
+            <span class="rule-arrow">→</span>
+            <span class="rule-then">Reroute</span>
+            <span style="font-size:11px;color:var(--mgi-steel);white-space:nowrap;">Alert rep + suggest alternate</span>
+          </div>
+          <div class="rule-row" style="background:#f9fafb;">
+            <div style="width:28px;height:28px;background:var(--mgi-navy);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800;">R5</div>
+            <span class="rule-if">IF</span>
+            <span class="rule-desc" style="flex:1;">New division / ERP added to MGI infrastructure in future</span>
+            <span class="rule-arrow">→</span>
+            <span class="rule-then">Add Rule</span>
+            <span style="font-size:11px;color:var(--mgi-steel);white-space:nowrap;">No ERP config change required</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM SECTION: Why Not SAP Access + Summary -->
+      <div class="two-col">
+        <div style="background:#fff;border:1.5px solid #f5c6c0;border-radius:6px;padding:16px;">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--mgi-red);margin-bottom:10px;">Why not just give reps SAP access?</div>
+          <div style="display:flex;flex-direction:column;gap:9px;">
+            <div style="font-size:12px;color:#4a5a70;line-height:1.5;padding-left:12px;border-left:2px solid #f5c6c0;">SAP access is ERP-specific. Reps would still need separate access to EIS/Progress for Smith Drain. <strong style="color:var(--mgi-navy);">Two logins, no unified view.</strong></div>
+            <div style="font-size:12px;color:#4a5a70;line-height:1.5;padding-left:12px;border-left:2px solid #f5c6c0;">SAP doesn't expose natively to Experience Cloud communities. Building a rep portal out of SAP is a heavier integration than OMS + Thomas's existing community POC.</div>
+            <div style="font-size:12px;color:#4a5a70;line-height:1.5;padding-left:12px;border-left:2px solid #f5c6c0;">SAP doesn't give you the agentic WISMO layer. <strong style="color:var(--mgi-navy);">The "where's my order" conversation still ends in a phone call.</strong></div>
+          </div>
+        </div>
+        <div style="background:linear-gradient(135deg,var(--mgi-navy),var(--mgi-navy-mid));border-radius:6px;padding:18px 20px;color:#fff;border-left:4px solid var(--mgi-red);">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.45);margin-bottom:10px;">The bottom line for MGI</div>
+          <div style="font-size:14px;font-weight:700;line-height:1.7;color:#fff;">OMS extends the Salesforce infrastructure MGI already owns — to solve a problem SAP alone can't.</div>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:7px;">
+            <div style="font-size:12px;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--mgi-red);font-weight:800;flex-shrink:0;">✓</span>One rep portal — all orders, both ERPs, no double entry</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--mgi-red);font-weight:800;flex-shrink:0;">✓</span>Agentic order interaction — reps get answers without calling in</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--mgi-red);font-weight:800;flex-shrink:0;">✓</span>SAP + EIS unchanged — nothing ripped, nothing replaced</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--mgi-red);font-weight:800;flex-shrink:0;">✓</span>Thomas's team works in Salesforce — no SAP development required</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.75);display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--mgi-red);font-weight:800;flex-shrink:0;">✓</span>Future-proof — add more ERPs or divisions with a new routing rule</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <button class="nav-btn outline" onclick="goTo(2)">← Back</button>
+        <span class="step-indicator">Step 4 of 4</span>
+        <button class="nav-btn outline" onclick="goTo(0)">↩ Restart</button>
+      </div>
+    </div>
+
+  </div><!-- /canvas -->
+</div><!-- /shell -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"><div id="toast-body">—</div></div>
+
+<script>
+const SCREEN_COUNT = 4;
+let isMuted = false;
+
+const screenAudio = Array.from({length: SCREEN_COUNT}, (_, i) => {
+  const a = new Audio('oms-s' + i + '.mp3');
+  a.preload = 'auto';
+  return a;
+});
+
+function checkPW() {
+  const val = document.getElementById('pw-input').value;
+  if (val === 'MGI**Salesforce8764!') {
+    document.getElementById('pw-gate').style.display = 'none';
+    document.getElementById('start-overlay').style.display = 'flex';
+  } else {
+    const err = document.getElementById('pw-error');
+    err.textContent = 'Incorrect access code. Please try again.';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+    setTimeout(() => { err.textContent = ''; }, 3000);
+  }
+}
+
+function toggleMute() {
+  isMuted = !isMuted;
+  const btn = document.getElementById('mute-btn');
+  if (isMuted) {
+    screenAudio.forEach(a => { a.pause(); a.currentTime = 0; });
+    for (let i = 0; i < SCREEN_COUNT; i++) {
+      const fill = document.getElementById('narr-fill-' + i);
+      if (fill) fill.style.width = '0%';
+    }
+    btn.textContent = '🔇 Narration Off';
+    btn.classList.add('muted');
+  } else {
+    btn.textContent = '🔊 Narration On';
+    btn.classList.remove('muted');
+    // figure out which screen is active and replay
+    const active = document.querySelector('.screen.active');
+    if (active) {
+      const n = parseInt(active.id.replace('screen-', ''));
+      playScreenAudio(n);
+    }
+  }
+}
+
+function stopAllAudio() {
+  screenAudio.forEach((a, i) => {
+    a.pause(); a.currentTime = 0;
+    const fill = document.getElementById('narr-fill-' + i);
+    const rpl  = document.getElementById('narr-replay-' + i);
+    if (fill) fill.style.width = '0%';
+    if (rpl)  rpl.classList.remove('visible');
+  });
+}
+
+function resetPrompts() {
+  for (let i = 0; i < SCREEN_COUNT; i++) {
+    const p = document.getElementById('prompt-' + i);
+    const b = document.getElementById('next-btn-' + i);
+    if (p) p.classList.remove('visible');
+    if (b) b.style.animation = '';
+  }
+}
+
+function playScreenAudio(n) {
+  stopAllAudio(); resetPrompts();
+  if (isMuted) return;
+  const audio = screenAudio[n];
+  const fill  = document.getElementById('narr-fill-'   + n);
+  const rpl   = document.getElementById('narr-replay-' + n);
+  audio.ontimeupdate = () => {
+    if (audio.duration && fill)
+      fill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+  };
+  audio.onended = () => {
+    if (fill) fill.style.width = '100%';
+    if (rpl)  rpl.classList.add('visible');
+    const p = document.getElementById('prompt-'   + n);
+    const b = document.getElementById('next-btn-' + n);
+    if (p) p.classList.add('visible');
+    if (b) b.style.animation = 'nextPulse 1.2s ease-in-out infinite';
+  };
+  audio.play().catch(() => { if (rpl) rpl.classList.add('visible'); });
+}
+
+function replayNarration(n) {
+  if (isMuted) return;
+  const p = document.getElementById('prompt-'   + n);
+  const b = document.getElementById('next-btn-' + n);
+  if (p) p.classList.remove('visible');
+  if (b) b.style.animation = '';
+  const a = screenAudio[n];
+  a.currentTime = 0;
+  const fill = document.getElementById('narr-fill-' + n);
+  if (fill) fill.style.width = '0%';
+  a.play().catch(() => {});
+}
+
+function startDemo() {
+  document.getElementById('start-overlay').style.display = 'none';
+  playScreenAudio(0);
+  setTimeout(() => {
+    const h = document.getElementById('hint-0');
+    if (h) h.classList.add('visible');
+  }, 2000);
+}
+
+function goTo(n) {
+  stopAllAudio(); resetPrompts();
+  for (let i = 0; i < SCREEN_COUNT; i++) {
+    const h = document.getElementById('hint-' + i);
+    if (h) h.classList.remove('visible');
+  }
+  document.querySelectorAll('.screen').forEach((s, i) => s.classList.toggle('active', i === n));
+  document.querySelectorAll('.step-btn').forEach((b, i) => b.classList.toggle('active', i === n));
+  document.querySelector('.canvas').scrollTop = 0;
+  playScreenAudio(n);
+  if (n < SCREEN_COUNT - 1) {
+    setTimeout(() => {
+      const h = document.getElementById('hint-' + n);
+      if (h) h.classList.add('visible');
+    }, 2000);
+  }
+}
+
+function showToast(msg, duration=2800) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-body').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+</script>
+</body>
+</html>
