@@ -191,6 +191,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
   </div>
 
+  <!-- WEDGEWOOD PROOF POINT -->
+  <div class="insight" style="border-color:#d4e8f7;background:#f7fbff;">
+    <div class="insight-head"><span class="ico">🏢</span>A Company That Made This Switch — What They Found</div>
+    <p>Wedgewood Weddings — family-owned since 1986, 84 venues, already on Salesforce Sales Cloud and Service Cloud — replaced HubSpot with Marketing Cloud Next. The problem that drove the decision: <strong>"Swiss cheese" data</strong>. Repeat customers were getting identical campaigns to first-time contacts because HubSpot couldn't see the relationship history that lived in Salesforce — which venues they'd considered, where they were in the sales cycle. VP of Sales Technology Brea Gardner named the root cause directly: <em>"We need a unified profile — it all started with Data Cloud."</em> The Trojan parallel is precise: a Tier 1 dealer who has reordered for years should not get the same outreach as one who credentialed last month. The data to tell them apart already lives in your dealer portal, Commerce Cloud, and Revenue Cloud. The question is whether your marketing platform can see it.</p>
+  </div>
+
   <!-- USE CASES -->
   <div class="section-label">The Four Use Cases With the Highest Immediate Impact</div>
   <div class="use-cases">
@@ -234,7 +240,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   <div class="section-label">The Salesforce Difference — In the AI Era, Trusted Data Is the Competitive Advantage</div>
   <div class="insight">
     <div class="insight-head"><span class="ico">🔒</span>Your Dealer Data Is Your Moat — We Are Built to Keep It That Way</div>
-    <p>Salesforce CEO Marc Benioff's position is direct: in an era where AI models are rapidly commoditizing, <strong>the organization with the most trusted, unified data wins</strong>. The advantage is not the AI itself — it is the proprietary data the AI runs on. Trojan Battery's dealer order history, contract terms, engagement patterns, and channel relationships across 8 market segments are exactly that advantage. Marketing Cloud Next is built to activate that data — not to aggregate it, share it, or use it to enrich a competitor's database. <strong>Your TrojanEx data powers your marketing intelligence. It goes nowhere else.</strong></p>
+    <p>Salesforce CEO Marc Benioff's position is direct: in an era where AI models are rapidly commoditizing, <strong>the organization with the most trusted, unified data wins</strong>. The advantage is not the AI itself — it is the proprietary data the AI runs on. Trojan Battery's dealer order history, contract terms, engagement patterns, and channel relationships across 8 market segments are exactly that advantage. Marketing Cloud Next is built to activate that data — not to aggregate it, share it, or use it to enrich a competitor's database. <strong>Your dealer data powers your marketing intelligence. It goes nowhere else.</strong></p>
   </div>
   <div class="two-col">
     <div class="insight">
@@ -243,7 +249,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
     <div class="insight">
       <div class="insight-head"><span class="ico">🏗️</span>Zero-Copy Architecture</div>
-      <p>Data Cloud connects to your TrojanEx order data, Revenue Cloud contract terms, and any external sources without moving or duplicating the underlying data. Your dealer intelligence stays exactly where it lives. Marketing Cloud Next brings the intelligence to the data — not the other way around. There is no shared dataset, no data co-op, and no platform quietly extracting value from 100 years of channel relationships you built.</p>
+      <p>Data Cloud connects to your dealer portal order data, Revenue Cloud contract terms, and any external sources without moving or duplicating the underlying data. Your dealer intelligence stays exactly where it lives. Marketing Cloud Next brings the intelligence to the data — not the other way around. There is no shared dataset, no data co-op, and no platform quietly extracting value from 100 years of channel relationships you built.</p>
     </div>
   </div>
 
@@ -294,11 +300,38 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
 </div>
 
+<!-- BRIEF AUDIO -->
+<audio id="brief-audio" src="tb-brief.mp3" preload="auto"></audio>
+<div id="audio-ctrl" style="position:fixed;top:16px;right:20px;z-index:200;display:none;">
+  <button onclick="toggleBriefAudio()" id="audio-btn" style="background:#fff;border:1.5px solid #e2e6ee;border-radius:6px;padding:7px 14px;font-size:11px;font-weight:700;color:#5a6a7c;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08);letter-spacing:.3px;transition:all .2s;">🔊 Narration On</button>
+</div>
+
 <script>
+let briefMuted = false;
+
+function toggleBriefAudio() {
+  const audio = document.getElementById('brief-audio');
+  const btn = document.getElementById('audio-btn');
+  briefMuted = !briefMuted;
+  if (briefMuted) {
+    audio.pause();
+    btn.textContent = '🔇 Narration Off';
+  } else {
+    audio.play().catch(() => {});
+    btn.textContent = '🔊 Narration On';
+  }
+}
+
 function checkPW() {
   const val = document.getElementById('pw-input').value;
   if (val === 'Trojan&Salesforce2026!') {
     document.getElementById('pw-gate').style.display = 'none';
+    setTimeout(() => {
+      document.getElementById('audio-ctrl').style.display = 'block';
+      if (!briefMuted) {
+        document.getElementById('brief-audio').play().catch(() => {});
+      }
+    }, 400);
   } else {
     const err = document.getElementById('pw-error');
     err.textContent = 'Incorrect access code. Please try again.';
