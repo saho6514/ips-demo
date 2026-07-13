@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Trojan Battery — Audio Generator</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#0b0202; color:#fff; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:40px 24px; }
+.wrap { max-width:560px; width:100%; }
+h1 { font-size:20px; font-weight:900; margin-bottom:6px; }
+.sub { font-size:13px; color:rgba(255,255,255,.45); margin-bottom:32px; line-height:1.6; }
+.btn { background:#9B1C1C; color:#fff; border:none; padding:14px 28px; border-radius:8px; font-size:14px; font-weight:800; cursor:pointer; letter-spacing:1px; text-transform:uppercase; transition:background .2s; width:100%; margin-bottom:20px; }
+.btn:hover { background:#b52424; }
+.btn:disabled { background:rgba(155,28,28,.4); cursor:default; }
+.status-list { display:flex; flex-direction:column; gap:8px; }
+.status-row { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:7px; padding:10px 14px; display:flex; align-items:center; gap:12px; font-size:12px; }
+.status-icon { font-size:16px; width:22px; text-align:center; flex-shrink:0; }
+.status-name { color:rgba(255,255,255,.65); width:100px; flex-shrink:0; font-weight:600; }
+.status-text { color:rgba(255,255,255,.38); flex:1; }
+.status-row.done { border-color:rgba(39,174,96,.3); }
+.status-row.done .status-text { color:#27ae60; }
+.status-row.running { border-color:rgba(0,112,210,.35); }
+.status-row.running .status-text { color:#5aaef7; }
+.status-row.error { border-color:rgba(220,50,50,.3); }
+.status-row.error .status-text { color:#E05555; }
+.note { font-size:11.5px; color:rgba(255,255,255,.28); margin-top:20px; line-height:1.65; border-top:1px solid rgba(255,255,255,.06); padding-top:16px; }
+.note strong { color:rgba(255,255,255,.5); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Trojan Battery · Audio Generator</h1>
+  <div class="sub">Generates all 7 narration MP3 files via ElevenLabs and downloads them to your Downloads folder. Open this file in Chrome, then click the button.</div>
+
+  <button class="btn" id="gen-btn" onclick="generateAll()">Generate All 7 Audio Files</button>
+
+  <div class="status-list" id="status-list"></div>
+
+  <div class="note" id="note" style="display:none">
+    <strong>Done!</strong> Move all 7 downloaded MP3 files from your Downloads folder into:<br>
+    <code style="font-size:11px;color:rgba(255,200,100,.7);">/Users/sam.holz/claude-projects/trojan-battery/</code><br><br>
+    Then come back to Claude Code and say "files are ready" — I'll push them to GitHub.
+  </div>
+</div>
+
+<script>
+const KEY = '43f4c2e5c1325adb68a8748c9857ac86f1bad13d9e1755dcff44747fbe19ff58';
+const VOICE = 'ZSNL4hPqCnqoMPaI4jGX';
+const ENDPOINT = 'https://api.elevenlabs.io/v1/text-to-speech/' + VOICE;
+
+const FILES = [
+  {
+    file: 'tb-s0.mp3',
+    label: 'Intro',
+    text: "Trojan Battery's dealer network is already generating rich commerce data — every order, every reorder, every product browse — captured in Data Cloud in real time. What you're about to see is what the Marketing Cloud Next platform does with it. Four use cases. Each one triggered automatically by something real happening in your business."
+  },
+  {
+    file: 'tb-s1.mp3',
+    label: 'Reorder',
+    text: "First: the reorder signal. Heartland Golf Supply is 85 days into a 90-day reorder cycle with nothing queued. The Marketing Cloud Next platform catches it, pulls their contracted Tier 2 pricing automatically from Revenue Cloud, and sends a personalized email — no human involved. HubSpot has no access to order history or contract pricing, so this outreach either goes out automatically or it doesn't happen at all."
+  },
+  {
+    file: 'tb-s2.mp3',
+    label: 'Onboarding',
+    text: "A new dealer just credentialed in the portal. The Marketing Cloud Next platform launches a tailored onboarding journey instantly — the right content for their segment, a rep introduction on day five, and if there's still no activity by day fourteen, a task automatically goes to the rep in Sales Cloud. The whole journey adapts based on what the dealer actually does — not a fixed calendar."
+  },
+  {
+    file: 'tb-s3.mp3',
+    label: 'Churn',
+    text: "Midwest Industrial Fleet — a top-tier dealer — has dropped 30 percent below their order average with no rep contact in 45 days. The Marketing Cloud Next platform scores the churn risk as high and coordinates three things simultaneously: a win-back email, a rep task in Sales Cloud, and a service flag to check for product issues. One data signal triggering all three clouds at once."
+  },
+  {
+    file: 'tb-s4.mp3',
+    label: 'Upsell',
+    text: "Eagle Golf has browsed the lithium product page three times in five days — but every order they've ever placed has been flooded lead-acid. Data Cloud scores their purchase intent at 82 percent based on their full account history. A personalized switch campaign launches automatically. And when the order closes in the dealer portal, Marketing Cloud receives attribution. HubSpot can see a webpage visit. It can't do the rest."
+  },
+  {
+    file: 'tb-s5.mp3',
+    label: 'Gap',
+    text: "Everything you just saw runs on data Trojan already has. Data Cloud connects it. The Marketing Cloud Next platform acts on it. On data trust — HubSpot tried to quietly pool customer data into a shared enrichment model earlier this year. They retracted after backlash but the strategy isn't dead. Salesforce zero-copy architecture means your dealer data powers your marketing and stays in your org. That's not a policy position — that's how the system is built."
+  },
+  {
+    file: 'tb-brief.mp3',
+    label: 'Brief',
+    text: "Here's the core idea. Trojan Battery already has what matters — years of dealer purchase history, contracted pricing, product preferences — all sitting in your dealer portal. The manufacturers pulling ahead right now are the ones whose marketing can see that data and act on it automatically. That's the gap Marketing Cloud Next closes. Instead of campaigns built on contact lists, you get outreach triggered by real purchase signals. A dealer approaching their reorder window gets a message before they think to look elsewhere. An account goes quiet and the system catches it weeks before the rep does. The HubSpot story matters beyond features — earlier this year they tried to quietly pool customer data into a shared enrichment model. They retracted after backlash but haven't abandoned the strategy. Salesforce was built the other way around: your dealer data stays in your org and goes nowhere else. The manufacturers connecting their commerce data to marketing this year are building a compounding lead. This brief shows what that looks like for Trojan."
+  }
+];
+
+function setStatus(index, state, text) {
+  const row = document.getElementById('row-' + index);
+  if (!row) return;
+  row.className = 'status-row ' + state;
+  row.querySelector('.status-text').textContent = text;
+  const icon = row.querySelector('.status-icon');
+  if (state === 'done') icon.textContent = '✓';
+  else if (state === 'running') icon.textContent = '⟳';
+  else if (state === 'error') icon.textContent = '✗';
+  else icon.textContent = '○';
+}
+
+function buildList() {
+  const list = document.getElementById('status-list');
+  list.innerHTML = FILES.map((f, i) =>
+    '<div class="status-row" id="row-' + i + '">' +
+    '<span class="status-icon">○</span>' +
+    '<span class="status-name">' + f.file + '</span>' +
+    '<span class="status-text">Waiting...</span>' +
+    '</div>'
+  ).join('');
+}
+
+async function generateOne(index) {
+  const item = FILES[index];
+  setStatus(index, 'running', 'Generating...');
+  try {
+    const resp = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'xi-api-key': KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        text: item.text,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+      })
+    });
+
+    if (!resp.ok) {
+      const errText = await resp.text();
+      setStatus(index, 'error', 'API error: ' + errText.slice(0, 80));
+      return false;
+    }
+
+    const blob = await resp.blob();
+    if (blob.size < 1000) {
+      const text = await blob.text();
+      setStatus(index, 'error', 'Bad response: ' + text.slice(0, 80));
+      return false;
+    }
+
+    const saveResp = await fetch('/save/' + item.file, {
+      method: 'POST',
+      headers: { 'Content-Type': 'audio/mpeg' },
+      body: blob
+    });
+    if (!saveResp.ok) {
+      setStatus(index, 'error', 'Save failed');
+      return false;
+    }
+
+    setStatus(index, 'done', 'Saved — ' + Math.round(blob.size / 1024) + ' KB');
+    return true;
+  } catch (e) {
+    setStatus(index, 'error', 'Failed: ' + e.message);
+    return false;
+  }
+}
+
+async function generateAll() {
+  buildList();
+  document.getElementById('gen-btn').disabled = true;
+  document.getElementById('gen-btn').textContent = 'Generating...';
+  document.getElementById('note').style.display = 'none';
+
+  let allOk = true;
+  for (let i = 0; i < FILES.length; i++) {
+    const ok = await generateOne(i);
+    if (!ok) allOk = false;
+    if (i < FILES.length - 1) await new Promise(r => setTimeout(r, 800));
+  }
+
+  document.getElementById('gen-btn').disabled = false;
+  document.getElementById('gen-btn').textContent = allOk ? 'Regenerate' : 'Retry';
+  if (allOk) document.getElementById('note').style.display = 'block';
+}
+</script>
+</body>
+</html>
