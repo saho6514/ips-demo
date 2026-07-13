@@ -27,7 +27,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
 /* LABELS */
-.screen-tag { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.22); margin-bottom:12px; }
+.screen-tag { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.22); margin-bottom:12px; flex-shrink:0; }
 .badge { font-size:10px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:#9B1C1C; margin-bottom:16px; }
 
 /* BUTTONS */
@@ -62,6 +62,24 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 .response-hdr { font-size:10px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:#5aaef7; margin-bottom:7px; display:flex; align-items:center; gap:6px; }
 .response-dot { width:6px; height:6px; border-radius:50%; background:#5aaef7; }
 .response-body { font-size:12.5px; color:rgba(255,255,255,.78); line-height:1.65; }
+.response-body strong { color:#fff; }
+
+/* JOURNEY (left panel compact) */
+.journey { display:flex; flex-direction:column; gap:6px; margin-top:9px; }
+.journey-step { display:flex; align-items:flex-start; gap:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:7px; padding:8px 11px; text-align:left; }
+.js-num { width:18px; height:18px; border-radius:50%; background:rgba(155,28,28,.25); border:1px solid rgba(155,28,28,.4); font-size:9px; font-weight:800; color:#CC2222; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+.js-text { font-size:11.5px; color:rgba(255,255,255,.73); line-height:1.5; }
+.js-text strong { color:#fff; }
+.js-adapt { font-size:9.5px; color:rgba(180,80,80,.8); font-style:italic; display:block; margin-top:2px; }
+
+/* INTENT BARS */
+.intent-bar { display:flex; align-items:center; gap:10px; margin-bottom:7px; }
+.intent-label { font-size:11px; color:rgba(255,255,255,.38); width:86px; flex-shrink:0; text-align:right; }
+.intent-track { flex:1; height:6px; background:rgba(255,255,255,.08); border-radius:3px; overflow:hidden; }
+.intent-fill { height:100%; border-radius:3px; }
+.fill-high { background:linear-gradient(90deg,#9B1C1C,#E53030); }
+.fill-med { background:linear-gradient(90deg,#9B5500,#E58A30); }
+.intent-val { font-size:11px; font-weight:700; width:34px; text-align:right; }
 
 /* EMAIL INLINE */
 .email-inline { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:7px; padding:11px 13px; margin-top:9px; }
@@ -72,31 +90,6 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 .e-body { font-size:11px; color:rgba(255,255,255,.65); line-height:1.7; }
 .e-body strong { color:rgba(255,255,255,.88); }
 .e-cta { color:#5aaef7; }
-
-/* THREE CLOUD */
-.cloud-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:10px; }
-.cloud-box { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:11px; text-align:left; }
-.cloud-box-icon { font-size:16px; margin-bottom:5px; }
-.cloud-box-name { font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:4px; }
-.cloud-box-action { font-size:11px; color:rgba(255,255,255,.7); line-height:1.5; }
-.cloud-box-action strong { color:#fff; }
-
-/* JOURNEY */
-.journey { display:flex; flex-direction:column; gap:7px; margin-bottom:10px; }
-.journey-step { display:flex; align-items:flex-start; gap:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:7px; padding:9px 11px; text-align:left; }
-.js-num { width:20px; height:20px; border-radius:50%; background:rgba(155,28,28,.25); border:1px solid rgba(155,28,28,.4); font-size:10px; font-weight:800; color:#CC2222; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
-.js-text { font-size:11.5px; color:rgba(255,255,255,.73); line-height:1.55; }
-.js-text strong { color:#fff; }
-.js-adapt { font-size:10px; color:rgba(180,80,80,.85); font-style:italic; display:block; margin-top:2px; }
-
-/* INTENT BARS */
-.intent-bar { display:flex; align-items:center; gap:10px; margin-bottom:7px; }
-.intent-label { font-size:11px; color:rgba(255,255,255,.38); width:86px; flex-shrink:0; text-align:right; }
-.intent-track { flex:1; height:6px; background:rgba(255,255,255,.08); border-radius:3px; overflow:hidden; }
-.intent-fill { height:100%; border-radius:3px; }
-.fill-high { background:linear-gradient(90deg,#9B1C1C,#E53030); }
-.fill-med { background:linear-gradient(90deg,#9B5500,#E58A30); }
-.intent-val { font-size:11px; font-weight:700; width:34px; text-align:right; }
 
 /* GAP */
 .gap { background:rgba(255,130,30,.06); border:1px solid rgba(255,130,30,.15); border-radius:7px; padding:10px 13px; }
@@ -142,6 +135,90 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 .ctrl-btn:hover { background:rgba(255,255,255,.1); color:#fff; }
 .back-link { position:fixed; top:18px; left:20px; font-size:11px; color:rgba(255,255,255,.28); text-decoration:none; transition:color .2s; z-index:100; }
 .back-link:hover { color:rgba(255,255,255,.65); }
+
+/* ── SPLIT LAYOUT ───────────────────────────────────────── */
+.split-wrap { display:flex; gap:16px; max-width:1100px; width:100%; align-items:flex-start; }
+.split-left { flex:1.1; min-width:0; }
+.split-left .card { max-width:none; }
+.split-right { flex:0.95; min-width:0; }
+@media (max-width:900px) { .split-right { display:none; } }
+
+/* ── SALESFORCE LIGHTNING PANEL ─────────────────────────── */
+.sf-panel { background:#f4f6f9; border-radius:12px; overflow:hidden; box-shadow:0 12px 40px rgba(0,0,0,.55); }
+.sf-phdr { background:linear-gradient(135deg,#032D60 0%,#0176D3 100%); padding:10px 14px; display:flex; align-items:center; gap:8px; }
+.sf-phdr-dots { display:flex; gap:4px; margin-right:2px; }
+.sf-phdr-dot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.28); }
+.sf-phdr-title { font-size:11.5px; font-weight:700; color:#fff; flex:1; }
+.sf-phdr-badge { font-size:9px; background:rgba(255,255,255,.22); border-radius:20px; padding:2px 9px; color:rgba(255,255,255,.92); font-weight:700; letter-spacing:.5px; text-transform:uppercase; }
+.sf-pbody { padding:12px 14px; }
+
+/* Einstein bar */
+.sf-einstein { display:flex; align-items:center; gap:8px; background:#fff; border:1px solid #d0e4f7; border-radius:7px; padding:7px 11px; margin-bottom:10px; }
+.sf-einstein-icon { font-size:15px; }
+.sf-einstein-label { font-size:11px; font-weight:700; color:#032D60; flex:1; }
+.sf-einstein-status { font-size:9.5px; color:#0176D3; font-weight:700; background:#EBF5FB; border-radius:3px; padding:2px 7px; }
+
+/* Compose box */
+.sf-compose { background:#fff; border:1px solid #d0d8e4; border-radius:8px; overflow:hidden; }
+.sf-compose-field { display:flex; align-items:flex-start; gap:8px; padding:7px 12px; border-bottom:1px solid #eaecf0; }
+.sf-compose-lbl { font-size:10px; color:#706e6b; width:44px; flex-shrink:0; font-weight:600; padding-top:1px; }
+.sf-compose-val { font-size:11.5px; color:#181818; flex:1; line-height:1.45; }
+.sf-compose-body { padding:10px 12px 12px; font-size:11.5px; color:#333; line-height:1.7; border-bottom:1px solid #eaecf0; }
+.sf-compose-body strong { color:#032D60; }
+.sf-compose-body .sf-link { color:#0176D3; font-weight:600; display:block; margin-top:7px; }
+.sf-compose-footer { padding:8px 12px; background:#f8f9fa; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.sf-send-btn { background:#0176D3; color:#fff; border:none; border-radius:4px; padding:5px 13px; font-size:11px; font-weight:700; cursor:default; flex-shrink:0; }
+.sf-data-tag { font-size:9px; color:#706e6b; line-height:1.4; }
+
+/* ── ANIMATION SYSTEM ───────────────────────────────────── */
+.sf-anim { opacity:0; transform:translateY(7px); }
+.anim-run .sf-anim { animation:sfFadeIn .4s ease forwards; animation-delay:var(--d,0s); }
+@keyframes sfFadeIn { to { opacity:1; transform:translateY(0); } }
+
+/* ── JOURNEY BUILDER ────────────────────────────────────── */
+.jb-canvas { display:flex; flex-direction:column; align-items:stretch; }
+.jb-node { background:#fff; border:1.5px solid #d0d8e4; border-radius:8px; padding:9px 12px; display:flex; align-items:center; gap:10px; }
+.jb-node-icon { font-size:16px; flex-shrink:0; }
+.jb-node-info { flex:1; }
+.jb-node-label { font-size:11.5px; font-weight:700; color:#032D60; }
+.jb-node-sub { font-size:10px; color:#706e6b; margin-top:2px; line-height:1.4; }
+.jb-node-if { font-size:9.5px; color:#B45309; background:#FEF3C7; border-radius:3px; padding:2px 6px; margin-top:4px; display:inline-block; }
+.jb-connector { width:2px; height:10px; background:#c0d0e4; margin:0 auto; }
+.jb-node-entry { border-color:#22C55E; background:#F0FBF4; }
+.jb-node-entry .jb-node-label { color:#16703C; }
+.jb-entry-pulse { width:8px; height:8px; border-radius:50%; background:#22C55E; animation:pulse-anim 1.5s ease-in-out infinite; flex-shrink:0; }
+.jb-node-alert { border-color:#EF4444; background:#FFF5F5; }
+.jb-node-alert .jb-node-label { color:#B91C1C; }
+
+/* ── CLOUD CARDS ────────────────────────────────────────── */
+.sf-cloud-cards { display:flex; flex-direction:column; gap:8px; }
+.sf-cloud-card { background:#fff; border:1.5px solid #d0d8e4; border-radius:8px; padding:10px 12px; display:flex; align-items:flex-start; gap:10px; }
+.sf-cloud-icon { font-size:20px; flex-shrink:0; padding-top:1px; }
+.sf-cloud-info { flex:1; }
+.sf-cloud-name { font-size:9.5px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:#706e6b; margin-bottom:3px; }
+.sf-cloud-action { font-size:11.5px; color:#181818; line-height:1.45; }
+.sf-cloud-action strong { color:#032D60; }
+.sf-cloud-done { font-size:9.5px; font-weight:700; color:#16A34A; margin-top:5px; display:flex; align-items:center; gap:4px; }
+
+/* ── INTENT GAUGE ───────────────────────────────────────── */
+.sf-gauge-wrap { display:flex; flex-direction:column; align-items:center; padding:12px 14px 6px; }
+.sf-gauge-ring { position:relative; display:inline-block; }
+.sf-gauge-ring svg { display:block; }
+.sf-gauge-label { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.sf-gauge-pct { font-size:26px; font-weight:900; color:#032D60; line-height:1; }
+.sf-gauge-sub { font-size:9px; color:#706e6b; font-weight:600; letter-spacing:.8px; text-transform:uppercase; margin-top:3px; }
+.sf-gauge-arc-bg { fill:none; stroke:#E0E8F4; stroke-width:10; }
+.sf-gauge-arc { fill:none; stroke:#0176D3; stroke-width:10; stroke-linecap:round; stroke-dasharray:251; stroke-dashoffset:251; transition:stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1) .4s; }
+.sf-gauge-arc.anim-gauge { stroke-dashoffset:45; }
+.sf-chips { display:flex; flex-wrap:wrap; gap:5px; padding:0 14px 10px; }
+.sf-chip { background:#EBF5FB; border:1px solid #AED6F1; border-radius:4px; padding:3px 8px; font-size:10px; color:#0176D3; font-weight:600; }
+
+/* Campaign brief */
+.sf-brief { background:#fff; border:1.5px solid #d0d8e4; border-radius:8px; padding:10px 12px; margin:0 14px 12px; }
+.sf-brief-hdr { font-size:9.5px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:#032D60; margin-bottom:7px; display:flex; align-items:center; gap:6px; }
+.sf-brief-pulse { width:6px; height:6px; border-radius:50%; background:#0176D3; animation:pulse-anim 1.5s ease-in-out infinite; }
+.sf-brief-row { font-size:11px; color:#333; line-height:1.65; }
+.sf-brief-row span { color:#0176D3; font-weight:600; }
 </style>
 </head>
 <body>
@@ -177,41 +254,78 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 <!-- SCREEN 1: REORDER INTELLIGENCE -->
 <div class="screen" id="s1">
   <div class="screen-tag">Use Case 1 of 4 — Reorder Intelligence</div>
-  <div class="card">
-    <div class="card-bar">
-      <div class="card-bar-left">
-        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
-        <span class="card-bar-title"><strong>Marketing Cloud Next</strong> · Reorder Monitor · Running</span>
-      </div>
-      <span class="trojanex-tag">Dealer Portal · Data Cloud</span>
-    </div>
-    <div class="card-body">
-      <div class="signal">
-        <div class="signal-hdr"><span class="pulse"></span>Signal Detected · Commerce Cloud · Purchase History</div>
-        <div class="signal-body">
-          <strong>Heartland Golf Supply</strong> — Golf Segment · Tier 2 Dealer · Kansas City, MO<br>
-          Last order: <strong>Day 85</strong> of their typical 90-day reorder cycle. No new order in queue.<br>
-          Historical average: 14 pallets of their top-volume product per order. Current inventory risk: high.
+  <div class="split-wrap">
+    <div class="split-left">
+      <div class="card">
+        <div class="card-bar">
+          <div class="card-bar-left">
+            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+            <span class="card-bar-title"><strong>Marketing Cloud Next</strong> · Reorder Monitor · Running</span>
+          </div>
+          <span class="trojanex-tag">Dealer Portal · Data Cloud</span>
         </div>
-      </div>
-      <div class="response">
-        <div class="response-hdr"><span class="response-dot"></span>Marketing Cloud Next · Auto-Executed</div>
-        <div class="response-body">
-          Retrieved contract pricing from Revenue Cloud: <strong>Tier 2 contracted rate, pulled automatically</strong>. Personalized reorder prompt drafted and sent — no rep involved.
-          <div class="email-inline">
-            <div class="e-row"><span class="e-lbl">To:</span><span class="e-val">Jake Morales · Heartland Golf Supply</span></div>
-            <div class="e-row"><span class="e-lbl">Subj:</span><span class="e-val">Your battery inventory — are you covered heading into peak season?</span></div>
-            <div class="e-div"></div>
-            <div class="e-body">Hi Jake — it's been about 85 days since your last order. Heading into peak season, wanted to make sure you're fully stocked before demand spikes.<br><br>Your current Tier 2 contracted rate is pulled automatically — no lookup needed. Same-day dispatch on orders placed before 2pm CT.<br><br><span class="e-cta">→ Reorder through your dealer portal</span> &nbsp;|&nbsp; <span style="color:rgba(255,255,255,.3);">Not ready yet</span></div>
+        <div class="card-body">
+          <div class="signal">
+            <div class="signal-hdr"><span class="pulse"></span>Signal Detected · Commerce Cloud · Purchase History</div>
+            <div class="signal-body">
+              <strong>Heartland Golf Supply</strong> — Golf Segment · Tier 2 Dealer · Kansas City, MO<br>
+              Last order: <strong>Day 85</strong> of their typical 90-day reorder cycle. No new order in queue.<br>
+              Historical average: 14 pallets of top-volume product per order. Inventory risk: <strong>High</strong>.
+            </div>
+          </div>
+          <div class="response">
+            <div class="response-hdr"><span class="response-dot"></span>Marketing Cloud Next · Auto-Executed</div>
+            <div class="response-body">
+              Retrieved contract pricing from Revenue Cloud: <strong>Tier 2 contracted rate, pulled automatically</strong>. Einstein AI drafted a personalized reorder prompt and sent it — no rep involved. Live draft shown →
+            </div>
+          </div>
+          <div class="gap">
+            <div class="gap-hdr">The HubSpot Gap</div>
+            <div class="gap-text">HubSpot has no visibility into dealer portal order history. It cannot know a dealer's purchase cycle, cannot pull contracted pricing from Revenue Cloud, and cannot trigger outreach from a commerce signal it has no access to.</div>
+          </div>
+          <div style="text-align:right;margin-top:13px;">
+            <button class="btn-primary" onclick="goTo(2)">Next Use Case →</button>
           </div>
         </div>
       </div>
-      <div class="gap">
-        <div class="gap-hdr">The HubSpot Gap</div>
-        <div class="gap-text">HubSpot has no visibility into your dealer portal order history. It cannot know a dealer's purchase cycle, cannot pull their contracted pricing from Revenue Cloud, and cannot trigger outreach from a commerce signal it has no access to.</div>
-      </div>
-      <div style="text-align:right;margin-top:13px;">
-        <button class="btn-primary" onclick="goTo(2)">Next Use Case →</button>
+    </div>
+    <div class="split-right">
+      <div class="sf-panel" id="sf-panel-1">
+        <div class="sf-phdr">
+          <div class="sf-phdr-dots"><div class="sf-phdr-dot"></div><div class="sf-phdr-dot"></div><div class="sf-phdr-dot"></div></div>
+          <span class="sf-phdr-title">Marketing Cloud Next · Email Studio</span>
+          <span class="sf-phdr-badge">Auto-Executing</span>
+        </div>
+        <div class="sf-pbody">
+          <div class="sf-einstein sf-anim" style="--d:0.15s">
+            <span class="sf-einstein-icon">✦</span>
+            <span class="sf-einstein-label">Einstein AI · Personalizing outreach · Heartland Golf Supply</span>
+            <span class="sf-einstein-status">Sending now</span>
+          </div>
+          <div class="sf-compose sf-anim" style="--d:0.45s">
+            <div class="sf-compose-field">
+              <span class="sf-compose-lbl">To</span>
+              <span class="sf-compose-val">Jake Morales · Heartland Golf Supply</span>
+            </div>
+            <div class="sf-compose-field">
+              <span class="sf-compose-lbl">From</span>
+              <span class="sf-compose-val">Trojan Battery · orders@trojanbattery.com</span>
+            </div>
+            <div class="sf-compose-field">
+              <span class="sf-compose-lbl">Subject</span>
+              <span class="sf-compose-val">Your battery inventory — are you covered heading into peak season?</span>
+            </div>
+            <div class="sf-compose-body">
+              Hi Jake — it's been about 85 days since your last order. Heading into peak season, wanted to make sure you're fully stocked before demand spikes.<br><br>
+              Your current <strong>Tier 2 contracted rate</strong> is pulled automatically from Revenue Cloud — no lookup needed. Same-day dispatch on orders placed before 2pm CT.<br><br>
+              <span class="sf-link">→ Reorder through your dealer portal</span>
+            </div>
+            <div class="sf-compose-footer">
+              <button class="sf-send-btn">✓ Sent</button>
+              <span class="sf-data-tag">Sources: Commerce Cloud · Revenue Cloud · Data Cloud unified profile</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -220,46 +334,102 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 <!-- SCREEN 2: NEW DEALER ACTIVATION -->
 <div class="screen" id="s2">
   <div class="screen-tag">Use Case 2 of 4 — New Dealer Activation</div>
-  <div class="card">
-    <div class="card-bar">
-      <div class="card-bar-left">
-        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
-        <span class="card-bar-title"><strong>Marketing Cloud Next</strong> · Dealer Onboarding · Running</span>
+  <div class="split-wrap">
+    <div class="split-left">
+      <div class="card">
+        <div class="card-bar">
+          <div class="card-bar-left">
+            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+            <span class="card-bar-title"><strong>Marketing Cloud Next</strong> · Dealer Onboarding · Running</span>
+          </div>
+          <span class="trojanex-tag">Dealer Portal · Experience Cloud</span>
+        </div>
+        <div class="card-body">
+          <div class="signal">
+            <div class="signal-hdr"><span class="pulse"></span>Trigger · Dealer Portal · New Dealer Credentialed</div>
+            <div class="signal-body">
+              <strong>SunPath Energy Solutions</strong> — Solar/Renewable Segment · Pacific Northwest<br>
+              Credentialing complete in your dealer portal. No onboarding journey active. First-order probability declines sharply after day 14 without contact.
+            </div>
+          </div>
+          <div class="response">
+            <div class="response-hdr"><span class="response-dot"></span>Marketing Cloud Next · Adaptive Journey Launched</div>
+            <div class="response-body">Journey built for solar segment, Pacific Northwest. Adapts based on what SunPath actually does — not a fixed calendar. Journey Builder canvas shown →
+              <div class="journey">
+                <div class="journey-step">
+                  <div class="js-num">1</div>
+                  <div class="js-text"><strong>Day 1:</strong> Welcome + AGM solar guide + dealer portal training link.<span class="js-adapt">Training done in 24h → jump to first-order offer immediately</span></div>
+                </div>
+                <div class="journey-step">
+                  <div class="js-num">2</div>
+                  <div class="js-text"><strong>Day 5:</strong> Rep intro + first-order incentive from Revenue Cloud co-op terms.<span class="js-adapt">Auto-skips if order already placed</span></div>
+                </div>
+                <div class="journey-step">
+                  <div class="js-num">3</div>
+                  <div class="js-text"><strong>Day 14:</strong> No portal login → rep task escalated in Sales Cloud.<span class="js-adapt">Triggered by Commerce behavior, not schedule</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="gap">
+            <div class="gap-hdr">The HubSpot Gap</div>
+            <div class="gap-text">HubSpot can execute a drip sequence on a schedule. It cannot adapt based on whether a dealer logged into the dealer portal, completed a training module, or placed their first order — it has no visibility into Commerce behavior in real time.</div>
+          </div>
+          <div style="text-align:right;margin-top:13px;">
+            <button class="btn-primary" onclick="goTo(3)">Next Use Case →</button>
+          </div>
+        </div>
       </div>
-      <span class="trojanex-tag">Dealer Portal · Experience Cloud</span>
     </div>
-    <div class="card-body">
-      <div class="signal">
-        <div class="signal-hdr"><span class="pulse"></span>Trigger · Dealer Portal · New Dealer Credentialed</div>
-        <div class="signal-body">
-          <strong>SunPath Energy Solutions</strong> — Solar/Renewable Segment · Pacific Northwest<br>
-          Credentialing complete in your dealer portal. No onboarding journey active. First-order probability declines after day 14 without contact.
+    <div class="split-right">
+      <div class="sf-panel" id="sf-panel-2">
+        <div class="sf-phdr">
+          <div class="sf-phdr-dots"><div class="sf-phdr-dot"></div><div class="sf-phdr-dot"></div><div class="sf-phdr-dot"></div></div>
+          <span class="sf-phdr-title">Journey Builder · Dealer Onboarding</span>
+          <span class="sf-phdr-badge">Live</span>
         </div>
-      </div>
-      <div class="response">
-        <div class="response-hdr"><span class="response-dot"></span>Marketing Cloud Next · Adaptive Journey Launched</div>
-        <div class="response-body" style="margin-bottom:9px;">Journey built for solar segment, Pacific Northwest. Adapts in real time based on what SunPath does — or doesn't do — in the dealer portal.</div>
-        <div class="journey">
-          <div class="journey-step">
-            <div class="js-num">1</div>
-            <div class="js-text"><strong>Day 1:</strong> Welcome email + AGM product guide for solar applications. Link to Certified Lithium Dealer training module in the dealer portal.<span class="js-adapt">If training completed within 24 hrs → skip to first-order offer immediately</span></div>
+        <div class="sf-pbody">
+          <div class="sf-einstein sf-anim" style="--d:0.15s">
+            <span class="sf-einstein-icon">✦</span>
+            <span class="sf-einstein-label">Journey active · SunPath Energy Solutions</span>
+            <span class="sf-einstein-status">Step 1 running</span>
           </div>
-          <div class="journey-step">
-            <div class="js-num">2</div>
-            <div class="js-text"><strong>Day 5:</strong> Field rep introduction + first-order incentive — pulled from current co-op program terms in Revenue Cloud.<span class="js-adapt">Skips automatically if they've already placed an order</span></div>
-          </div>
-          <div class="journey-step">
-            <div class="js-num">3</div>
-            <div class="js-text"><strong>Day 14:</strong> No dealer portal login detected — Marketing Cloud Next escalates to rep task in Sales Cloud.<span class="js-adapt">Triggered by Commerce behavior, not a calendar schedule</span></div>
+          <div class="jb-canvas">
+            <div class="jb-node jb-node-entry sf-anim" style="--d:0.35s">
+              <span class="jb-entry-pulse"></span>
+              <div class="jb-node-info">
+                <div class="jb-node-label">Entry Event</div>
+                <div class="jb-node-sub">Dealer credentialed in portal · SunPath Energy Solutions</div>
+              </div>
+            </div>
+            <div class="jb-connector sf-anim" style="--d:0.45s"></div>
+            <div class="jb-node sf-anim" style="--d:0.55s">
+              <span class="jb-node-icon">📧</span>
+              <div class="jb-node-info">
+                <div class="jb-node-label">Day 1 · Welcome Email</div>
+                <div class="jb-node-sub">AGM solar guide + dealer portal training link</div>
+                <span class="jb-node-if">If training complete in 24h → skip to order offer</span>
+              </div>
+            </div>
+            <div class="jb-connector sf-anim" style="--d:0.65s"></div>
+            <div class="jb-node sf-anim" style="--d:0.75s">
+              <span class="jb-node-icon">👤</span>
+              <div class="jb-node-info">
+                <div class="jb-node-label">Day 5 · Rep Introduction</div>
+                <div class="jb-node-sub">First-order incentive pulled from Revenue Cloud co-op</div>
+                <span class="jb-node-if">Skips automatically if order already placed</span>
+              </div>
+            </div>
+            <div class="jb-connector sf-anim" style="--d:0.85s"></div>
+            <div class="jb-node jb-node-alert sf-anim" style="--d:0.95s">
+              <span class="jb-node-icon">⚡</span>
+              <div class="jb-node-info">
+                <div class="jb-node-label">Day 14 · Escalate to Sales Cloud</div>
+                <div class="jb-node-sub">Rep task created if no dealer portal login detected — triggered by Commerce behavior, not a calendar</div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="gap">
-        <div class="gap-hdr">The HubSpot Gap</div>
-        <div class="gap-text">HubSpot can execute a drip sequence on a schedule. It cannot adapt based on whether a dealer logged into the dealer portal, completed a training module, or placed their first order — because it has no visibility into Commerce behavior in real time.</div>
-      </div>
-      <div style="text-align:right;margin-top:13px;">
-        <button class="btn-primary" onclick="goTo(3)">Next Use Case →</button>
       </div>
     </div>
   </div>
@@ -268,48 +438,80 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 <!-- SCREEN 3: CHURN RISK -->
 <div class="screen" id="s3">
   <div class="screen-tag">Use Case 3 of 4 — Churn Risk Response</div>
-  <div class="card">
-    <div class="card-bar">
-      <div class="card-bar-left">
-        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
-        <span class="card-bar-title"><strong>Marketing Cloud Next</strong> · Churn Risk Monitor · Running</span>
+  <div class="split-wrap">
+    <div class="split-left">
+      <div class="card">
+        <div class="card-bar">
+          <div class="card-bar-left">
+            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+            <span class="card-bar-title"><strong>Marketing Cloud Next</strong> · Churn Risk Monitor · Running</span>
+          </div>
+          <span class="trojanex-tag">Dealer Portal · Data Cloud</span>
+        </div>
+        <div class="card-body">
+          <div class="signal">
+            <div class="signal-hdr"><span class="pulse"></span>Anomaly Detected · Commerce Cloud · Order Frequency</div>
+            <div class="signal-body">
+              <strong>Midwest Industrial Fleet</strong> — Material Handling Segment · Tier 1 Dealer · Chicago, IL<br>
+              Order frequency: <strong>30% below their 6-month average</strong>. No open service cases. No logged rep contact in 45 days. Churn risk score: <strong>High</strong>.
+            </div>
+          </div>
+          <div class="response">
+            <div class="response-hdr"><span class="response-dot"></span>Marketing Cloud Next · Three-Cloud Coordination</div>
+            <div class="response-body">
+              One signal. Three simultaneous responses across <strong>Marketing, Sales, and Service Cloud</strong> — no manual escalation, no separate tickets, no time delay. Coordination shown live →
+            </div>
+          </div>
+          <div class="gap">
+            <div class="gap-hdr">The HubSpot Gap</div>
+            <div class="gap-text">HubSpot cannot see the commerce signal that triggered this. It cannot write a task to Sales Cloud. It cannot coordinate marketing, sales, and service simultaneously. This is a three-cloud coordinated response to a single data point — only possible when all three clouds share the same foundation.</div>
+          </div>
+          <div style="text-align:right;margin-top:13px;">
+            <button class="btn-primary" onclick="goTo(4)">Next Use Case →</button>
+          </div>
+        </div>
       </div>
-      <span class="trojanex-tag">Dealer Portal · Data Cloud</span>
     </div>
-    <div class="card-body">
-      <div class="signal">
-        <div class="signal-hdr"><span class="pulse"></span>Anomaly Detected · Commerce Cloud · Order Frequency</div>
-        <div class="signal-body">
-          <strong>Midwest Industrial Fleet</strong> — Material Handling Segment · Tier 1 Dealer · Chicago, IL<br>
-          Order frequency: <strong>30% below their 6-month average</strong>. No open service cases. No logged rep contact in 45 days. Churn risk score: <strong>High</strong>.
+    <div class="split-right">
+      <div class="sf-panel" id="sf-panel-3">
+        <div class="sf-phdr">
+          <div class="sf-phdr-dots"><div class="sf-phdr-dot"></div><div class="sf-phdr-dot"></div><div class="sf-phdr-dot"></div></div>
+          <span class="sf-phdr-title">Marketing Cloud Next · Multi-Cloud Response</span>
+          <span class="sf-phdr-badge">Coordinating</span>
         </div>
-      </div>
-      <div class="response">
-        <div class="response-hdr"><span class="response-dot"></span>Marketing Cloud Next · Three-Cloud Coordination</div>
-        <div class="cloud-row">
-          <div class="cloud-box">
-            <div class="cloud-box-icon">📧</div>
-            <div class="cloud-box-name">Marketing Cloud</div>
-            <div class="cloud-box-action"><strong>Win-back email</strong> sent to dealer contact with loyalty incentive and fleet refresh offer for their industrial battery line</div>
+        <div class="sf-pbody">
+          <div class="sf-einstein sf-anim" style="--d:0.1s">
+            <span class="sf-einstein-icon">✦</span>
+            <span class="sf-einstein-label">Churn risk: High · Midwest Industrial Fleet</span>
+            <span class="sf-einstein-status">3 actions firing</span>
           </div>
-          <div class="cloud-box">
-            <div class="cloud-box-icon">📋</div>
-            <div class="cloud-box-name">Sales Cloud</div>
-            <div class="cloud-box-action"><strong>Rep task created:</strong> "Midwest Industrial Fleet — 30% order drop vs. 6-mo average. High churn risk. Reach out this week."</div>
-          </div>
-          <div class="cloud-box">
-            <div class="cloud-box-icon">🔔</div>
-            <div class="cloud-box-name">Service Cloud</div>
-            <div class="cloud-box-action"><strong>Flag added:</strong> Check for unresolved cases or product issues that may be driving reduced ordering behavior</div>
+          <div class="sf-cloud-cards">
+            <div class="sf-cloud-card sf-anim" style="--d:0.35s">
+              <span class="sf-cloud-icon">📧</span>
+              <div class="sf-cloud-info">
+                <div class="sf-cloud-name">Marketing Cloud</div>
+                <div class="sf-cloud-action"><strong>Win-back email sent</strong> — loyalty incentive + fleet refresh offer for their industrial battery line</div>
+                <div class="sf-cloud-done">✓ Delivered</div>
+              </div>
+            </div>
+            <div class="sf-cloud-card sf-anim" style="--d:0.9s">
+              <span class="sf-cloud-icon">📋</span>
+              <div class="sf-cloud-info">
+                <div class="sf-cloud-name">Sales Cloud</div>
+                <div class="sf-cloud-action"><strong>Rep task created:</strong> "Midwest Industrial Fleet — 30% order drop vs. 6-mo avg. High churn risk. Reach out this week."</div>
+                <div class="sf-cloud-done">✓ Assigned to account rep</div>
+              </div>
+            </div>
+            <div class="sf-cloud-card sf-anim" style="--d:1.45s">
+              <span class="sf-cloud-icon">🔔</span>
+              <div class="sf-cloud-info">
+                <div class="sf-cloud-name">Service Cloud</div>
+                <div class="sf-cloud-action"><strong>Flag added:</strong> Check for unresolved cases or product issues driving reduced ordering behavior</div>
+                <div class="sf-cloud-done">✓ Flagged for review</div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="gap">
-        <div class="gap-hdr">The HubSpot Gap</div>
-        <div class="gap-text">HubSpot cannot see the commerce signal that triggered this. It cannot write a task to Sales Cloud. It cannot coordinate marketing, sales, and service simultaneously. This is a three-cloud coordinated response to a single data point — only possible when all three clouds share the same foundation.</div>
-      </div>
-      <div style="text-align:right;margin-top:13px;">
-        <button class="btn-primary" onclick="goTo(4)">Next Use Case →</button>
       </div>
     </div>
   </div>
@@ -318,53 +520,87 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 <!-- SCREEN 4: PRODUCT LINE UPSELL -->
 <div class="screen" id="s4">
   <div class="screen-tag">Use Case 4 of 4 — Product Line Upsell</div>
-  <div class="card">
-    <div class="card-bar">
-      <div class="card-bar-left">
-        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
-        <span class="card-bar-title"><strong>Marketing Cloud Next</strong> · Intent Scoring · Running</span>
+  <div class="split-wrap">
+    <div class="split-left">
+      <div class="card">
+        <div class="card-bar">
+          <div class="card-bar-left">
+            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+            <span class="card-bar-title"><strong>Marketing Cloud Next</strong> · Intent Scoring · Running</span>
+          </div>
+          <span class="trojanex-tag">Dealer Portal · Data Cloud</span>
+        </div>
+        <div class="card-body">
+          <div class="signal">
+            <div class="signal-hdr"><span class="pulse"></span>Behavioral Signal · Dealer Portal · Product Browse</div>
+            <div class="signal-body">
+              <strong>Eagle Golf Distributors</strong> — Golf Segment · Account history: 100% flooded lead-acid<br>
+              Visited <strong>lithium product page</strong> 3× in 5 days. No order. No rep contact. Data Cloud scores purchase intent from full account history.
+            </div>
+          </div>
+          <div class="response">
+            <div class="response-hdr"><span class="response-dot"></span>Marketing Cloud Next · Intent-Triggered Campaign</div>
+            <div class="response-body">
+              <div style="margin-bottom:9px;">Intent scored at <strong>82%</strong> from Commerce browse history + full account profile. Personalized lithium switch campaign launched.</div>
+              <div style="margin-bottom:9px;">
+                <div class="intent-bar">
+                  <span class="intent-label">Switch intent</span>
+                  <div class="intent-track"><div class="intent-fill fill-high" style="width:82%;"></div></div>
+                  <span class="intent-val" style="color:#CC2222;">82%</span>
+                </div>
+                <div class="intent-bar">
+                  <span class="intent-label">Reorder risk</span>
+                  <div class="intent-track"><div class="intent-fill fill-med" style="width:34%;"></div></div>
+                  <span class="intent-val" style="color:#E58A30;">34%</span>
+                </div>
+              </div>
+              <div style="font-size:11px;color:rgba(255,255,255,.3);text-align:left;">When the order closes in the dealer portal, Marketing Cloud receives attribution. The loop closes natively.</div>
+            </div>
+          </div>
+          <div class="gap">
+            <div class="gap-hdr">The HubSpot Gap</div>
+            <div class="gap-text">HubSpot sees a web visit from a known contact. It cannot see which product they browsed in the dealer portal, cannot score intent from their full order history, and cannot close the attribution loop when the conversion happens in Commerce.</div>
+          </div>
+          <div style="text-align:right;margin-top:13px;">
+            <button class="btn-primary" onclick="goTo(5)">See the Full Picture →</button>
+          </div>
+        </div>
       </div>
-      <span class="trojanex-tag">Dealer Portal · Data Cloud</span>
     </div>
-    <div class="card-body">
-      <div class="signal">
-        <div class="signal-hdr"><span class="pulse"></span>Behavioral Signal · Dealer Portal · Product Browse</div>
-        <div class="signal-body">
-          <strong>Eagle Golf Distributors</strong> — Golf Segment · Account history: 100% flooded lead-acid<br>
-          Visited <strong>lithium product page</strong> 3× in 5 days. No order. No rep contact. Data Cloud scores purchase intent: <strong>82%</strong>.
+    <div class="split-right">
+      <div class="sf-panel" id="sf-panel-4">
+        <div class="sf-phdr">
+          <div class="sf-phdr-dots"><div class="sf-phdr-dot"></div><div class="sf-phdr-dot"></div><div class="sf-phdr-dot"></div></div>
+          <span class="sf-phdr-title">Data Cloud · Intent Intelligence</span>
+          <span class="sf-phdr-badge">Scoring Active</span>
         </div>
-      </div>
-      <div class="response">
-        <div class="response-hdr"><span class="response-dot"></span>Marketing Cloud Next · Intent-Triggered Campaign</div>
-        <div class="response-body">
-          <div style="margin-bottom:9px;">Intent scored from Commerce browse history + full account profile. Personalized lithium switch campaign launched for golf cart fleet application.</div>
-          <div style="margin-bottom:9px;">
-            <div class="intent-bar">
-              <span class="intent-label">Switch intent</span>
-              <div class="intent-track"><div class="intent-fill fill-high" style="width:82%;"></div></div>
-              <span class="intent-val" style="color:#CC2222;">82%</span>
-            </div>
-            <div class="intent-bar">
-              <span class="intent-label">Reorder risk</span>
-              <div class="intent-track"><div class="intent-fill fill-med" style="width:34%;"></div></div>
-              <span class="intent-val" style="color:#E58A30;">34%</span>
+        <div class="sf-gauge-wrap sf-anim" style="--d:0.2s">
+          <div class="sf-gauge-ring">
+            <svg viewBox="0 0 100 100" width="130" height="130">
+              <circle class="sf-gauge-arc-bg" cx="50" cy="50" r="40" transform="rotate(-90 50 50)"/>
+              <circle class="sf-gauge-arc" id="gauge-arc" cx="50" cy="50" r="40" transform="rotate(-90 50 50)"/>
+            </svg>
+            <div class="sf-gauge-label">
+              <div class="sf-gauge-pct" id="gauge-pct">0%</div>
+              <div class="sf-gauge-sub">Purchase Intent</div>
             </div>
           </div>
-          <div class="email-inline">
-            <div class="e-row"><span class="e-lbl">To:</span><span class="e-val">David Chen · Eagle Golf Distributors</span></div>
-            <div class="e-row"><span class="e-lbl">Subj:</span><span class="e-val">The math on switching your fleet to Trojan Lithium</span></div>
-            <div class="e-div"></div>
-            <div class="e-body">Hi David — noticed you've been exploring our lithium line. For a golf cart fleet your size, operators switching from flooded lead-acid are typically seeing significantly lower maintenance costs and longer warranty coverage. Your current contracted rate applies.<br><br><span class="e-cta">→ Get the ROI breakdown for your fleet size</span></div>
-          </div>
-          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:8px;text-align:left;">When the order closes in the dealer portal, Marketing Cloud receives attribution. The loop closes natively.</div>
+          <div style="font-size:11px;color:#032D60;font-weight:700;margin-top:6px;">Eagle Golf Distributors</div>
+          <div style="font-size:10px;color:#706e6b;margin-top:2px;">Lithium product line switch</div>
         </div>
-      </div>
-      <div class="gap">
-        <div class="gap-hdr">The HubSpot Gap</div>
-        <div class="gap-text">HubSpot sees a web visit from a known contact. It cannot see which product they browsed in the dealer portal, cannot score intent from their full order history, and cannot close the attribution loop when the conversion happens in Commerce.</div>
-      </div>
-      <div style="text-align:right;margin-top:13px;">
-        <button class="btn-primary" onclick="goTo(5)">See the Full Picture →</button>
+        <div class="sf-chips sf-anim" style="--d:0.5s">
+          <span class="sf-chip">Golf segment</span>
+          <span class="sf-chip">100% lead-acid history</span>
+          <span class="sf-chip">3× lithium page in 5 days</span>
+          <span class="sf-chip">No rep contact</span>
+        </div>
+        <div class="sf-brief sf-anim" style="--d:0.75s">
+          <div class="sf-brief-hdr"><span class="sf-brief-pulse"></span>Campaign Brief · Auto-Generated</div>
+          <div class="sf-brief-row">Segment: <span>Golf fleet operators · lead-acid replacement</span></div>
+          <div class="sf-brief-row">Message: <span>Lithium ROI for fleet of their size</span></div>
+          <div class="sf-brief-row">Offer: <span>Current contracted rate applied automatically</span></div>
+          <div class="sf-brief-row">Attribution: <span>Closes natively when order placed in dealer portal</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -464,15 +700,43 @@ let muted = false;
 function goTo(n) {
   const prev = document.getElementById('audio-' + current);
   if (prev) { prev.pause(); prev.currentTime = 0; }
+
+  const prevPanel = document.getElementById('sf-panel-' + current);
+  if (prevPanel) prevPanel.classList.remove('anim-run');
+
   document.getElementById('s' + current).classList.remove('active');
   document.getElementById('pd' + current).classList.remove('active');
   current = n;
   document.getElementById('s' + current).classList.add('active');
   document.getElementById('pd' + current).classList.add('active');
+
+  const newPanel = document.getElementById('sf-panel-' + n);
+  if (newPanel) {
+    void newPanel.offsetWidth;
+    newPanel.classList.add('anim-run');
+    if (n === 4) animateGauge();
+  }
+
   if (!muted) {
     const audio = document.getElementById('audio-' + current);
     if (audio) audio.play().catch(() => {});
   }
+}
+
+function animateGauge() {
+  const arc = document.getElementById('gauge-arc');
+  const pct = document.getElementById('gauge-pct');
+  if (!arc || !pct) return;
+  arc.classList.remove('anim-gauge');
+  void arc.offsetWidth;
+  arc.classList.add('anim-gauge');
+  let n = 0;
+  pct.textContent = '0%';
+  const t = setInterval(function() {
+    n += 2;
+    if (n >= 82) { n = 82; clearInterval(t); }
+    pct.textContent = n + '%';
+  }, 36);
 }
 
 function toggleMute() {
@@ -492,7 +756,7 @@ function checkPW() {
   const val = document.getElementById('pw-input').value;
   if (val === 'Trojan&Salesforce2026!') {
     document.getElementById('pw-gate').style.display = 'none';
-    setTimeout(() => {
+    setTimeout(function() {
       if (!muted) {
         const audio = document.getElementById('audio-0');
         if (audio) audio.play().catch(() => {});
@@ -503,7 +767,7 @@ function checkPW() {
     err.textContent = 'Incorrect access code. Please try again.';
     document.getElementById('pw-input').value = '';
     document.getElementById('pw-input').focus();
-    setTimeout(() => { err.textContent = ''; }, 3000);
+    setTimeout(function() { err.textContent = ''; }, 3000);
   }
 }
 </script>
