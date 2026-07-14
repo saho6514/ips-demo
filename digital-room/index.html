@@ -230,7 +230,42 @@ body {
   margin-bottom: clamp(16px, 2.5vh, 32px);
 }
 
-/* ─── SLIDE 2: CHALLENGE ─── */
+/* ─── SLIDE 2: GOALS ─── */
+.goal-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.5vh, 18px);
+  flex: 1;
+}
+
+.goal-item {
+  border-left: 3px solid var(--blue);
+  padding: clamp(12px, 1.5vh, 18px) clamp(16px, 2vw, 24px);
+  background: #F8FAFF;
+  border-radius: 0 8px 8px 0;
+}
+
+.gi-title {
+  font-size: clamp(12px, 1.3vw, 16px);
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+
+.gi-body {
+  font-size: clamp(11px, 1.1vw, 14px);
+  color: var(--gray);
+  line-height: 1.55;
+}
+
+.goals-note {
+  font-size: clamp(10px, 1vw, 12px);
+  color: #999;
+  font-style: italic;
+  margin-top: clamp(10px, 1.5vh, 18px);
+}
+
+/* ─── SLIDE 3: CHALLENGE ─── */
 .challenge-list {
   display: flex;
   flex-direction: column;
@@ -276,7 +311,7 @@ body {
   margin-top: clamp(10px, 1.5vh, 18px);
 }
 
-/* ─── SLIDE 3: REFRAME ─── */
+/* ─── SLIDE 4: REFRAME ─── */
 .reframe-body {
   font-size: clamp(11px, 1.2vw, 14.5px);
   color: var(--gray);
@@ -312,7 +347,7 @@ body {
 .compare-table td.td-left  { background: #F8F8F8; color: #888; }
 .compare-table td.td-right { background: #FAFCFF; color: var(--navy); font-weight: 600; }
 
-/* ─── SLIDE 4: SOCIAL PROOF ─── */
+/* ─── SLIDE 5: SOCIAL PROOF ─── */
 .case-row {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -362,6 +397,60 @@ body {
   color: #fff;
   font-weight: 500;
   text-align: center;
+}
+
+/* ─── SLIDE 6: TRANSITION ─── */
+.discussion-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 1.8vh, 22px);
+  flex: 1;
+  justify-content: center;
+}
+
+.discussion-item {
+  display: flex;
+  gap: clamp(14px, 1.8vw, 22px);
+  align-items: flex-start;
+  padding: clamp(14px, 1.8vh, 22px) clamp(16px, 2vw, 24px);
+  background: #F8FAFF;
+  border-radius: 8px;
+}
+
+.di-num {
+  width: clamp(28px, 2.8vw, 36px);
+  height: clamp(28px, 2.8vw, 36px);
+  min-width: clamp(28px, 2.8vw, 36px);
+  background: var(--navy);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(11px, 1.1vw, 14px);
+  font-weight: 800;
+  margin-top: 1px;
+}
+
+.di-title {
+  font-size: clamp(12px, 1.3vw, 16px);
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+
+.di-body {
+  font-size: clamp(11px, 1.1vw, 14px);
+  color: var(--gray);
+  line-height: 1.55;
+}
+
+.discussion-footer {
+  font-size: clamp(11px, 1.1vw, 13.5px);
+  color: var(--blue);
+  font-weight: 600;
+  text-align: center;
+  margin-top: clamp(8px, 1.2vh, 16px);
 }
 
 /* ─── NAV CHROME ─── */
@@ -439,8 +528,29 @@ body {
     </div>
   </div>
 
-  <!-- SLIDE 2: THE CHALLENGE -->
+  <!-- SLIDE 2: GOALS -->
   <div class="slide slide-content" data-slide="2">
+    <div class="section-label">What You're Building Toward</div>
+    <div class="slide-headline">We heard three clear priorities<br>from your team</div>
+    <div class="goal-list">
+      <div class="goal-item">
+        <div class="gi-title">Scale the team without scaling headcount</div>
+        <div class="gi-body">You're managing ten brands with a lean team and need AI to dramatically speed up content creation, test launches, and learning cycles — not add more complexity to an already full plate.</div>
+      </div>
+      <div class="goal-item">
+        <div class="gi-title">Turn retention into a growth lever, not just a follow-up sequence</div>
+        <div class="gi-body">Repeat customers are a significant share of your revenue. The opportunity is using what you already know about how customers order to bring them back sooner — not just send emails on a calendar.</div>
+      </div>
+      <div class="goal-item">
+        <div class="gi-title">Win acquisition as AI changes how buyers search</div>
+        <div class="gi-body">Paid search is the current engine. But GEO and AI search are changing how buyers find vendors — and you're already thinking ahead about what it means to show up in those new channels.</div>
+      </div>
+    </div>
+    <div class="goals-note">These came directly from your team. If we got anything wrong — or if priorities have shifted — we want to know that first.</div>
+  </div>
+
+  <!-- SLIDE 3: THE CHALLENGE -->
+  <div class="slide slide-content" data-slide="3">
     <div class="section-label">The Challenge</div>
     <div class="slide-headline">Most marketing AI was built<br>for the wrong business model</div>
     <div class="challenge-list">
@@ -469,8 +579,8 @@ body {
     <div class="slide-footer-note">We hear this consistently across our customer base — and we've seen what breaks the pattern.</div>
   </div>
 
-  <!-- SLIDE 3: THE REFRAME -->
-  <div class="slide slide-content" data-slide="3">
+  <!-- SLIDE 4: THE REFRAME -->
+  <div class="slide slide-content" data-slide="4">
     <div class="section-label">The Reframe</div>
     <div class="slide-headline">Your product complexity isn't a liability.<br>It's your richest behavioral dataset.</div>
     <div class="reframe-body">Every unique spec combination a customer builds — material, size, finish, quantity, turnaround — is a high-signal behavioral fingerprint. SKU businesses have catalog data. You have intent data. The companies winning at retention aren't the ones with the best product catalog. They're the ones who learned to read order patterns as behavioral signals.</div>
@@ -498,8 +608,8 @@ body {
     </table>
   </div>
 
-  <!-- SLIDE 4: SOCIAL PROOF -->
-  <div class="slide slide-content" data-slide="4">
+  <!-- SLIDE 5: SOCIAL PROOF -->
+  <div class="slide slide-content" data-slide="5">
     <div class="section-label">Who's Doing It</div>
     <div class="slide-headline">How companies with similar challenges<br>have moved the needle</div>
     <div class="case-row">
@@ -524,6 +634,36 @@ body {
     </div>
   </div>
 
+  <!-- SLIDE 6: TRANSITION -->
+  <div class="slide slide-content" data-slide="6">
+    <div class="section-label">Let's Go Deeper</div>
+    <div class="slide-headline">To build the right recommendation,<br>we want to understand three things</div>
+    <div class="discussion-list">
+      <div class="discussion-item">
+        <div class="di-num">1</div>
+        <div>
+          <div class="di-title">Where your retention program stands today</div>
+          <div class="di-body">What's working, what's been tried and hasn't moved the needle, and what "great" looks like when it's firing on all cylinders.</div>
+        </div>
+      </div>
+      <div class="discussion-item">
+        <div class="di-num">2</div>
+        <div>
+          <div class="di-title">How your team actually spends their time</div>
+          <div class="di-body">Across ten brands, where is the manual work concentrated — and what would it mean to get that time back?</div>
+        </div>
+      </div>
+      <div class="discussion-item">
+        <div class="di-num">3</div>
+        <div>
+          <div class="di-title">What success looks like for you this year</div>
+          <div class="di-body">Not just the metrics — what does a win feel like for you and the team? We build to that bar, not a generic benchmark.</div>
+        </div>
+      </div>
+    </div>
+    <div class="discussion-footer">We'll guide the conversation — but this is yours to shape.</div>
+  </div>
+
 </div>
 
 <!-- ─── NAV CHROME ─── -->
@@ -532,11 +672,11 @@ body {
   <span class="hint-key">→</span>
   <span style="margin-left:2px">or click to navigate</span>
 </div>
-<div id="slide-counter">1 / 4</div>
+<div id="slide-counter">1 / 6</div>
 
 <script>
   const PASSWORD = 'digitalroom';
-  const TOTAL = 4;
+  const TOTAL = 6;
   let current = 1;
 
   function checkPassword() {
