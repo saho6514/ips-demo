@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lucas Oil — Marketing Intelligence Working Session</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,700;1,900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
@@ -223,22 +226,19 @@ html,body{
 .slide-header-right{
   display:flex;align-items:flex-end;gap:0;
 }
-.slide-logo-lockup{
-  display:flex;align-items:center;gap:.7vw;
+.slide-logo-lockup{display:flex;align-items:center;gap:.75vw;}
+.sll-lucas{display:flex;align-items:center;gap:.38vw;}
+.sll-shield{width:1.1vw;height:1.32vw;flex-shrink:0;}
+.sll-lucas-text{
+  font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;
+  font-style:italic;font-weight:900;font-size:1.18vw;
+  color:#fff;letter-spacing:.03em;line-height:1;
 }
-.sll-lucas{
-  font-size:1.25vw;font-weight:900;font-style:italic;
-  color:#fff;letter-spacing:-.02em;
-}
-.sll-lucas span{color:var(--red);}
-.sll-div{width:1px;height:2.2vw;background:rgba(255,255,255,.2);}
-.sll-sf{
-  font-size:1.05vw;font-weight:600;color:rgba(255,255,255,.7);
-  display:flex;align-items:center;gap:.4vw;
-}
-.sll-sf-dot{
-  width:.6vw;height:.6vw;border-radius:50%;background:#4aa3e0;
-}
+.sll-lucas-text span{color:var(--red);}
+.sll-div{width:1px;height:1.9vw;background:rgba(255,255,255,.18);}
+.sll-sf{display:flex;align-items:center;gap:.42vw;color:rgba(255,255,255,.75);}
+.sll-sf-cloud{width:1.85vw;height:1.26vw;flex-shrink:0;}
+.sll-sf-text{font-size:.95vw;font-weight:300;letter-spacing:-.01em;}
 
 .slide-body{
   flex:1;padding:2.5% 4%;
@@ -530,7 +530,17 @@ html,body{
 <body>
 <div id="pw-gate" style="position:fixed;inset:0;background:#032D60;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;padding:24px;">
   <div style="text-align:center;margin-bottom:32px;">
-    <div style="font-size:32px;font-weight:900;color:#fff;margin-bottom:6px;">Lucas Oil × Salesforce</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <svg viewBox="0 0 20 24" style="width:22px;height:26px;flex-shrink:0;" xmlns="http://www.w3.org/2000/svg"><path d="M10 .8L19.2 4V13.2C19.2 18.2 15.1 21.8 10 23.2 4.9 21.8.8 18.2.8 13.2V4Z" fill="#C8102E"/></svg>
+        <span style="font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-style:italic;font-weight:900;font-size:28px;color:#fff;letter-spacing:.03em;"><span style="color:#C8102E;">LUCAS</span> OIL</span>
+      </div>
+      <span style="font-size:18px;color:rgba(255,255,255,.25);font-weight:300;">×</span>
+      <div style="display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.8);">
+        <svg viewBox="0 0 55 38" style="width:26px;height:18px;flex-shrink:0;" xmlns="http://www.w3.org/2000/svg"><path d="M22.4 8.5c2.3-2.5 5.7-4 9.3-4 5.1 0 9.4 3.2 11 7.7.7-.1 1.4-.2 2.2-.2 5.4 0 9.7 4.4 9.7 9.7s-4.3 9.7-9.7 9.7H10.8c-4.9 0-8.8-4-8.8-8.8s3.9-8.8 8.8-8.8c.6 0 1.2.07 1.7.19C14.1 11 17.9 8.5 22.4 8.5z" fill="currentColor"/></svg>
+        <span style="font-size:24px;font-weight:300;letter-spacing:-.02em;">salesforce</span>
+      </div>
+    </div>
     <div style="font-size:13px;color:rgba(255,255,255,.45);">This asset is private. Enter the access code to continue.</div>
   </div>
   <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:28px 32px;width:100%;max-width:380px;text-align:center;">
@@ -558,9 +568,15 @@ html,body{
       <div class="title-h1">Marketing<br><span>Intelligence</span><br>Deep Dive</div>
       <div class="title-sub">Understanding your three-tier marketing mix — and what data we need to build it right.</div>
       <div class="title-logos-row">
-        <div class="title-logo-pill lucas"><div class="pill-dot"></div>Lucas Oil Products</div>
+        <div class="title-logo-pill lucas">
+          <svg viewBox="0 0 20 24" style="width:11px;height:13px;flex-shrink:0;" xmlns="http://www.w3.org/2000/svg"><path d="M10 .8L19.2 4V13.2C19.2 18.2 15.1 21.8 10 23.2 4.9 21.8.8 18.2.8 13.2V4Z" fill="#C8102E"/></svg>
+          <span style="font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-style:italic;font-weight:700;">Lucas Oil Products</span>
+        </div>
         <div class="title-divider-x">×</div>
-        <div class="title-logo-pill sf"><div class="pill-dot"></div>Salesforce Marketing Intelligence</div>
+        <div class="title-logo-pill sf">
+          <svg viewBox="0 0 55 38" style="width:16px;height:11px;flex-shrink:0;" fill="#1976D2" xmlns="http://www.w3.org/2000/svg"><path d="M22.4 8.5c2.3-2.5 5.7-4 9.3-4 5.1 0 9.4 3.2 11 7.7.7-.1 1.4-.2 2.2-.2 5.4 0 9.7 4.4 9.7 9.7s-4.3 9.7-9.7 9.7H10.8c-4.9 0-8.8-4-8.8-8.8s3.9-8.8 8.8-8.8c.6 0 1.2.07 1.7.19C14.1 11 17.9 8.5 22.4 8.5z"/></svg>
+          <span>Salesforce Marketing Intelligence</span>
+        </div>
       </div>
     </div>
 
@@ -621,9 +637,15 @@ html,body{
     </div>
     <div class="slide-header-right">
       <div class="slide-logo-lockup">
-        <div class="sll-lucas"><span style="color:var(--red);">LUCAS</span> OIL</div>
+        <div class="sll-lucas">
+          <svg class="sll-shield" viewBox="0 0 20 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 .8L19.2 4V13.2C19.2 18.2 15.1 21.8 10 23.2 4.9 21.8.8 18.2.8 13.2V4Z" fill="#C8102E"/></svg>
+          <span class="sll-lucas-text"><span>LUCAS</span> OIL</span>
+        </div>
         <div class="sll-div"></div>
-        <div class="sll-sf"><div class="sll-sf-dot"></div>salesforce</div>
+        <div class="sll-sf">
+          <svg class="sll-sf-cloud" viewBox="0 0 55 38" xmlns="http://www.w3.org/2000/svg"><path d="M22.4 8.5c2.3-2.5 5.7-4 9.3-4 5.1 0 9.4 3.2 11 7.7.7-.1 1.4-.2 2.2-.2 5.4 0 9.7 4.4 9.7 9.7s-4.3 9.7-9.7 9.7H10.8c-4.9 0-8.8-4-8.8-8.8s3.9-8.8 8.8-8.8c.6 0 1.2.07 1.7.19C14.1 11 17.9 8.5 22.4 8.5z" fill="currentColor"/></svg>
+          <span class="sll-sf-text">salesforce</span>
+        </div>
       </div>
     </div>
   </div>
@@ -737,9 +759,15 @@ html,body{
     </div>
     <div class="slide-header-right">
       <div class="slide-logo-lockup">
-        <div class="sll-lucas"><span style="color:var(--red);">LUCAS</span> OIL</div>
+        <div class="sll-lucas">
+          <svg class="sll-shield" viewBox="0 0 20 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 .8L19.2 4V13.2C19.2 18.2 15.1 21.8 10 23.2 4.9 21.8.8 18.2.8 13.2V4Z" fill="#C8102E"/></svg>
+          <span class="sll-lucas-text"><span>LUCAS</span> OIL</span>
+        </div>
         <div class="sll-div"></div>
-        <div class="sll-sf"><div class="sll-sf-dot"></div>salesforce</div>
+        <div class="sll-sf">
+          <svg class="sll-sf-cloud" viewBox="0 0 55 38" xmlns="http://www.w3.org/2000/svg"><path d="M22.4 8.5c2.3-2.5 5.7-4 9.3-4 5.1 0 9.4 3.2 11 7.7.7-.1 1.4-.2 2.2-.2 5.4 0 9.7 4.4 9.7 9.7s-4.3 9.7-9.7 9.7H10.8c-4.9 0-8.8-4-8.8-8.8s3.9-8.8 8.8-8.8c.6 0 1.2.07 1.7.19C14.1 11 17.9 8.5 22.4 8.5z" fill="currentColor"/></svg>
+          <span class="sll-sf-text">salesforce</span>
+        </div>
       </div>
     </div>
   </div>
@@ -834,9 +862,15 @@ html,body{
     </div>
     <div class="slide-header-right">
       <div class="slide-logo-lockup">
-        <div class="sll-lucas"><span style="color:#ff6b7a;">LUCAS</span> OIL</div>
+        <div class="sll-lucas">
+          <svg class="sll-shield" viewBox="0 0 20 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 .8L19.2 4V13.2C19.2 18.2 15.1 21.8 10 23.2 4.9 21.8.8 18.2.8 13.2V4Z" fill="#C8102E" stroke="rgba(255,255,255,0.3)" stroke-width="1"/></svg>
+          <span class="sll-lucas-text"><span style="color:#ff9aaa;">LUCAS</span> OIL</span>
+        </div>
         <div class="sll-div"></div>
-        <div class="sll-sf"><div class="sll-sf-dot"></div>salesforce</div>
+        <div class="sll-sf">
+          <svg class="sll-sf-cloud" viewBox="0 0 55 38" xmlns="http://www.w3.org/2000/svg"><path d="M22.4 8.5c2.3-2.5 5.7-4 9.3-4 5.1 0 9.4 3.2 11 7.7.7-.1 1.4-.2 2.2-.2 5.4 0 9.7 4.4 9.7 9.7s-4.3 9.7-9.7 9.7H10.8c-4.9 0-8.8-4-8.8-8.8s3.9-8.8 8.8-8.8c.6 0 1.2.07 1.7.19C14.1 11 17.9 8.5 22.4 8.5z" fill="currentColor"/></svg>
+          <span class="sll-sf-text">salesforce</span>
+        </div>
       </div>
     </div>
   </div>
@@ -930,9 +964,15 @@ html,body{
     </div>
     <div class="slide-header-right">
       <div class="slide-logo-lockup">
-        <div class="sll-lucas"><span style="color:#ffd080;">LUCAS</span> OIL</div>
+        <div class="sll-lucas">
+          <svg class="sll-shield" viewBox="0 0 20 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 .8L19.2 4V13.2C19.2 18.2 15.1 21.8 10 23.2 4.9 21.8.8 18.2.8 13.2V4Z" fill="#C8102E" stroke="rgba(255,255,255,0.3)" stroke-width="1"/></svg>
+          <span class="sll-lucas-text"><span style="color:#ffd080;">LUCAS</span> OIL</span>
+        </div>
         <div class="sll-div"></div>
-        <div class="sll-sf"><div class="sll-sf-dot"></div>salesforce</div>
+        <div class="sll-sf">
+          <svg class="sll-sf-cloud" viewBox="0 0 55 38" xmlns="http://www.w3.org/2000/svg"><path d="M22.4 8.5c2.3-2.5 5.7-4 9.3-4 5.1 0 9.4 3.2 11 7.7.7-.1 1.4-.2 2.2-.2 5.4 0 9.7 4.4 9.7 9.7s-4.3 9.7-9.7 9.7H10.8c-4.9 0-8.8-4-8.8-8.8s3.9-8.8 8.8-8.8c.6 0 1.2.07 1.7.19C14.1 11 17.9 8.5 22.4 8.5z" fill="currentColor"/></svg>
+          <span class="sll-sf-text">salesforce</span>
+        </div>
       </div>
     </div>
   </div>
@@ -1019,9 +1059,15 @@ html,body{
     </div>
     <div class="slide-header-right">
       <div class="slide-logo-lockup">
-        <div class="sll-lucas"><span style="color:var(--red);">LUCAS</span> OIL</div>
+        <div class="sll-lucas">
+          <svg class="sll-shield" viewBox="0 0 20 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 .8L19.2 4V13.2C19.2 18.2 15.1 21.8 10 23.2 4.9 21.8.8 18.2.8 13.2V4Z" fill="#C8102E"/></svg>
+          <span class="sll-lucas-text"><span>LUCAS</span> OIL</span>
+        </div>
         <div class="sll-div"></div>
-        <div class="sll-sf"><div class="sll-sf-dot"></div>salesforce</div>
+        <div class="sll-sf">
+          <svg class="sll-sf-cloud" viewBox="0 0 55 38" xmlns="http://www.w3.org/2000/svg"><path d="M22.4 8.5c2.3-2.5 5.7-4 9.3-4 5.1 0 9.4 3.2 11 7.7.7-.1 1.4-.2 2.2-.2 5.4 0 9.7 4.4 9.7 9.7s-4.3 9.7-9.7 9.7H10.8c-4.9 0-8.8-4-8.8-8.8s3.9-8.8 8.8-8.8c.6 0 1.2.07 1.7.19C14.1 11 17.9 8.5 22.4 8.5z" fill="currentColor"/></svg>
+          <span class="sll-sf-text">salesforce</span>
+        </div>
       </div>
     </div>
   </div>
