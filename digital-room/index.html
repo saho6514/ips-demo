@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Room × Salesforce</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy: #032D60;
+  --blue: #0176D3;
+  --blue-lt: #E8F4FF;
+  --white: #ffffff;
+  --gray: #444444;
+  --gray-lt: #F2F4F7;
+  --border: #E0E8F0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #0d1b2e;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── PASSWORD GATE ─── */
+#gate {
+  position: fixed;
+  inset: 0;
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  gap: 28px;
+}
+
+.gate-logos {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.gate-logo-sf {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--blue);
+  letter-spacing: -0.5px;
+}
+
+.gate-divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(255,255,255,0.25);
+}
+
+.gate-logo-dr {
+  font-size: 20px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+}
+
+.gate-title {
+  font-size: 15px;
+  color: rgba(255,255,255,0.45);
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+.gate-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.gate-form input {
+  width: 240px;
+  padding: 12px 16px;
+  border-radius: 7px;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.07);
+  color: #fff;
+  font-size: 15px;
+  font-family: inherit;
+  text-align: center;
+  letter-spacing: 2px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.gate-form input::placeholder { color: rgba(255,255,255,0.3); letter-spacing: 0.5px; }
+.gate-form input:focus { border-color: var(--blue); }
+
+.gate-form button {
+  width: 240px;
+  padding: 12px;
+  border-radius: 7px;
+  border: none;
+  background: var(--blue);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.gate-form button:hover { background: #0063bb; }
+
+.gate-error {
+  font-size: 12px;
+  color: #ff7b7b;
+  font-weight: 500;
+  min-height: 16px;
+}
+
+/* ─── DECK SHELL ─── */
+#deck {
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+/* ─── SLIDES ─── */
+.slide {
+  position: absolute;
+  inset: 0;
+  display: none;
+  cursor: pointer;
+}
+
+.slide.active { display: flex; }
+
+/* ─── SLIDE 1: COVER ─── */
+.slide-cover {
+  background: var(--navy);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(32px, 6vw, 80px);
+  gap: clamp(12px, 2vh, 24px);
+}
+
+.cover-logos {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.cover-logo-sf {
+  font-size: clamp(16px, 2vw, 24px);
+  font-weight: 900;
+  color: var(--blue);
+  letter-spacing: -0.5px;
+}
+
+.cover-logo-div {
+  width: 1px;
+  height: clamp(24px, 3vh, 36px);
+  background: rgba(255,255,255,0.3);
+}
+
+.cover-logo-dr {
+  font-size: clamp(16px, 2vw, 24px);
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+}
+
+.cover-title {
+  font-size: clamp(28px, 4.5vw, 58px);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  max-width: min(760px, 85vw);
+}
+
+.cover-subtitle {
+  font-size: clamp(13px, 1.5vw, 19px);
+  color: rgba(168, 200, 240, 0.9);
+  max-width: min(520px, 75vw);
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.cover-byline {
+  position: absolute;
+  bottom: clamp(20px, 3vh, 36px);
+  left: clamp(32px, 4vw, 56px);
+  right: clamp(32px, 4vw, 56px);
+  display: flex;
+  justify-content: space-between;
+  font-size: clamp(10px, 1.1vw, 13px);
+  color: rgba(255,255,255,0.38);
+  font-weight: 500;
+}
+
+/* ─── CONTENT SLIDES ─── */
+.slide-content {
+  background: #fff;
+  flex-direction: column;
+  padding: clamp(28px, 4.5vw, 60px) clamp(36px, 5.5vw, 72px);
+}
+
+.section-label {
+  font-size: clamp(9px, 0.9vw, 11px);
+  font-weight: 800;
+  color: var(--blue);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-bottom: clamp(8px, 1.2vh, 16px);
+}
+
+.slide-headline {
+  font-size: clamp(22px, 3.2vw, 40px);
+  font-weight: 900;
+  color: var(--navy);
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+  margin-bottom: clamp(16px, 2.5vh, 32px);
+}
+
+/* ─── SLIDE 2: CHALLENGE ─── */
+.challenge-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.5vh, 18px);
+  flex: 1;
+}
+
+.challenge-item {
+  background: #F8FAFF;
+  border-radius: 8px;
+  padding: clamp(12px, 1.5vh, 18px) clamp(16px, 2vw, 24px);
+  display: flex;
+  gap: clamp(12px, 1.5vw, 20px);
+  align-items: flex-start;
+}
+
+.ci-dot {
+  width: clamp(6px, 0.7vw, 9px);
+  height: clamp(6px, 0.7vw, 9px);
+  min-width: clamp(6px, 0.7vw, 9px);
+  background: var(--blue);
+  border-radius: 50%;
+  margin-top: clamp(4px, 0.5vh, 8px);
+}
+
+.ci-title {
+  font-size: clamp(12px, 1.3vw, 16px);
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+
+.ci-body {
+  font-size: clamp(11px, 1.1vw, 14px);
+  color: var(--gray);
+  line-height: 1.55;
+}
+
+.slide-footer-note {
+  font-size: clamp(10px, 1vw, 12px);
+  color: #999;
+  font-style: italic;
+  margin-top: clamp(10px, 1.5vh, 18px);
+}
+
+/* ─── SLIDE 3: REFRAME ─── */
+.reframe-body {
+  font-size: clamp(11px, 1.2vw, 14.5px);
+  color: var(--gray);
+  line-height: 1.65;
+  margin-bottom: clamp(16px, 2.5vh, 28px);
+  max-width: 88%;
+}
+
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  flex: 1;
+}
+
+.compare-table th {
+  padding: clamp(8px, 1vh, 12px) clamp(12px, 1.5vw, 20px);
+  font-size: clamp(10px, 1vw, 12.5px);
+  font-weight: 800;
+  text-align: left;
+  letter-spacing: 0.3px;
+}
+
+.compare-table th.th-left  { background: #EBEBEB; color: #888; }
+.compare-table th.th-right { background: var(--blue-lt); color: var(--blue); }
+
+.compare-table td {
+  padding: clamp(8px, 1vh, 12px) clamp(12px, 1.5vw, 20px);
+  font-size: clamp(11px, 1.1vw, 14px);
+  border-top: 1px solid var(--border);
+  line-height: 1.4;
+}
+
+.compare-table td.td-left  { background: #F8F8F8; color: #888; }
+.compare-table td.td-right { background: #FAFCFF; color: var(--navy); font-weight: 600; }
+
+/* ─── SLIDE 4: SOCIAL PROOF ─── */
+.case-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: clamp(12px, 1.8vw, 22px);
+  flex: 1;
+}
+
+.case-card {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: clamp(14px, 2vw, 22px);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.cc-label {
+  font-size: clamp(10px, 1vw, 12px);
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.4;
+  padding-bottom: clamp(8px, 1vh, 12px);
+  border-bottom: 1px solid #F0F0F0;
+  margin-bottom: clamp(8px, 1vh, 12px);
+}
+
+.cc-metric {
+  font-size: clamp(13px, 1.5vw, 18px);
+  font-weight: 900;
+  color: var(--blue);
+  line-height: 1.25;
+  flex: 1;
+  margin-bottom: clamp(8px, 1.2vh, 14px);
+}
+
+.cc-method {
+  font-size: clamp(10px, 1vw, 12.5px);
+  color: #666;
+  line-height: 1.55;
+}
+
+.cta-strip {
+  background: var(--navy);
+  margin: clamp(14px, 2vh, 22px) clamp(-36px, -5.5vw, -72px) clamp(-28px, -4.5vw, -60px);
+  padding: clamp(12px, 1.5vh, 18px) clamp(36px, 5.5vw, 72px);
+  font-size: clamp(10.5px, 1.1vw, 13.5px);
+  color: #fff;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* ─── NAV CHROME ─── */
+#slide-counter {
+  position: fixed;
+  bottom: clamp(14px, 2.5vh, 24px);
+  right: clamp(20px, 2.5vw, 32px);
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.5px;
+  pointer-events: none;
+  z-index: 100;
+}
+
+#slide-counter.on-light { color: rgba(3,45,96,0.3); }
+
+#nav-hint {
+  position: fixed;
+  bottom: clamp(14px, 2.5vh, 24px);
+  left: clamp(20px, 2.5vw, 32px);
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.3);
+  pointer-events: none;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#nav-hint.on-light { color: rgba(3,45,96,0.28); }
+
+.hint-key {
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 10px;
+  opacity: 0.8;
+}
+</style>
+</head>
+<body>
+
+<!-- ─── PASSWORD GATE ─── -->
+<div id="gate">
+  <div class="gate-logos">
+    <span class="gate-logo-sf">salesforce</span>
+    <div class="gate-divider"></div>
+    <span class="gate-logo-dr">Digital Room</span>
+  </div>
+  <div class="gate-title">Marketing Discovery — July 2026</div>
+  <div class="gate-form">
+    <input type="password" id="pw-input" placeholder="enter password" autofocus>
+    <button onclick="checkPassword()">View Presentation</button>
+    <div class="gate-error" id="pw-error"></div>
+  </div>
+</div>
+
+<!-- ─── DECK ─── -->
+<div id="deck">
+
+  <!-- SLIDE 1: COVER -->
+  <div class="slide slide-cover active" data-slide="1">
+    <div class="cover-logos">
+      <span class="cover-logo-sf">salesforce</span>
+      <div class="cover-logo-div"></div>
+      <span class="cover-logo-dr">Digital Room</span>
+    </div>
+    <div class="cover-title">Marketing for Multi-Brand Custom Commerce</div>
+    <div class="cover-subtitle">A perspective on what's working — and where the opportunity is for Digital Room</div>
+    <div class="cover-byline">
+      <span>Sam Holz, Digital Account Executive &nbsp;·&nbsp; Mary Leonard, Account Director</span>
+      <span>July 2026</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: THE CHALLENGE -->
+  <div class="slide slide-content" data-slide="2">
+    <div class="section-label">The Challenge</div>
+    <div class="slide-headline">Most marketing AI was built<br>for the wrong business model</div>
+    <div class="challenge-list">
+      <div class="challenge-item">
+        <div class="ci-dot"></div>
+        <div>
+          <div class="ci-title">The catalog wall</div>
+          <div class="ci-body">AI personalization tools are architected for SKU-based e-commerce. Configure-to-order businesses are being forced to retrofit a model that was never built for them.</div>
+        </div>
+      </div>
+      <div class="challenge-item">
+        <div class="ci-dot"></div>
+        <div>
+          <div class="ci-title">The lean team squeeze</div>
+          <div class="ci-body">Marketing teams managing multiple brands with the same headcount as single-brand teams spend the majority of their time on tasks AI should be handling.</div>
+        </div>
+      </div>
+      <div class="challenge-item">
+        <div class="ci-dot"></div>
+        <div>
+          <div class="ci-title">Retention is still time-based, not behavior-based</div>
+          <div class="ci-body">Most retention programs trigger on days-since-purchase — not on what the customer configured, what that predicts about their next need, or when they're most likely to reorder.</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer-note">We hear this consistently across our customer base — and we've seen what breaks the pattern.</div>
+  </div>
+
+  <!-- SLIDE 3: THE REFRAME -->
+  <div class="slide slide-content" data-slide="3">
+    <div class="section-label">The Reframe</div>
+    <div class="slide-headline">Your product complexity isn't a liability.<br>It's your richest behavioral dataset.</div>
+    <div class="reframe-body">Every unique spec combination a customer builds — material, size, finish, quantity, turnaround — is a high-signal behavioral fingerprint. SKU businesses have catalog data. You have intent data. The companies winning at retention aren't the ones with the best product catalog. They're the ones who learned to read purchase configuration patterns as behavioral signals.</div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th class="th-left">SKU-based model</th>
+          <th class="th-right">Behavioral signal model</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-left">Recommends based on what others bought</td>
+          <td class="td-right">Triggers based on what this customer configured</td>
+        </tr>
+        <tr>
+          <td class="td-left">Segments by product category</td>
+          <td class="td-right">Segments by purchase intent fingerprint</td>
+        </tr>
+        <tr>
+          <td class="td-left">Triggered by days-since-purchase</td>
+          <td class="td-right">Triggered by lifecycle signals and spec patterns</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SLIDE 4: SOCIAL PROOF -->
+  <div class="slide slide-content" data-slide="4">
+    <div class="section-label">Who's Doing It</div>
+    <div class="slide-headline">How companies with similar challenges<br>have moved the needle</div>
+    <div class="case-row">
+      <div class="case-card">
+        <div class="cc-label">Williams-Sonoma<br>9 brands · distinct audiences · one platform</div>
+        <div class="cc-metric">21M new subscribers. Thousands of hours saved per year.</div>
+        <div class="cc-method">Behavioral lifecycle triggers — not time-based — across 9 brands. Data Cloud unified first- and third-party signals in 7.5 months.</div>
+      </div>
+      <div class="case-card">
+        <div class="cc-label">Global jobs platform<br>Lean team · high campaign volume</div>
+        <div class="cc-metric">Campaigns built in hours, not days</div>
+        <div class="cc-method">Agentforce + Marketing Cloud Next — the team briefs the agent, it drafts the journey, humans approve and launch.</div>
+      </div>
+      <div class="case-card">
+        <div class="cc-label">Multi-brand retailer<br>Fragmented data · no unified customer view</div>
+        <div class="cc-metric">165% lift in web engagement · 60% increase in marketing-sourced revenue</div>
+        <div class="cc-method">Data Cloud unified fragmented records; behavioral signals drove personalized re-engagement without a product catalog.</div>
+      </div>
+    </div>
+    <div class="cta-strip">
+      This is what we want to build for Digital Room — the conversation we're about to have will determine exactly how we do it.
+    </div>
+  </div>
+
+</div>
+
+<!-- ─── NAV CHROME ─── -->
+<div id="nav-hint">
+  <span class="hint-key">←</span>
+  <span class="hint-key">→</span>
+  <span style="margin-left:2px">or click to navigate</span>
+</div>
+<div id="slide-counter">1 / 4</div>
+
+<script>
+  const PASSWORD = 'digitalroom';
+  const TOTAL = 4;
+  let current = 1;
+
+  function checkPassword() {
+    const val = document.getElementById('pw-input').value.trim().toLowerCase();
+    if (val === PASSWORD) {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('deck').style.display = 'block';
+      updateChrome();
+    } else {
+      const err = document.getElementById('pw-error');
+      err.textContent = 'Incorrect password. Try again.';
+      document.getElementById('pw-input').value = '';
+      setTimeout(() => err.textContent = '', 2500);
+    }
+  }
+
+  document.getElementById('pw-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkPassword();
+  });
+
+  function goTo(n) {
+    if (n < 1 || n > TOTAL) return;
+    document.querySelector(`.slide[data-slide="${current}"]`).classList.remove('active');
+    current = n;
+    document.querySelector(`.slide[data-slide="${current}"]`).classList.add('active');
+    updateChrome();
+  }
+
+  function updateChrome() {
+    document.getElementById('slide-counter').textContent = `${current} / ${TOTAL}`;
+    const isLight = current > 1;
+    document.getElementById('slide-counter').classList.toggle('on-light', isLight);
+    document.getElementById('nav-hint').classList.toggle('on-light', isLight);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (document.getElementById('gate').style.display !== 'none') return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')  { e.preventDefault(); goTo(current - 1); }
+  });
+
+  document.getElementById('deck').addEventListener('click', e => {
+    const x = e.clientX / window.innerWidth;
+    goTo(x > 0.15 ? current + 1 : current - 1);
+  });
+</script>
+</body>
+</html>
