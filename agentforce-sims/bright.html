@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bright Innovation Labs — Agentforce + Slack Simulation</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#db2777;--accent-dark:#831843}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;min-height:100vh;display:flex;flex-direction:column}
+.banner{background:linear-gradient(135deg,var(--accent-dark) 0%,var(--accent) 100%);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.banner-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.company{font-size:17px;font-weight:900;color:#fff}
+.product-tag{background:rgba(255,255,255,.2);padding:3px 12px;border-radius:12px;font-size:12px;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,.3)}
+.back-link{color:rgba(255,255,255,.75);font-size:13px;text-decoration:none;font-weight:700}
+.back-link:hover{color:#fff}
+.slack{display:flex;height:calc(100vh - 50px)}
+.sidebar{width:240px;background:#19171d;flex-shrink:0;overflow-y:auto;padding:10px 0}
+.ws-name{font-size:16px;font-weight:900;color:#fff;padding:8px 16px 12px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:6px}
+.sb-hdr{font-size:11px;font-weight:700;color:#8b8c8e;padding:4px 16px;letter-spacing:.05em;margin-top:8px}
+.ch{padding:5px 8px 5px 16px;border-radius:4px;margin:1px 6px;font-size:14px;color:#c9cacc;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch.active{background:var(--accent);color:#fff;font-weight:700}
+.ch:not(.active):hover{background:rgba(255,255,255,.05)}
+.ch-hash{opacity:.55;font-size:13px;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.ch-hdr{padding:11px 20px;border-bottom:1px solid #2c2d30;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.ch-hdr-name{font-size:15px;font-weight:900;color:#fff}
+.ch-hdr-sep{width:1px;height:18px;background:#2c2d30;margin:0 4px}
+.ch-hdr-desc{font-size:13px;color:#8b8c8e}
+.msgs{flex:1;overflow-y:auto;padding:14px 20px 20px}
+.sec-div{display:flex;align-items:center;gap:10px;margin:20px 0 14px;opacity:.65}
+.sec-div-line{flex:1;height:1px;background:#2c2d30}
+.sec-div-lbl{font-size:10px;font-weight:700;color:#8b8c8e;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;padding:2px 8px;border:1px solid #2c2d30;border-radius:10px}
+.msg{display:flex;gap:11px;padding:5px 4px 3px;border-radius:4px;margin-bottom:1px;animation:fadeUp .3s ease both}
+.msg:hover{background:rgba(255,255,255,.025)}
+.msg:nth-child(1){animation-delay:.05s}.msg:nth-child(2){animation-delay:.1s}.msg:nth-child(3){animation-delay:.15s}.msg:nth-child(4){animation-delay:.2s}.msg:nth-child(5){animation-delay:.25s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.av{width:36px;height:36px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;margin-top:2px}
+.av-agent{background:linear-gradient(135deg,#7c3aed,#0176d3)}
+.av-ro{background:#0891b2}
+.mb{flex:1;min-width:0}
+.mh{display:flex;align-items:baseline;gap:8px;margin-bottom:3px;flex-wrap:wrap}
+.un{font-size:15px;font-weight:900;color:#fff}
+.un-agent{color:#c4d4ff}
+.app-badge{background:#1a7f64;color:#fff;font-size:10px;padding:1px 5px;border-radius:2px;font-weight:700;letter-spacing:.03em}
+.ts{font-size:12px;color:#6b6c6e}
+.mt{font-size:15px;line-height:1.65;color:#d1d2d3}
+.mt strong,.mt b{color:#fff;font-weight:700}
+.mt ul{margin:8px 0 6px 18px}
+.mt ul li{margin-bottom:3px;color:#c9cacc;font-size:14px}
+.mt ul li strong{color:#fff}
+.alert-row{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:900;margin-bottom:8px}
+.a-red{color:#e01e5a}.a-green{color:#2bac76}.a-yellow{color:#ecb22e}.a-blue{color:#1d9bd1}
+.data-block{background:#222529;border-radius:6px;padding:11px 16px;margin:10px 0 4px;border-left:4px solid var(--accent)}
+.data-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:14px}
+.data-row:last-child{border-bottom:none}
+.dk{color:#8b8c8e}.dv{color:#fff;font-weight:700}.dv.pos{color:#2bac76}.dv.neg{color:#e01e5a}.dv.warn{color:#ecb22e}
+.btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{padding:7px 16px;border-radius:4px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:filter .15s}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{filter:brightness(1.12)}
+.btn-s{background:#313131;color:#d1d2d3;border:1px solid rgba(255,255,255,.1)}.btn-s:hover{background:#3c3c3c}
+.btn-a{background:#2bac76;color:#fff}.btn-a:hover{filter:brightness(1.1)}
+.thread-meta{margin:4px 0 0 47px;display:flex;align-items:center;gap:8px;font-size:13px;color:#1d9bd1;cursor:pointer;padding:3px 0}
+.thread-ct{font-weight:700}
+.thread-time{color:#6b6c6e;font-weight:400}
+.thread-wrap{margin:4px 0 10px 47px}
+.thread-msg{background:#1e2124;border-radius:6px;padding:12px 14px;border-left:3px solid rgba(255,255,255,.07)}
+.thread-hdr{display:flex;align-items:baseline;gap:8px;margin-bottom:5px;flex-wrap:wrap}
+.result-card{background:linear-gradient(135deg,rgba(219,39,119,.06),rgba(124,58,237,.06));border:1px solid rgba(219,39,119,.25);border-radius:8px;padding:15px 18px;margin-top:10px}
+.rc-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.rc-title{font-size:15px;font-weight:900;color:#fff;flex:1}
+.rc-badge{font-size:11px;padding:2px 10px;background:#2bac76;color:#fff;border-radius:20px;font-weight:700}
+.rc-bullets{list-style:none}
+.rc-bullets li{font-size:14px;color:#c9cacc;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:8px;line-height:1.55;align-items:flex-start}
+.rc-bullets li:last-child{border-bottom:none}
+.bi{flex-shrink:0;margin-top:1px}
+.why-slack{background:#13151a;border-top:1px solid #2c2d30;padding:12px 20px;font-size:13px;color:#6b6c6e;font-style:italic;line-height:1.6;flex-shrink:0}
+.why-slack strong{color:#1d9bd1;font-style:normal;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <div class="banner-left">
+    <span class="company">Bright Innovation Labs</span>
+    <span class="product-tag">Revenue Cloud Advanced</span>
+  </div>
+  <a class="back-link" href="index.html">← All Simulations</a>
+</div>
+
+<div class="slack">
+  <div class="sidebar">
+    <div class="ws-name">Bright Innovation</div>
+    <div class="sb-hdr">Channels</div>
+    <div class="ch"><span class="ch-hash">#</span>general</div>
+    <div class="ch"><span class="ch-hash">#</span>project-ohio-facility</div>
+    <div class="ch"><span class="ch-hash">#</span>project-arizona-facility</div>
+    <div class="ch active"><span class="ch-hash">#</span>client-ops-margin-watch</div>
+    <div class="ch"><span class="ch-hash">#</span>formulation-r-and-d</div>
+    <div class="ch"><span class="ch-hash">#</span>supply-chain</div>
+    <div class="ch"><span class="ch-hash">#</span>quality-compliance</div>
+    <div class="ch"><span class="ch-hash">#</span>finance</div>
+    <div class="sb-hdr" style="margin-top:8px">Direct Messages</div>
+    <div class="ch">Rachel Osei</div>
+    <div class="ch">Miguel Torres</div>
+  </div>
+
+  <div class="main">
+    <div class="ch-hdr">
+      <span class="ch-hdr-name">#client-ops-margin-watch</span>
+      <span class="ch-hdr-sep"></span>
+      <span class="ch-hdr-desc">Project Margin, Change Orders, Contract Amendments</span>
+    </div>
+
+    <div class="msgs">
+
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">① The Trigger</div><div class="sec-div-line"></div></div>
+
+      <div class="msg">
+        <div class="av av-agent">⚡</div>
+        <div class="mb">
+          <div class="mh">
+            <span class="un un-agent">Margin Watch</span>
+            <span class="app-badge">APP</span>
+            <span class="ts">Today at 11:07 AM</span>
+          </div>
+          <div class="mt">
+            <div class="alert-row"><span class="a-red">🔴</span><span>Margin alert — Naturium Hair Color Project · OH Facility</span></div>
+            This project has accumulated <strong>4 change orders in 63 days.</strong> The original contract price has <strong>not been updated</strong> since kickoff.
+            <div class="data-block">
+              <div class="data-row"><span class="dk">CO-001 · Ingredient substitution</span><span class="dv warn">Keratin Complex → BioKeratin Pro · +$0.34/unit</span></div>
+              <div class="data-row"><span class="dk">CO-002 · pH adjustment / quality hold</span><span class="dv warn">Additional process step · +$0.12/unit</span></div>
+              <div class="data-row"><span class="dk">CO-003 · Packaging spec change</span><span class="dv warn">Standard cap → airless pump · +$0.91/unit</span></div>
+              <div class="data-row"><span class="dk">CO-004 · Fragrance re-formulation batch</span><span class="dv warn">Flat cost · +$6,200</span></div>
+              <div class="data-row"><span class="dk">Original contract (40,000 units)</span><span class="dv">$312,000</span></div>
+              <div class="data-row"><span class="dk">Current estimated cost-to-complete</span><span class="dv neg">$358,400</span></div>
+              <div class="data-row"><span class="dk">Unrecovered scope</span><span class="dv neg">~$46,400</span></div>
+              <div class="data-row"><span class="dk">Days until ship</span><span class="dv warn">18 days</span></div>
+            </div>
+          </div>
+          <div class="btns">
+            <button class="btn btn-p">Generate Amendment Package</button>
+            <button class="btn btn-s">Review Change Detail</button>
+            <button class="btn btn-s">Flag for Client Call</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">② The Agent Action</div><div class="sec-div-line"></div></div>
+
+      <div class="msg">
+        <div class="av av-agent">⚡</div>
+        <div class="mb">
+          <div class="mh">
+            <span class="un un-agent">Margin Watch</span>
+            <span class="app-badge">APP</span>
+            <span class="ts">Today at 11:08 AM</span>
+          </div>
+          <div class="mt">
+            <div class="alert-row"><span class="a-blue">📄</span><span>Amendment package generated — awaiting VP review before client send</span></div>
+            Revenue Cloud has consolidated all 4 change orders into a single client-facing amendment:
+            <div class="data-block">
+              <div class="data-row"><span class="dk">CO-001 (ingredient substitution)</span><span class="dv">$13,600 · 40,000 units × $0.34</span></div>
+              <div class="data-row"><span class="dk">CO-002 (pH adjustment / quality hold)</span><span class="dv">$4,800 · 40,000 units × $0.12</span></div>
+              <div class="data-row"><span class="dk">CO-003 (airless pump packaging)</span><span class="dv">$36,400 · 40,000 units × $0.91</span></div>
+              <div class="data-row"><span class="dk">CO-004 (fragrance re-formulation)</span><span class="dv">$6,200 flat</span></div>
+              <div class="data-row"><span class="dk">Proposed amendment total</span><span class="dv pos">$358,400 (+$46,400)</span></div>
+            </div>
+            Supporting docs attached: ingredient substitution cert (CO-001), packaging spec sheet (CO-003), re-formulation batch record (CO-004).
+            <br><br>
+            Amendment drafted to client portal. <strong>Not yet sent</strong> — pending Rachel's review.
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">③ The Human Moment</div><div class="sec-div-line"></div></div>
+
+      <div class="msg">
+        <div class="av av-agent">⚡</div>
+        <div class="mb">
+          <div class="mh">
+            <span class="un un-agent">Margin Watch</span>
+            <span class="app-badge">APP</span>
+            <span class="ts">Today at 11:08 AM</span>
+          </div>
+          <div class="mt">
+            <div class="alert-row"><span>🔔</span><span style="color:#ecb22e">Rachel — amendment ready. One call to make before it goes to Naturium.</span></div>
+            All 4 change orders are documented and the math checks out. But CO-002 (pH adjustment, $4,800) involved a formulation variance on our end, not a client-driven spec change. Do you want to include it in the amendment, or absorb it?
+          </div>
+          <div class="btns">
+            <button class="btn btn-a">Send Full Amendment ($46,400)</button>
+            <button class="btn btn-s">Absorb CO-002 · Send $41,600</button>
+            <button class="btn btn-s">Preview Amendment Draft</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="thread-meta"><span class="thread-ct">1 reply</span><span class="thread-time">Today at 11:14 AM</span><span style="color:#8b8c8e">View thread</span></div>
+      <div class="thread-wrap">
+        <div class="thread-msg">
+          <div class="thread-hdr">
+            <div class="av av-ro" style="width:28px;height:28px;border-radius:4px;font-size:11px;flex-shrink:0">RO</div>
+            <span class="un">Rachel Osei</span>
+            <span class="ts">11:14 AM</span>
+            <span style="font-size:12px;color:#8b8c8e">VP Client Services</span>
+          </div>
+          <div class="mt">
+            <strong>Absorb CO-002.</strong> The pH thing was a formulation variance on our side — that's on us, not them. The other three are clearly client-driven changes and they'll know it.
+            <br><br>
+            Amendment total: <strong>$41,600.</strong> Also add a note to the cover letter that we're flagging this proactively — I want Naturium to see we're on top of their project before they ever get the final invoice. That matters more than the $4,800.
+          </div>
+          <div class="btns">
+            <button class="btn btn-a">Apply CO-002 Absorption &amp; Send Amendment</button>
+            <button class="btn btn-s">Preview Final Draft</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">④ The Result</div><div class="sec-div-line"></div></div>
+
+      <div class="msg">
+        <div class="av av-agent">⚡</div>
+        <div class="mb">
+          <div class="mh">
+            <span class="un un-agent">Margin Watch</span>
+            <span class="app-badge">APP</span>
+            <span class="ts">Today at 11:16 AM</span>
+          </div>
+          <div class="result-card">
+            <div class="rc-hdr">
+              <span class="rc-icon">✅</span>
+              <span class="rc-title">Naturium Hair Color — amendment sent</span>
+              <span class="rc-badge">$41,600 Recovered</span>
+            </div>
+            <ul class="rc-bullets">
+              <li><span class="bi">⏱</span><span><strong>Before agents:</strong> Change orders tracked across email threads and a shared spreadsheet; margin erosion typically discovered at invoice time, after the product had already shipped — and often not recovered at all because the client conversation felt adversarial after the fact</span></li>
+              <li><span class="bi">⚡</span><span><strong>Now:</strong> $41,600 in unrecovered scope identified, documented, and sent as a proactive amendment — <strong>18 days before ship date,</strong> not after. Rachel spent 2 minutes on a decision, not 2 hours building a case</span></li>
+              <li><span class="bi">🤝</span><span><strong>Rachel's call paid off:</strong> Absorbing CO-002 ($4,800) while recovering the other three ($41,600) signals a trustworthy partner, not a surprise billing. That's a relationship decision no algorithm should make</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="why-slack"><strong>Why Slack is the glue:</strong> Revenue Cloud Advanced automatically tracks every change order against the original contract and surfaces the commercial gap before the product ships; Slack is where Rachel makes the one judgment call that protects a client relationship — absorbing the $4,800 they genuinely owe — while still recovering $41,600 the client absolutely owes them.</div>
+  </div>
+</div>
+
+</body>
+</html>

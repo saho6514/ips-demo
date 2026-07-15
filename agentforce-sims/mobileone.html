@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MobileOne — Agentforce + Slack Simulation</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#e20074;--accent-dark:#881337}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;min-height:100vh;display:flex;flex-direction:column}
+.banner{background:linear-gradient(135deg,var(--accent-dark) 0%,var(--accent) 100%);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.banner-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.company{font-size:17px;font-weight:900;color:#fff}
+.product-tag{background:rgba(255,255,255,.2);padding:3px 12px;border-radius:12px;font-size:12px;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,.3)}
+.back-link{color:rgba(255,255,255,.75);font-size:13px;text-decoration:none;font-weight:700}
+.back-link:hover{color:#fff}
+.slack{display:flex;height:calc(100vh - 50px)}
+.sidebar{width:240px;background:#19171d;flex-shrink:0;overflow-y:auto;padding:10px 0}
+.ws-name{font-size:16px;font-weight:900;color:#fff;padding:8px 16px 12px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:6px}
+.sb-hdr{font-size:11px;font-weight:700;color:#8b8c8e;padding:4px 16px;letter-spacing:.05em;margin-top:8px}
+.ch{padding:5px 8px 5px 16px;border-radius:4px;margin:1px 6px;font-size:14px;color:#c9cacc;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch.active{background:var(--accent);color:#fff;font-weight:700}
+.ch:not(.active):hover{background:rgba(255,255,255,.05)}
+.ch-hash{opacity:.55;font-size:13px;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.ch-hdr{padding:11px 20px;border-bottom:1px solid #2c2d30;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.ch-hdr-name{font-size:15px;font-weight:900;color:#fff}
+.ch-hdr-sep{width:1px;height:18px;background:#2c2d30;margin:0 4px}
+.ch-hdr-desc{font-size:13px;color:#8b8c8e}
+.msgs{flex:1;overflow-y:auto;padding:14px 20px 20px}
+.sec-div{display:flex;align-items:center;gap:10px;margin:20px 0 14px;opacity:.65}
+.sec-div-line{flex:1;height:1px;background:#2c2d30}
+.sec-div-lbl{font-size:10px;font-weight:700;color:#8b8c8e;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;padding:2px 8px;border:1px solid #2c2d30;border-radius:10px}
+.msg{display:flex;gap:11px;padding:5px 4px 3px;border-radius:4px;margin-bottom:1px;animation:fadeUp .3s ease both}
+.msg:hover{background:rgba(255,255,255,.025)}
+.msg:nth-child(1){animation-delay:.05s}.msg:nth-child(2){animation-delay:.1s}.msg:nth-child(3){animation-delay:.15s}.msg:nth-child(4){animation-delay:.2s}.msg:nth-child(5){animation-delay:.25s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.av{width:36px;height:36px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;margin-top:2px}
+.av-agent{background:linear-gradient(135deg,#7c3aed,#0176d3)}
+.av-mt{background:#0891b2}
+.mb{flex:1;min-width:0}
+.mh{display:flex;align-items:baseline;gap:8px;margin-bottom:3px;flex-wrap:wrap}
+.un{font-size:15px;font-weight:900;color:#fff}
+.un-agent{color:#c4d4ff}
+.app-badge{background:#1a7f64;color:#fff;font-size:10px;padding:1px 5px;border-radius:2px;font-weight:700;letter-spacing:.03em}
+.ts{font-size:12px;color:#6b6c6e}
+.mt{font-size:15px;line-height:1.65;color:#d1d2d3}
+.mt strong,.mt b{color:#fff;font-weight:700}
+.mt ul{margin:8px 0 6px 18px}
+.mt ul li{margin-bottom:3px;color:#c9cacc;font-size:14px}
+.mt ul li strong{color:#fff}
+.alert-row{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:900;margin-bottom:8px}
+.a-red{color:#e01e5a}.a-green{color:#2bac76}.a-yellow{color:#ecb22e}.a-blue{color:#1d9bd1}
+.data-block{background:#222529;border-radius:6px;padding:11px 16px;margin:10px 0 4px;border-left:4px solid var(--accent)}
+.data-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:14px}
+.data-row:last-child{border-bottom:none}
+.dk{color:#8b8c8e}.dv{color:#fff;font-weight:700}.dv.pos{color:#2bac76}.dv.neg{color:#e01e5a}.dv.warn{color:#ecb22e}
+.btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{padding:7px 16px;border-radius:4px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:filter .15s}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{filter:brightness(1.12)}
+.btn-s{background:#313131;color:#d1d2d3;border:1px solid rgba(255,255,255,.1)}.btn-s:hover{background:#3c3c3c}
+.btn-a{background:#2bac76;color:#fff}.btn-a:hover{filter:brightness(1.1)}
+.thread-meta{margin:4px 0 0 47px;display:flex;align-items:center;gap:8px;font-size:13px;color:#1d9bd1;cursor:pointer;padding:3px 0}
+.thread-ct{font-weight:700}
+.thread-time{color:#6b6c6e;font-weight:400}
+.thread-wrap{margin:4px 0 10px 47px}
+.thread-msg{background:#1e2124;border-radius:6px;padding:12px 14px;border-left:3px solid rgba(255,255,255,.07)}
+.thread-hdr{display:flex;align-items:baseline;gap:8px;margin-bottom:5px;flex-wrap:wrap}
+.result-card{background:linear-gradient(135deg,rgba(226,0,116,.06),rgba(124,58,237,.06));border:1px solid rgba(226,0,116,.25);border-radius:8px;padding:15px 18px;margin-top:10px}
+.rc-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.rc-title{font-size:15px;font-weight:900;color:#fff;flex:1}
+.rc-badge{font-size:11px;padding:2px 10px;background:#2bac76;color:#fff;border-radius:20px;font-weight:700}
+.rc-bullets{list-style:none}
+.rc-bullets li{font-size:14px;color:#c9cacc;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:8px;line-height:1.55;align-items:flex-start}
+.rc-bullets li:last-child{border-bottom:none}
+.bi{flex-shrink:0;margin-top:1px}
+.why-slack{background:#13151a;border-top:1px solid #2c2d30;padding:12px 20px;font-size:13px;color:#6b6c6e;font-style:italic;line-height:1.6;flex-shrink:0}
+.why-slack strong{color:#1d9bd1;font-style:normal;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <div class="banner-left">
+    <span class="company">MobileOne</span>
+    <span class="product-tag">Commerce Cloud + OMS</span>
+  </div>
+  <a class="back-link" href="index.html">← All Simulations</a>
+</div>
+
+<div class="slack">
+  <div class="sidebar">
+    <div class="ws-name">MobileOne</div>
+    <div class="sb-hdr">Channels</div>
+    <div class="ch"><span class="ch-hash">#</span>general</div>
+    <div class="ch"><span class="ch-hash">#</span>ops-northwest-district</div>
+    <div class="ch active"><span class="ch-hash">#</span>ops-southwest-district</div>
+    <div class="ch"><span class="ch-hash">#</span>ops-southeast-district</div>
+    <div class="ch"><span class="ch-hash">#</span>promos-launches</div>
+    <div class="ch"><span class="ch-hash">#</span>inventory-alerts</div>
+    <div class="ch"><span class="ch-hash">#</span>hr-store-mgrs</div>
+    <div class="ch"><span class="ch-hash">#</span>finance</div>
+    <div class="sb-hdr" style="margin-top:8px">Direct Messages</div>
+    <div class="ch">Marcus Trujillo</div>
+    <div class="ch">Aisha Patel</div>
+  </div>
+
+  <div class="main">
+    <div class="ch-hdr">
+      <span class="ch-hdr-name">#ops-southwest-district</span>
+      <span class="ch-hdr-sep"></span>
+      <span class="ch-hdr-desc">SW District · Store Ops, Inventory, Promos</span>
+    </div>
+
+    <div class="msgs">
+
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">① The Trigger</div><div class="sec-div-line"></div></div>
+
+      <div class="msg">
+        <div class="av av-agent">⚡</div>
+        <div class="mb">
+          <div class="mh">
+            <span class="un un-agent">Store Pulse</span>
+            <span class="app-badge">APP</span>
+            <span class="ts">Today at 7:03 AM</span>
+          </div>
+          <div class="mt">
+            <div class="alert-row"><span class="a-yellow">⚠️</span><span>iPhone 17 Pro launch in 68 hours — inventory gap detected</span></div>
+            <strong>3 San Diego stores</strong> are critically understocked ahead of Saturday's T-Mobile national launch window:
+            <div class="data-block">
+              <div class="data-row"><span class="dk">Mission Valley</span><span class="dv neg">3 units available / 19 projected sell-through</span></div>
+              <div class="data-row"><span class="dk">Chula Vista</span><span class="dv neg">4 units available / 16 projected sell-through</span></div>
+              <div class="data-row"><span class="dk">La Mesa</span><span class="dv neg">2 units available / 11 projected sell-through</span></div>
+            </div>
+            Meanwhile, <strong>Phoenix East Mesa</strong> and <strong>Tempe</strong> are holding <strong>28 and 22 excess units</strong> respectively above their projected sell-through rates.
+            <br><br>
+            Proposed rebalance: transfer 14 units East Mesa → Mission Valley + Chula Vista; 9 units Tempe → La Mesa. Same-day courier available, Friday delivery confirmed.
+          </div>
+          <div class="btns">
+            <button class="btn btn-p">Review Transfer Plan</button>
+            <button class="btn btn-s">Auto-Execute Transfers</button>
+            <button class="btn btn-s">Adjust Quantities</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">② The Agent Action</div><div class="sec-div-line"></div></div>
+
+      <div class="msg">
+        <div class="av av-agent">⚡</div>
+        <div class="mb">
+          <div class="mh">
+            <span class="un un-agent">Store Pulse</span>
+            <span class="app-badge">APP</span>
+            <span class="ts">Today at 7:04 AM</span>
+          </div>
+          <div class="mt">
+            <div class="alert-row"><span class="a-green">✅</span><span>Transfer plan executed — all 3 SD stores above sell-through buffer</span></div>
+            OMS has filed transfer orders and confirmed Friday delivery across all 5 stores:
+            <div class="data-block">
+              <div class="data-row"><span class="dk">East Mesa → Mission Valley</span><span class="dv pos">8 units · courier pickup 11 AM</span></div>
+              <div class="data-row"><span class="dk">East Mesa → Chula Vista</span><span class="dv pos">6 units · courier pickup 11 AM</span></div>
+              <div class="data-row"><span class="dk">Tempe → La Mesa</span><span class="dv pos">9 units · courier pickup 12 PM</span></div>
+            </div>
+            Updated inventory post-transfer:
+            <ul>
+              <li><strong>Mission Valley</strong>: 11 units ✓ (above 19-unit sell-through with sales history adjustment)</li>
+              <li><strong>Chula Vista</strong>: 10 units ✓</li>
+              <li><strong>La Mesa</strong>: 11 units ✓</li>
+            </ul>
+            All 5 store managers notified with transfer ETAs. Phoenix stores remain above their own sell-through floor.
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">③ The Human Moment</div><div class="sec-div-line"></div></div>
+
+      <div class="msg">
+        <div class="av av-agent">⚡</div>
+        <div class="mb">
+          <div class="mh">
+            <span class="un un-agent">Store Pulse</span>
+            <span class="app-badge">APP</span>
+            <span class="ts">Today at 7:04 AM</span>
+          </div>
+          <div class="mt">
+            <div class="alert-row"><span>🔔</span><span style="color:#ecb22e">Marcus — one item needs your call before courier cutoff at 11 AM.</span></div>
+            The plan covers all three stores, but <strong>Mission Valley</strong> is scheduled to receive Desert Titanium and Natural Black only. They won't have a full color spread (White Titanium and Black Titanium are not in the East Mesa transfer).
+            <br><br>
+            Mission Valley's regional VP visit is on the calendar for Saturday morning. Full color spread may matter for floor presentation.
+          </div>
+          <div class="btns">
+            <button class="btn btn-a">Approve Plan As-Is</button>
+            <button class="btn btn-s">Adjust Mission Valley Allocation</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="thread-meta"><span class="thread-ct">1 reply</span><span class="thread-time">Today at 7:06 AM</span><span style="color:#8b8c8e">View thread</span></div>
+      <div class="thread-wrap">
+        <div class="thread-msg">
+          <div class="thread-hdr">
+            <div class="av av-mt" style="width:28px;height:28px;border-radius:4px;font-size:11px;flex-shrink:0">MT</div>
+            <span class="un">Marcus Trujillo</span>
+            <span class="ts">7:06 AM</span>
+            <span style="font-size:12px;color:#8b8c8e">SW District Manager</span>
+          </div>
+          <div class="mt">
+            Good catch. <strong>Bump Mission Valley up by 4 units from East Mesa</strong> — they can handle the reduction — and make sure they get all four finishes. Regional VP visit Saturday morning and I want that floor looking perfect. Everything else looks right.
+          </div>
+          <div class="btns">
+            <button class="btn btn-a">Apply Adjustment &amp; Confirm All Transfers</button>
+            <button class="btn btn-s">Edit Quantities</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">④ The Result</div><div class="sec-div-line"></div></div>
+
+      <div class="msg">
+        <div class="av av-agent">⚡</div>
+        <div class="mb">
+          <div class="mh">
+            <span class="un un-agent">Store Pulse</span>
+            <span class="app-badge">APP</span>
+            <span class="ts">Today at 7:07 AM</span>
+          </div>
+          <div class="result-card">
+            <div class="rc-hdr">
+              <span class="rc-icon">✅</span>
+              <span class="rc-title">iPhone 17 Pro launch rebalance — Southwest complete</span>
+              <span class="rc-badge">Launch Ready</span>
+            </div>
+            <ul class="rc-bullets">
+              <li><span class="bi">⏱</span><span><strong>Before agents:</strong> Marcus spent 90 minutes every launch week calling store managers, texting transfer requests, and manually updating a shared Google Sheet — after which stores still sometimes received wrong quantities or incomplete color assortments</span></li>
+              <li><span class="bi">⚡</span><span><strong>Now:</strong> 5 stores rebalanced, transfer orders filed, ETAs confirmed — in <strong>4 minutes.</strong> Marcus spent 60 seconds approving and adding one line of judgment no system could know</span></li>
+              <li><span class="bi">🏆</span><span><strong>Launch day outcome:</strong> Zero stockouts in San Diego on launch morning; Mission Valley fully stocked in all four finishes for the regional VP visit — because Marcus knew about the visit and the system asked</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="why-slack"><strong>Why Slack is the glue:</strong> Commerce Cloud + OMS does the inventory math across 200 stores in seconds; Slack is where Marcus — the only person who knew about the regional VP visit — adds the one thing the system can't know, before the couriers leave the Phoenix docks.</div>
+  </div>
+</div>
+
+</body>
+</html>

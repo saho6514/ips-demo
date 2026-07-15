@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPS Corporation — Agentforce + Slack Simulation</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#0176d3;--accent-dark:#1e3a5f}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;min-height:100vh;display:flex;flex-direction:column}
+.banner{background:linear-gradient(135deg,var(--accent-dark) 0%,var(--accent) 100%);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.banner-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.company{font-size:17px;font-weight:900;color:#fff}
+.product-tag{background:rgba(255,255,255,.2);padding:3px 12px;border-radius:12px;font-size:12px;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,.3)}
+.back-link{color:rgba(255,255,255,.75);font-size:13px;text-decoration:none;font-weight:700}
+.back-link:hover{color:#fff}
+.slack{display:flex;height:calc(100vh - 50px)}
+.sidebar{width:240px;background:#19171d;flex-shrink:0;overflow-y:auto;padding:10px 0}
+.ws-name{font-size:16px;font-weight:900;color:#fff;padding:8px 16px 12px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:6px}
+.sb-hdr{font-size:11px;font-weight:700;color:#8b8c8e;padding:4px 16px;letter-spacing:.05em;margin-top:8px}
+.ch{padding:5px 8px 5px 16px;border-radius:4px;margin:1px 6px;font-size:14px;color:#c9cacc;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch.active{background:var(--accent);color:#fff;font-weight:700}
+.ch:not(.active):hover{background:rgba(255,255,255,.05)}
+.ch-hash{opacity:.55;font-size:13px;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.ch-hdr{padding:11px 20px;border-bottom:1px solid #2c2d30;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.ch-hdr-name{font-size:15px;font-weight:900;color:#fff}
+.ch-hdr-sep{width:1px;height:18px;background:#2c2d30;margin:0 4px}
+.ch-hdr-desc{font-size:13px;color:#8b8c8e}
+.msgs{flex:1;overflow-y:auto;padding:14px 20px 20px}
+.sec-div{display:flex;align-items:center;gap:10px;margin:20px 0 14px;opacity:.65}
+.sec-div-line{flex:1;height:1px;background:#2c2d30}
+.sec-div-lbl{font-size:10px;font-weight:700;color:#8b8c8e;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;padding:2px 8px;border:1px solid #2c2d30;border-radius:10px}
+.msg{display:flex;gap:11px;padding:5px 4px 3px;border-radius:4px;margin-bottom:1px;animation:fadeUp .3s ease both}
+.msg:hover{background:rgba(255,255,255,.025)}
+.msg:nth-child(1){animation-delay:.05s}.msg:nth-child(2){animation-delay:.1s}.msg:nth-child(3){animation-delay:.15s}.msg:nth-child(4){animation-delay:.2s}.msg:nth-child(5){animation-delay:.25s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.av{width:36px;height:36px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;margin-top:2px}
+.av-agent{background:linear-gradient(135deg,#7c3aed,#0176d3)}
+.av-sk{background:#7c3aed}
+.mb{flex:1;min-width:0}
+.mh{display:flex;align-items:baseline;gap:8px;margin-bottom:3px;flex-wrap:wrap}
+.un{font-size:15px;font-weight:900;color:#fff}
+.un-agent{color:#c4d4ff}
+.app-badge{background:#1a7f64;color:#fff;font-size:10px;padding:1px 5px;border-radius:2px;font-weight:700;letter-spacing:.03em}
+.ts{font-size:12px;color:#6b6c6e}
+.mt{font-size:15px;line-height:1.65;color:#d1d2d3}
+.mt strong,.mt b{color:#fff;font-weight:700}
+.mt ul{margin:8px 0 6px 18px}
+.mt ul li{margin-bottom:4px;color:#c9cacc;font-size:14px}
+.mt ul li strong{color:#fff}
+.alert-row{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:900;margin-bottom:8px}
+.a-red{color:#e01e5a}.a-green{color:#2bac76}.a-yellow{color:#ecb22e}.a-blue{color:#1d9bd1}
+.data-block{background:#222529;border-radius:6px;padding:11px 16px;margin:10px 0 4px;border-left:4px solid var(--accent)}
+.data-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:14px}
+.data-row:last-child{border-bottom:none}
+.dk{color:#8b8c8e}.dv{color:#fff;font-weight:700}.dv.pos{color:#2bac76}.dv.neg{color:#e01e5a}.dv.warn{color:#ecb22e}
+.note-block{background:rgba(236,178,46,.06);border:1px solid rgba(236,178,46,.2);border-radius:6px;padding:10px 14px;margin:10px 0 4px;font-size:14px;color:#c9cacc;line-height:1.6}
+.note-block strong{color:#ecb22e}
+.btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{padding:7px 16px;border-radius:4px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:filter .15s}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{filter:brightness(1.12)}
+.btn-s{background:#313131;color:#d1d2d3;border:1px solid rgba(255,255,255,.1)}.btn-s:hover{background:#3c3c3c}
+.btn-a{background:#2bac76;color:#fff}.btn-a:hover{filter:brightness(1.1)}
+.thread-meta{margin:4px 0 0 47px;display:flex;align-items:center;gap:8px;font-size:13px;color:#1d9bd1;cursor:pointer;padding:3px 0}
+.thread-ct{font-weight:700}
+.thread-time{color:#6b6c6e;font-weight:400}
+.thread-wrap{margin:4px 0 10px 47px}
+.thread-msg{background:#1e2124;border-radius:6px;padding:12px 14px;border-left:3px solid rgba(255,255,255,.07)}
+.thread-hdr{display:flex;align-items:baseline;gap:8px;margin-bottom:5px;flex-wrap:wrap}
+.result-card{background:linear-gradient(135deg,rgba(1,118,211,.07),rgba(124,58,237,.07));border:1px solid rgba(1,118,211,.28);border-radius:8px;padding:15px 18px;margin-top:10px}
+.rc-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.rc-title{font-size:15px;font-weight:900;color:#fff;flex:1}
+.rc-badge{font-size:11px;padding:2px 10px;background:#2bac76;color:#fff;border-radius:20px;font-weight:700}
+.rc-bullets{list-style:none}
+.rc-bullets li{font-size:14px;color:#c9cacc;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:8px;line-height:1.55;align-items:flex-start}
+.rc-bullets li:last-child{border-bottom:none}
+.bi{flex-shrink:0;margin-top:1px}
+.why-slack{background:#13151a;border-top:1px solid #2c2d30;padding:12px 20px;font-size:13px;color:#6b6c6e;font-style:italic;line-height:1.6;flex-shrink:0}
+.why-slack strong{color:#1d9bd1;font-style:normal;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <div class="banner-left">
+    <span class="company">IPS Corporation</span>
+    <span class="product-tag">Commerce Cloud + OMS</span>
+  </div>
+  <a class="back-link" href="index.html">← All Simulations</a>
+</div>
+
+<div class="slack">
+  <div class="sidebar">
+    <div class="ws-name">IPS Corporation</div>
+    <div class="sb-hdr">Channels</div>
+    <div class="ch"><span class="ch-hash">#</span>general</div>
+    <div class="ch"><span class="ch-hash">#</span>national-accounts</div>
+    <div class="ch active"><span class="ch-hash">#</span>b2b-channel-ops</div>
+    <div class="ch"><span class="ch-hash">#</span>distribution-alerts</div>
+    <div class="ch"><span class="ch-hash">#</span>supply-chain</div>
+    <div class="ch"><span class="ch-hash">#</span>pool-spa-vertical</div>
+    <div class="ch"><span class="ch-hash">#</span>plumbing-vertical</div>
+    <div class="ch"><span class="ch-hash">#</span>finance-ops</div>
+    <div class="sb-hdr" style="margin-top:8px">Direct Messages</div>
+    <div class="ch">Sarah Kim</div>
+    <div class="ch">David Reyes</div>
+  </div>
+
+  <div class="main">
+    <div class="ch-hdr">
+      <span class="ch-hdr-name">#b2b-channel-ops</span>
+      <span class="ch-hdr-sep"></span>
+      <span class="ch-hdr-desc">B2B Commerce · Distributor Orders, OMS, Fulfillment</span>
+    </div>
+
+    <div class="msgs">
+
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">① The Trigger</div><div class="sec-div-line"></div></div>
+
+      <div class="msg">
+        <div class="av av-agent">⚡</div>
+        <div class="mb">
+          <div class="mh">
+            <span class="un un-agent">Channel Watch</span>
+            <span class="app-badge">APP</span>
+            <span class="ts">Today at 10:17 AM</span>
+          </div>
+          <div class="mt">
+            <div class="alert-row"><span class="a-yellow">⚠️</span><span>Allocation gap — Ferguson Q3 Stocking Order #FE-2406-7821</span></div>
+            Ferguson Enterprises submitted their Q3 stocking order via the B2B Commerce portal. Order total: <strong>$318,400 across 47 line items.</strong>
+            <br><br>
+            <strong>4 line items are short at the Lumberton, NJ distribution center:</strong>
+            <div class="data-block">
+              <div class="data-row"><span class="dk">WELD-ON 711 Premium PVC</span><span class="dv neg">4,800 requested · 1,200 available NJ</span></div>
+              <div class="data-row"><span class="dk">Christy's Red Hot Blue Glue 16oz</span><span class="dv neg">3,600 requested · 900 available NJ</span></div>
+              <div class="data-row"><span class="dk">WELD-ON 795 Silicone</span><span class="dv neg">2,200 requested · 0 available NJ</span></div>
+              <div class="data-row"><span class="dk">IPS Pool Repair Kit Commercial</span><span class="dv neg">1,800 requested · 700 available NJ</span></div>
+              <div class="data-row"><span class="dk">Value at risk of back-order</span><span class="dv neg">$87,400</span></div>
+            </div>
+            Alternate inventory confirmed at Fresno, CA and Houston, TX facilities.
+          </div>
+          <div class="btns">
+            <button class="btn btn-p">Auto-Route from Alternate Facilities</button>
+            <button class="btn btn-s">Review Routing Options</button>
+            <button class="btn btn-s">Flag for Account Rep</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">② The Agent Action</div><div class="sec-div-line"></div></div>
+
+      <div class="msg">
+        <div class="av av-agent">⚡</div>
+        <div class="mb">
+          <div class="mh">
+            <span class="un un-agent">Channel Watch</span>
+            <span class="app-badge">APP</span>
+            <span class="ts">Today at 10:18 AM</span>
+          </div>
+          <div class="mt">
+            <div class="alert-row"><span class="a-green">✅</span><span>Order routing updated — Ferguson order will ship complete</span></div>
+            OMS has rerouted all 4 short items across IPS facilities and updated the order confirmation:
+            <div class="data-block">
+              <div class="data-row"><span class="dk">WELD-ON 711 Premium · 3,600 units</span><span class="dv pos">Fresno, CA → Ferguson DC · +1 day ETA</span></div>
+              <div class="data-row"><span class="dk">Christy's Red Hot Blue Glue · 2,700 units</span><span class="dv pos">Fresno, CA → Ferguson DC · +1 day ETA</span></div>
+              <div class="data-row"><span class="dk">WELD-ON 795 Silicone · 2,200 units</span><span class="dv pos">Houston, TX → Ferguson DC · +2 days ETA</span></div>
+              <div class="data-row"><span class="dk">IPS Pool Repair Kit · 1,100 units</span><span class="dv pos">Fresno, CA → Ferguson DC · +1 day ETA</span></div>
+            </div>
+            Updated order confirmation sent to <strong>Ferguson's B2B portal</strong> — all 47 line items confirmed, ETAs updated by line item. Ferguson buyer sees zero back-orders. Account record in Salesforce updated with confirmation and ETA detail.
+          </div>
+          <div class="note-block">
+            <strong>⚠️ Margin note:</strong> WELD-ON 711 Premium routed CA→NJ adds $0.18/unit freight premium on 3,600 units = <strong>$648 above standard rate.</strong> Ferguson is a $2.1M annual account. Flagged for Sarah's review.
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">③ The Human Moment</div><div class="sec-div-line"></div></div>
+
+      <div class="msg">
+        <div class="av av-agent">⚡</div>
+        <div class="mb">
+          <div class="mh">
+            <span class="un un-agent">Channel Watch</span>
+            <span class="app-badge">APP</span>
+            <span class="ts">Today at 10:18 AM</span>
+          </div>
+          <div class="mt">
+            <div class="alert-row"><span>🔔</span><span style="color:#ecb22e">Sarah — one freight call before we confirm this complete.</span></div>
+            The $648 freight premium on WELD-ON 711 (CA→NJ routing) is flagged. Ferguson is your biggest plumbing distributor on the East Coast at $2.1M annual. Two options: absorb it and confirm complete, or call their buyer to discuss a small premium.
+          </div>
+          <div class="btns">
+            <button class="btn btn-a">Absorb Freight · Confirm Order Complete</button>
+            <button class="btn btn-s">Flag for Buyer Conversation</button>
+            <button class="btn btn-s">Run WELD-ON 795 Inventory Report</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="thread-meta"><span class="thread-ct">1 reply</span><span class="thread-time">Today at 10:21 AM</span><span style="color:#8b8c8e">View thread</span></div>
+      <div class="thread-wrap">
+        <div class="thread-msg">
+          <div class="thread-hdr">
+            <div class="av av-sk" style="width:28px;height:28px;border-radius:4px;font-size:11px;flex-shrink:0">SK</div>
+            <span class="un">Sarah Kim</span>
+            <span class="ts">10:21 AM</span>
+            <span style="font-size:12px;color:#8b8c8e">National Accounts Manager</span>
+          </div>
+          <div class="mt">
+            <strong>Absorb the $648.</strong> No question — Ferguson is too important to let a freight line item show up on their order confirmation. I want them seeing a clean confirmed order, nothing else.
+            <br><br>
+            Also — pull that WELD-ON 795 inventory report. If Houston is consistently showing zero NJ stock on that SKU, I need to get ahead of that with Ops before the Q4 cycle. That's the real issue.
+          </div>
+          <div class="btns">
+            <button class="btn btn-a">Absorb Freight · Send Confirmed Order</button>
+            <button class="btn btn-s">Run WELD-ON 795 Inventory Report</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">④ The Result</div><div class="sec-div-line"></div></div>
+
+      <div class="msg">
+        <div class="av av-agent">⚡</div>
+        <div class="mb">
+          <div class="mh">
+            <span class="un un-agent">Channel Watch</span>
+            <span class="app-badge">APP</span>
+            <span class="ts">Today at 10:22 AM</span>
+          </div>
+          <div class="result-card">
+            <div class="rc-hdr">
+              <span class="rc-icon">✅</span>
+              <span class="rc-title">Ferguson Q3 Order — $318,400 confirmed complete</span>
+              <span class="rc-badge">Shipped Complete</span>
+            </div>
+            <ul class="rc-bullets">
+              <li><span class="bi">⏱</span><span><strong>Before agents:</strong> Allocation gaps discovered 1–2 days after order submission; the NAM spent ~45 minutes on back-order damage-control calls; 40% historical rate of distributors filling the gap from a competitor when IPS couldn't confirm same-day</span></li>
+              <li><span class="bi">⚡</span><span><strong>Now:</strong> $318,400 order confirmed complete in <strong>4 minutes</strong> from submission — Ferguson sees zero friction in their B2B portal, and Sarah's 45-minute call became a 30-second approval</span></li>
+              <li><span class="bi">📊</span><span><strong>Bonus signal caught:</strong> WELD-ON 795 inventory pattern flagged for supply planning — a systemic fix that, if addressed now, prevents the same $87,400 allocation gap from recurring every quarter</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="why-slack"><strong>Why Slack is the glue:</strong> Commerce Cloud + OMS turns IPS's Salesforce account data into a real-time order routing brain that protects distributor relationships automatically; Slack is where Sarah makes the $648 freight call in 10 seconds and flags a supply planning problem before it costs $87,000 next quarter.</div>
+  </div>
+</div>
+
+</body>
+</html>

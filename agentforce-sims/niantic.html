@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Niantic Spatial — Agentforce + Slack Simulation</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#7c3aed;--accent-dark:#3b0764}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;min-height:100vh;display:flex;flex-direction:column}
+.banner{background:linear-gradient(135deg,var(--accent-dark) 0%,var(--accent) 100%);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.banner-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.company{font-size:17px;font-weight:900;color:#fff}
+.product-tag{background:rgba(255,255,255,.2);padding:3px 12px;border-radius:12px;font-size:12px;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,.3)}
+.back-link{color:rgba(255,255,255,.75);font-size:13px;text-decoration:none;font-weight:700}
+.back-link:hover{color:#fff}
+.slack{display:flex;height:calc(100vh - 50px)}
+.sidebar{width:240px;background:#19171d;flex-shrink:0;overflow-y:auto;padding:10px 0}
+.ws-name{font-size:16px;font-weight:900;color:#fff;padding:8px 16px 12px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:6px}
+.sb-hdr{font-size:11px;font-weight:700;color:#8b8c8e;padding:4px 16px;letter-spacing:.05em;margin-top:8px}
+.ch{padding:5px 8px 5px 16px;border-radius:4px;margin:1px 6px;font-size:14px;color:#c9cacc;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch.active{background:var(--accent);color:#fff;font-weight:700}
+.ch:not(.active):hover{background:rgba(255,255,255,.05)}
+.ch-hash{opacity:.55;font-size:13px;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.ch-hdr{padding:11px 20px;border-bottom:1px solid #2c2d30;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.ch-hdr-name{font-size:15px;font-weight:900;color:#fff}
+.ch-hdr-sep{width:1px;height:18px;background:#2c2d30;margin:0 4px}
+.ch-hdr-desc{font-size:13px;color:#8b8c8e}
+.msgs{flex:1;overflow-y:auto;padding:14px 20px 20px}
+.sec-div{display:flex;align-items:center;gap:10px;margin:20px 0 14px;opacity:.65}
+.sec-div-line{flex:1;height:1px;background:#2c2d30}
+.sec-div-lbl{font-size:10px;font-weight:700;color:#8b8c8e;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;padding:2px 8px;border:1px solid #2c2d30;border-radius:10px}
+.msg{display:flex;gap:11px;padding:5px 4px 3px;border-radius:4px;margin-bottom:1px;animation:fadeUp .3s ease both}
+.msg:hover{background:rgba(255,255,255,.025)}
+.msg:nth-child(1){animation-delay:.05s}.msg:nth-child(2){animation-delay:.1s}.msg:nth-child(3){animation-delay:.15s}.msg:nth-child(4){animation-delay:.2s}.msg:nth-child(5){animation-delay:.25s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.av{width:36px;height:36px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;margin-top:2px}
+.av-agent{background:linear-gradient(135deg,#7c3aed,#0176d3)}
+.av-dh{background:#0891b2}
+.mb{flex:1;min-width:0}
+.mh{display:flex;align-items:baseline;gap:8px;margin-bottom:3px;flex-wrap:wrap}
+.un{font-size:15px;font-weight:900;color:#fff}
+.un-agent{color:#c4d4ff}
+.app-badge{background:#1a7f64;color:#fff;font-size:10px;padding:1px 5px;border-radius:2px;font-weight:700;letter-spacing:.03em}
+.ts{font-size:12px;color:#6b6c6e}
+.mt{font-size:15px;line-height:1.65;color:#d1d2d3}
+.mt strong,.mt b{color:#fff;font-weight:700}
+.mt ul{margin:8px 0 6px 18px}
+.mt ul li{margin-bottom:4px;color:#c9cacc;font-size:14px}
+.mt ul li strong{color:#fff}
+.alert-row{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:900;margin-bottom:8px}
+.a-red{color:#e01e5a}.a-green{color:#2bac76}.a-yellow{color:#ecb22e}.a-blue{color:#1d9bd1}
+.data-block{background:#222529;border-radius:6px;padding:11px 16px;margin:10px 0 4px;border-left:4px solid var(--accent)}
+.data-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:14px}
+.data-row:last-child{border-bottom:none}
+.dk{color:#8b8c8e}.dv{color:#fff;font-weight:700}.dv.pos{color:#2bac76}.dv.neg{color:#e01e5a}.dv.warn{color:#ecb22e}
+.note-block{background:rgba(236,178,46,.06);border:1px solid rgba(236,178,46,.2);border-radius:6px;padding:10px 14px;margin:10px 0 4px;font-size:14px;color:#c9cacc;line-height:1.6}
+.note-block strong{color:#ecb22e}
+.btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{padding:7px 16px;border-radius:4px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:filter .15s}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{filter:brightness(1.12)}
+.btn-s{background:#313131;color:#d1d2d3;border:1px solid rgba(255,255,255,.1)}.btn-s:hover{background:#3c3c3c}
+.btn-a{background:#2bac76;color:#fff}.btn-a:hover{filter:brightness(1.1)}
+.thread-meta{margin:4px 0 0 47px;display:flex;align-items:center;gap:8px;font-size:13px;color:#1d9bd1;cursor:pointer;padding:3px 0}
+.thread-ct{font-weight:700}
+.thread-time{color:#6b6c6e;font-weight:400}
+.thread-wrap{margin:4px 0 10px 47px}
+.thread-msg{background:#1e2124;border-radius:6px;padding:12px 14px;border-left:3px solid rgba(255,255,255,.07)}
+.thread-hdr{display:flex;align-items:baseline;gap:8px;margin-bottom:5px;flex-wrap:wrap}
+.result-card{background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(1,118,211,.06));border:1px solid rgba(124,58,237,.25);border-radius:8px;padding:15px 18px;margin-top:10px}
+.rc-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.rc-title{font-size:15px;font-weight:900;color:#fff;flex:1}
+.rc-badge{font-size:11px;padding:2px 10px;background:#2bac76;color:#fff;border-radius:20px;font-weight:700}
+.rc-bullets{list-style:none}
+.rc-bullets li{font-size:14px;color:#c9cacc;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:8px;line-height:1.55;align-items:flex-start}
+.rc-bullets li:last-child{border-bottom:none}
+.bi{flex-shrink:0;margin-top:1px}
+.why-slack{background:#13151a;border-top:1px solid #2c2d30;padding:12px 20px;font-size:13px;color:#6b6c6e;font-style:italic;line-height:1.6;flex-shrink:0}
+.why-slack strong{color:#1d9bd1;font-style:normal;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <div class="banner-left">
+    <span class="company">Niantic Spatial</span>
+    <span class="product-tag">Marketing Cloud Next</span>
+  </div>
+  <a class="back-link" href="index.html">← All Simulations</a>
+</div>
+
+<div class="slack">
+  <div class="sidebar">
+    <div class="ws-name">Niantic Spatial</div>
+    <div class="sb-hdr">Channels</div>
+    <div class="ch"><span class="ch-hash">#</span>general</div>
+    <div class="ch"><span class="ch-hash">#</span>product-platform</div>
+    <div class="ch"><span class="ch-hash">#</span>scaniverse</div>
+    <div class="ch active"><span class="ch-hash">#</span>gtm-pipeline-enterprise</div>
+    <div class="ch"><span class="ch-hash">#</span>vertical-manufacturing</div>
+    <div class="ch"><span class="ch-hash">#</span>vertical-defense</div>
+    <div class="ch"><span class="ch-hash">#</span>deals-enterprise</div>
+    <div class="ch"><span class="ch-hash">#</span>research</div>
+    <div class="sb-hdr" style="margin-top:8px">Direct Messages</div>
+    <div class="ch">Derek Hollis</div>
+    <div class="ch">Inhi Cho Suh</div>
+  </div>
+
+  <div class="main">
+    <div class="ch-hdr">
+      <span class="ch-hdr-name">#gtm-pipeline-enterprise</span>
+      <span class="ch-hdr-sep"></span>
+      <span class="ch-hdr-desc">Enterprise GTM · Pipeline, Journeys, Conversion</span>
+    </div>
+
+    <div class="msgs">
+
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">① The Trigger</div><div class="sec-div-line"></div></div>
+
+      <div class="msg">
+        <div class="av av-agent">⚡</div>
+        <div class="mb">
+          <div class="mh">
+            <span class="un un-agent">Pipeline Scout</span>
+            <span class="app-badge">APP</span>
+            <span class="ts">Today at 8:22 AM</span>
+          </div>
+          <div class="mt">
+            <div class="alert-row"><span>📡</span><span style="color:#a78bfa">Enterprise signal detected — 340 qualified accounts, zero sales contact</span></div>
+            <strong>340 Scaniverse Pro users</strong> from identifiable enterprise domains have been active for <strong>30+ days</strong> with behavior patterns consistent with commercial evaluation — multiple scene captures, API key requests, or team seat invitations. <strong>None have been contacted by Sales.</strong>
+            <div class="data-block">
+              <div class="data-row"><span class="dk">Manufacturing / industrial</span><span class="dv">141 accounts</span></div>
+              <div class="data-row"><span class="dk">Logistics / warehousing</span><span class="dv">89 accounts</span></div>
+              <div class="data-row"><span class="dk">AEC / construction</span><span class="dv">67 accounts</span></div>
+              <div class="data-row"><span class="dk">Defense / government</span><span class="dv warn">43 accounts ⚠️ compliance review required</span></div>
+              <div class="data-row"><span class="dk">Time to work this list manually (current SDR capacity)</span><span class="dv neg">~8 weeks</span></div>
+            </div>
+          </div>
+          <div class="btns">
+            <button class="btn btn-p">Launch Enterprise Nurture Journeys</button>
+            <button class="btn btn-s">Export to Sales Queue</button>
+            <button class="btn btn-s">Review by Vertical</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">② The Agent Action</div><div class="sec-div-line"></div></div>
+
+      <div class="msg">
+        <div class="av av-agent">⚡</div>
+        <div class="mb">
+          <div class="mh">
+            <span class="un un-agent">Pipeline Scout</span>
+            <span class="app-badge">APP</span>
+            <span class="ts">Today at 8:23 AM</span>
+          </div>
+          <div class="mt">
+            <div class="alert-row"><span class="a-green">✅</span><span>Journeys launched for 297 accounts — 43 defense accounts held for routing</span></div>
+            Marketing Cloud Next has segmented and enrolled accounts by vertical and usage pattern:
+            <ul>
+              <li><strong>Manufacturing (141):</strong> ExxonMobil refinery case study as lead asset, API-first users prioritized for direct outreach sequence</li>
+              <li><strong>Logistics (89):</strong> Coco Robotics GPS-denied positioning brief, with LiDAR-heavy users flagged for robotics-specific nurture</li>
+              <li><strong>AEC (67):</strong> Construction digital twin ROI calculator, personalized sender names by account domain</li>
+            </ul>
+            <div class="data-block">
+              <div class="data-row"><span class="dk">Accounts enrolled in journeys</span><span class="dv pos">297</span></div>
+              <div class="data-row"><span class="dk">First touchpoint delivery</span><span class="dv pos">Next 4 hours</span></div>
+              <div class="data-row"><span class="dk">Defense / gov accounts held</span><span class="dv warn">43 — pending manual routing</span></div>
+              <div class="data-row"><span class="dk">Predicted demo conversion (12% baseline)</span><span class="dv pos">~36 qualified enterprise conversations</span></div>
+            </div>
+          </div>
+          <div class="note-block">
+            <strong>⚠️ 43 defense/government accounts held:</strong> These domains cannot enter the standard commercial email sequence. Require compliance-reviewed content or Tradewinds Marketplace routing. Flagged for Derek's review.
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">③ The Human Moment</div><div class="sec-div-line"></div></div>
+
+      <div class="msg">
+        <div class="av av-agent">⚡</div>
+        <div class="mb">
+          <div class="mh">
+            <span class="un un-agent">Pipeline Scout</span>
+            <span class="app-badge">APP</span>
+            <span class="ts">Today at 8:23 AM</span>
+          </div>
+          <div class="mt">
+            <div class="alert-row"><span>🔔</span><span style="color:#ecb22e">Derek — 43 defense accounts need your routing call before we can activate them.</span></div>
+            These accounts are from DoD-adjacent and prime contractor domains. We can't send them a standard commercial sequence — they need either Tradewinds Marketplace routing or a defense-specific content track. How do you want to split them?
+          </div>
+          <div class="btns">
+            <button class="btn btn-a">Route All 43 via Tradewinds</button>
+            <button class="btn btn-s">Split — I'll Flag Tradewinds vs. Commercial</button>
+            <button class="btn btn-s">Hold All for Manual Outreach</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="thread-meta"><span class="thread-ct">1 reply</span><span class="thread-time">Today at 8:26 AM</span><span style="color:#8b8c8e">View thread</span></div>
+      <div class="thread-wrap">
+        <div class="thread-msg">
+          <div class="thread-hdr">
+            <div class="av av-dh" style="width:28px;height:28px;border-radius:4px;font-size:11px;flex-shrink:0">DH</div>
+            <span class="un">Derek Hollis</span>
+            <span class="ts">8:26 AM</span>
+            <span style="font-size:12px;color:#8b8c8e">Head of Enterprise Sales</span>
+          </div>
+          <div class="mt">
+            I know this list. About half are Army/DoD proper — those go through Tradewinds, do not send direct outreach. The other half are defense-adjacent commercial (prime contractors, integrators) — they can go into the manufacturing journey with the <strong>Army Applications Lab brief</strong> swapped in as the lead asset instead of ExxonMobil.
+            <br><br>
+            I'll flag the Tradewinds-eligible accounts in the system now.
+          </div>
+          <div class="btns">
+            <button class="btn btn-a">Apply Split &amp; Activate Remaining 43</button>
+            <button class="btn btn-s">Preview Defense Sequence</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">④ The Result</div><div class="sec-div-line"></div></div>
+
+      <div class="msg">
+        <div class="av av-agent">⚡</div>
+        <div class="mb">
+          <div class="mh">
+            <span class="un un-agent">Pipeline Scout</span>
+            <span class="app-badge">APP</span>
+            <span class="ts">Today at 8:31 AM</span>
+          </div>
+          <div class="result-card">
+            <div class="rc-hdr">
+              <span class="rc-icon">✅</span>
+              <span class="rc-title">340-account pipeline activation — complete</span>
+              <span class="rc-badge">All Live</span>
+            </div>
+            <ul class="rc-bullets">
+              <li><span class="bi">⏱</span><span><strong>Before agents:</strong> 1 SDR could manually work ~40 accounts/week; this list would have taken 8 weeks and likely aged out before first contact. Defense accounts would have gone into the wrong sequence or been dropped entirely</span></li>
+              <li><span class="bi">⚡</span><span><strong>Now:</strong> 340 accounts in active, personalized journeys within <strong>9 minutes</strong> of detection — compliance-sensitive accounts properly split between Tradewinds and commercial tracks, zero slipping through</span></li>
+              <li><span class="bi">📈</span><span><strong>Pipeline math:</strong> At a 12% conversion-to-demo rate, this cohort represents <strong>~41 qualified enterprise conversations</strong> Niantic Spatial didn't have this morning — without adding a single SDR</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="why-slack"><strong>Why Slack is the glue:</strong> Marketing Cloud Next turns 340 cold enterprise signals into personalized conversations at a speed no SDR team can match; Slack is where Derek's one insight — "half of these need Tradewinds, not a cold email" — prevents a compliance misstep that could have locked Niantic Spatial out of DoD channels entirely.</div>
+  </div>
+</div>
+
+</body>
+</html>
