@@ -142,13 +142,14 @@ body {
 
 /* ─── SLIDE 1: COVER ─── */
 .slide-cover {
-  background: var(--navy);
+  background: linear-gradient(150deg, #01192F 0%, #032D60 50%, #0B3D72 100%);
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   padding: clamp(32px, 6vw, 80px);
   gap: clamp(12px, 2vh, 24px);
+  overflow: hidden;
 }
 
 .cover-logos {
@@ -192,11 +193,57 @@ body {
   font-weight: 500;
 }
 
+/* Decorative accent circles on cover */
+.cover-accent {
+  position: absolute;
+  right: -6vw;
+  bottom: -10vh;
+  width: clamp(260px, 42vw, 500px);
+  height: clamp(260px, 42vw, 500px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,161,224,0.14) 0%, rgba(0,161,224,0.04) 55%, transparent 70%);
+  pointer-events: none;
+}
+.cover-accent::before {
+  content: '';
+  position: absolute;
+  inset: -14%;
+  border-radius: 50%;
+  border: 1px solid rgba(0,161,224,0.13);
+}
+.cover-accent::after {
+  content: '';
+  position: absolute;
+  inset: -30%;
+  border-radius: 50%;
+  border: 1px solid rgba(0,161,224,0.08);
+}
+.cover-accent-top {
+  position: absolute;
+  left: -3vw;
+  top: -5vh;
+  width: clamp(80px, 14vw, 160px);
+  height: clamp(80px, 14vw, 160px);
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.07);
+  pointer-events: none;
+}
+
 /* ─── CONTENT SLIDES ─── */
 .slide-content {
   background: #fff;
   flex-direction: column;
   padding: clamp(28px, 4.5vw, 60px) clamp(36px, 5.5vw, 72px);
+  position: relative;
+}
+
+.slide-content::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #0176D3 0%, #00A1E0 60%, transparent 100%);
+  pointer-events: none;
 }
 
 .section-label {
@@ -209,11 +256,11 @@ body {
 }
 
 .slide-headline {
-  font-size: clamp(22px, 3.2vw, 40px);
+  font-size: clamp(22px, 3.4vw, 44px);
   font-weight: 900;
   color: var(--navy);
-  line-height: 1.1;
-  letter-spacing: -0.3px;
+  line-height: 1.08;
+  letter-spacing: -0.5px;
   margin-bottom: clamp(16px, 2.5vh, 32px);
 }
 
@@ -226,10 +273,11 @@ body {
 }
 
 .goal-item {
-  border-left: 3px solid var(--blue);
-  padding: clamp(12px, 1.5vh, 18px) clamp(16px, 2vw, 24px);
-  background: #F8FAFF;
-  border-radius: 0 8px 8px 0;
+  border-left: 4px solid var(--blue);
+  padding: clamp(14px, 1.8vh, 20px) clamp(18px, 2vw, 26px);
+  background: #fff;
+  border-radius: 0 10px 10px 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 0 0 1px rgba(1,118,211,0.09);
 }
 
 .gi-title {
@@ -261,12 +309,13 @@ body {
 }
 
 .challenge-item {
-  background: #F8FAFF;
-  border-radius: 8px;
-  padding: clamp(12px, 1.5vh, 18px) clamp(16px, 2vw, 24px);
+  background: #fff;
+  border-radius: 10px;
+  padding: clamp(14px, 1.8vh, 20px) clamp(18px, 2vw, 26px);
   display: flex;
   gap: clamp(12px, 1.5vw, 20px);
   align-items: flex-start;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.07);
 }
 
 .ci-dot {
@@ -343,12 +392,12 @@ body {
 }
 
 .case-card {
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: clamp(14px, 2vw, 22px);
+  border: 1px solid rgba(0,0,0,0.09);
+  border-radius: 12px;
+  padding: clamp(16px, 2vw, 24px);
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.05);
 }
 
 .cc-label {
@@ -366,9 +415,9 @@ body {
   font-weight: 900;
   color: var(--blue);
   line-height: 1.25;
-  flex: 1;
   margin-bottom: clamp(8px, 1.2vh, 14px);
 }
+.cc-spacer { flex: 1; }
 
 .cc-method {
   font-size: clamp(10px, 1vw, 12.5px);
@@ -401,7 +450,8 @@ body {
   align-items: flex-start;
   padding: clamp(14px, 1.8vh, 22px) clamp(16px, 2vw, 24px);
   background: #F8FAFF;
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
 .di-num {
@@ -519,6 +569,8 @@ body {
 
   <!-- SLIDE 1: COVER -->
   <div class="slide slide-cover active" data-slide="1">
+    <div class="cover-accent" aria-hidden="true"></div>
+    <div class="cover-accent-top" aria-hidden="true"></div>
     <div class="cover-logos">
       <!-- Salesforce logo -->
       <svg style="height:clamp(44px,6vh,60px);width:auto" viewBox="20 -5 148 81" xmlns="http://www.w3.org/2000/svg">
@@ -640,16 +692,19 @@ body {
       <div class="case-card">
         <div class="cc-label">Williams-Sonoma<br>9 brands · distinct audiences · one platform</div>
         <div class="cc-metric">21M new subscribers. Thousands of hours saved per year.</div>
+        <div class="cc-spacer"></div>
         <div class="cc-method">Behavioral lifecycle triggers — not time-based — across 9 brands. Data Cloud unified first- and third-party signals in 7.5 months.</div>
       </div>
       <div class="case-card">
         <div class="cc-label">SharkNinja<br>Two $3B brands · 14 countries · 8-week deployment</div>
         <div class="cc-metric">58% lower churn YoY. 14% increase in cart conversions.</div>
+        <div class="cc-spacer"></div>
         <div class="cc-method">Data Cloud unified customer records across brands and markets. Behavioral signals — not calendar triggers — deployed across 14 countries in 8 weeks.</div>
       </div>
       <div class="case-card">
         <div class="cc-label">Pandora<br>Lean team · loyalty across 6 markets · millions of members</div>
         <div class="cc-metric">10% NPS lift. 60% autonomous case deflection. 40K AI conversations monthly.</div>
+        <div class="cc-spacer"></div>
         <div class="cc-method">Agentforce handles loyalty and customer conversations across 6 markets at scale — adding capacity without adding headcount.</div>
       </div>
     </div>
