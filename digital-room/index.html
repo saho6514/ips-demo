@@ -154,26 +154,13 @@ body {
 .cover-logos {
   display: flex;
   align-items: center;
-  gap: 20px;
-}
-
-.cover-logo-sf {
-  font-size: clamp(16px, 2vw, 24px);
-  font-weight: 900;
-  color: var(--blue);
-  letter-spacing: -0.5px;
+  gap: clamp(20px, 3vw, 36px);
 }
 
 .cover-logo-div {
   width: 1px;
-  height: clamp(24px, 3vh, 36px);
-  background: rgba(255,255,255,0.3);
-}
-
-.cover-logo-dr {
-  font-size: clamp(16px, 2vw, 24px);
-  font-weight: 700;
-  color: rgba(255,255,255,0.9);
+  height: clamp(48px, 7vh, 72px);
+  background: rgba(255,255,255,0.25);
 }
 
 .cover-title {
@@ -195,9 +182,9 @@ body {
 
 .cover-byline {
   position: absolute;
-  bottom: clamp(20px, 3vh, 36px);
+  bottom: clamp(44px, 6vh, 64px);
   left: clamp(32px, 4vw, 56px);
-  right: clamp(32px, 4vw, 56px);
+  right: clamp(80px, 8vw, 120px);
   display: flex;
   justify-content: space-between;
   font-size: clamp(10px, 1.1vw, 13px);
@@ -236,6 +223,7 @@ body {
   flex-direction: column;
   gap: clamp(10px, 1.5vh, 18px);
   flex: 1;
+  justify-content: space-between;
 }
 
 .goal-item {
@@ -271,6 +259,7 @@ body {
   flex-direction: column;
   gap: clamp(10px, 1.5vh, 18px);
   flex: 1;
+  justify-content: space-between;
 }
 
 .challenge-item {
@@ -453,6 +442,23 @@ body {
   margin-top: clamp(8px, 1.2vh, 16px);
 }
 
+/* ─── CO-BRAND (content slides) ─── */
+#co-brand {
+  position: fixed;
+  top: clamp(14px, 2vh, 22px);
+  right: clamp(20px, 2.5vw, 36px);
+  display: none;
+  align-items: center;
+  gap: 8px;
+  z-index: 100;
+}
+#co-brand.visible { display: flex; }
+.co-brand-div {
+  width: 1px;
+  height: 20px;
+  background: rgba(0,0,0,0.12);
+}
+
 /* ─── NAV CHROME ─── */
 #slide-counter {
   position: fixed;
@@ -516,9 +522,24 @@ body {
   <!-- SLIDE 1: COVER -->
   <div class="slide slide-cover active" data-slide="1">
     <div class="cover-logos">
-      <span class="cover-logo-sf">salesforce</span>
+      <!-- Salesforce logo -->
+      <svg height="clamp(52px,7vh,72px)" viewBox="0 0 220 90" xmlns="http://www.w3.org/2000/svg" style="height:clamp(52px,7vh,72px);width:auto">
+        <path d="M110,14 C101,14 93,19 89,26 C85,20 78,16 70,16 C57,16 46,27 46,40 C46,41 46,42 47,43 C38,45 32,53 32,62 C32,73 41,82 52,82 L168,82 C179,82 188,73 188,62 C188,52 181,44 172,42 C172,41 172,40 172,39 C172,25 161,14 148,14 C142,14 137,16 133,20 C126,16 118,14 110,14 Z" fill="rgba(255,255,255,0.15)"/>
+        <text x="110" y="55" text-anchor="middle" font-family="'Helvetica Neue',Arial,sans-serif" font-size="28" font-weight="300" fill="white" letter-spacing="-0.5">salesforce</text>
+      </svg>
       <div class="cover-logo-div"></div>
-      <span class="cover-logo-dr">Digital Room</span>
+      <!-- Digital Room hexagon logo -->
+      <svg style="height:clamp(52px,7vh,72px);width:auto" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="50,2 91.6,26 91.6,74 50,98 8.4,74 8.4,26" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <polygon points="50,2 91.6,26 74.2,36 50,22" fill="#EF5B2B"/>
+        <polygon points="91.6,26 91.6,74 74.2,64 74.2,36" fill="#F7941D"/>
+        <polygon points="91.6,74 50,98 50,78 74.2,64" fill="#8DC63F"/>
+        <polygon points="50,98 8.4,74 25.8,64 50,78" fill="#29ABE2"/>
+        <polygon points="8.4,74 8.4,26 25.8,36 25.8,64" fill="#6A5EA8"/>
+        <polygon points="8.4,26 50,2 50,22 25.8,36" fill="#D5176B"/>
+        <polygon points="50,22 74.2,36 74.2,64 50,78 25.8,64 25.8,36" fill="white"/>
+        <text x="50" y="58" text-anchor="middle" font-family="'Arial Black','Helvetica Neue',sans-serif" font-weight="900" font-size="22" fill="#1A1A1A">DR</text>
+      </svg>
     </div>
     <div class="cover-title">Marketing for Multi-Brand Custom Commerce</div>
     <div class="cover-subtitle">A perspective on what's working — and where the opportunity is for Digital Room</div>
@@ -668,6 +689,25 @@ body {
 
 </div>
 
+<!-- ─── CO-BRAND (slides 2–6) ─── -->
+<div id="co-brand">
+  <svg style="height:28px;width:auto" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="50,2 91.6,26 74.2,36 50,22" fill="#EF5B2B"/>
+    <polygon points="91.6,26 91.6,74 74.2,64 74.2,36" fill="#F7941D"/>
+    <polygon points="91.6,74 50,98 50,78 74.2,64" fill="#8DC63F"/>
+    <polygon points="50,98 8.4,74 25.8,64 50,78" fill="#29ABE2"/>
+    <polygon points="8.4,74 8.4,26 25.8,36 25.8,64" fill="#6A5EA8"/>
+    <polygon points="8.4,26 50,2 50,22 25.8,36" fill="#D5176B"/>
+    <polygon points="50,22 74.2,36 74.2,64 50,78 25.8,64 25.8,36" fill="white"/>
+    <text x="50" y="58" text-anchor="middle" font-family="'Arial Black','Helvetica Neue',sans-serif" font-weight="900" font-size="22" fill="#1A1A1A">DR</text>
+  </svg>
+  <div class="co-brand-div"></div>
+  <svg style="height:22px;width:auto" viewBox="0 0 160 56" xmlns="http://www.w3.org/2000/svg">
+    <path d="M80,8 C73,8 67,12 64,18 C61,13 55,10 49,10 C39,10 31,18 31,28 C31,29 31,30 31,31 C25,33 20,39 20,46 C20,54 27,60 35,60 L125,60 C133,60 140,53 140,45 C140,38 135,32 128,31 C128,30 128,29 128,28 C128,17 119,8 108,8 C104,8 100,9 97,12 C92,9 86,8 80,8 Z" fill="#00A1E0"/>
+    <text x="80" y="40" text-anchor="middle" font-family="'Helvetica Neue',Arial,sans-serif" font-size="18" font-weight="300" fill="white" letter-spacing="-0.3">salesforce</text>
+  </svg>
+</div>
+
 <!-- ─── NAV CHROME ─── -->
 <div id="nav-hint">
   <span class="hint-key">←</span>
@@ -712,6 +752,7 @@ body {
     const isLight = current > 1;
     document.getElementById('slide-counter').classList.toggle('on-light', isLight);
     document.getElementById('nav-hint').classList.toggle('on-light', isLight);
+    document.getElementById('co-brand').classList.toggle('visible', isLight);
   }
 
   document.addEventListener('keydown', e => {
