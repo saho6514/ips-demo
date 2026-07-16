@@ -142,12 +142,29 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 #mute-btn{position:fixed;bottom:18px;left:20px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);border-radius:20px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:none;z-index:999}
 #mute-btn.vis{display:block}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#3e3e3e;border-radius:3px}
+.h360-badge{position:absolute;top:16px;right:16px;background:rgba(0,118,206,.12);border:1px solid rgba(0,118,206,.35);border-radius:20px;padding:8px 16px;text-align:center;animation:h360glow 2.5s ease-in-out infinite}
+.h360-badge-title{font-size:10px;font-weight:800;color:#0076CE;letter-spacing:1.8px;text-transform:uppercase}
+.h360-badge-sub{font-size:9px;color:rgba(255,255,255,.35);letter-spacing:.4px;margin-top:2px}
+@keyframes h360glow{0%,100%{box-shadow:0 0 0 0 rgba(0,118,206,0)}50%{box-shadow:0 0 16px 2px rgba(0,118,206,.2)}}
+.intro-headless{font-size:11px;color:rgba(255,255,255,.3);font-style:italic;margin:10px 0 6px;letter-spacing:.3px;text-align:center}
 </style>
 </head>
 <body>
+<div id="pw-gate" style="position:fixed;inset:0;background:#032D60;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;padding:24px;">
+  <div style="text-align:center;margin-bottom:32px;">
+    <div style="font-size:32px;font-weight:900;color:#fff;margin-bottom:6px;">Demo Access</div>
+    <div style="font-size:13px;color:rgba(255,255,255,.45);">This asset is private. Enter the access code to continue.</div>
+  </div>
+  <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:28px 32px;width:100%;max-width:380px;text-align:center;">
+    <input id="pw-input" type="password" placeholder="Enter access code" onkeydown="if(event.key==='Enter')checkPW()" style="width:100%;padding:11px 16px;border-radius:4px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font-size:14px;font-weight:600;outline:none;margin-bottom:10px;letter-spacing:.5px;text-align:center;" />
+    <div id="pw-error" style="font-size:11px;color:#e74c3c;font-weight:700;height:16px;margin-bottom:8px;"></div>
+    <button onclick="checkPW()" style="width:100%;padding:12px;background:#0070D2;color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:800;cursor:pointer;letter-spacing:1px;text-transform:uppercase;">Access Demo →</button>
+  </div>
+</div>
 <audio id="nar" preload="auto"><source src="niantic-narration.mp3" type="audio/mpeg"></audio>
 
 <div id="intro">
+  <div class="h360-badge"><div class="h360-badge-title">⚡ Headless 360</div><div class="h360-badge-sub">No browser required — the API is the UI</div></div>
   <div class="intro-logo">Salesforce Agentforce · Simulation</div>
   <div class="intro-company">Niantic Spatial</div>
   <div class="intro-product">Marketing Cloud Next</div>
@@ -160,6 +177,7 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
     <div class="lbl">Without Agentforce</div>
     <p>Your data team runs a quarterly report on high-usage accounts. By the time sales reviews the list, most have already evaluated alternatives — or signed with a competitor.</p>
   </div>
+  <div class="intro-headless">Pipeline Scout ran headlessly — no analyst pulled this report.</div>
   <div class="intro-cta">Watch what happens instead ↓</div>
   <button class="narr-btn" onclick="startNarration()">&#9654; Play narration</button>
   <div class="intro-bar"></div>
@@ -318,6 +336,7 @@ async function startSim(){
   await D(1000);$('replay').classList.add('show');
 }
 
+function checkPW(){const val=document.getElementById('pw-input').value;if(val==='headless360!'){document.getElementById('pw-gate').style.display='none';}else{const err=document.getElementById('pw-error');err.textContent='Incorrect access code. Please try again.';document.getElementById('pw-input').value='';document.getElementById('pw-input').focus();setTimeout(()=>{err.textContent='';},3000);}}
 async function run(){
   await D(5600);
   if(simStarted)return;
