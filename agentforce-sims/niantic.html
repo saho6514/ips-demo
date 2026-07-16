@@ -18,10 +18,12 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 .intro-scene{max-width:560px;text-align:center;margin-bottom:32px}
 .intro-scene p{font-size:20px;color:rgba(255,255,255,.8);line-height:1.8;margin-bottom:2px}
 .intro-scene .h{color:#fff;font-weight:900}
-.intro-without{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 24px;max-width:500px;text-align:center;margin-bottom:36px}
+.intro-without{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 24px;max-width:500px;text-align:center;margin-bottom:28px}
 .intro-without .lbl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(224,30,90,.7);margin-bottom:5px}
 .intro-without p{font-size:15px;color:#aaa;line-height:1.65}
 .intro-cta{font-size:13px;color:var(--brand);font-weight:700;opacity:.75;animation:pulse 2.2s ease-in-out infinite}
+.narr-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);color:rgba(255,255,255,.65);border-radius:20px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:14px;transition:background .2s,color .2s}
+.narr-btn:hover{background:rgba(123,92,245,.18);border-color:rgba(123,92,245,.4);color:var(--brand)}
 .intro-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--brand);animation:ibar 5.5s linear forwards}
 @keyframes ibar{0%{width:0}100%{width:100%}}
 @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
@@ -135,27 +137,31 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 @keyframes blink{50%{opacity:0}}
 .footer-why{background:#13151a;border-top:1px solid #2c2d30;padding:9px 20px;font-size:13px;color:#6b6c6e;font-style:italic;line-height:1.6;flex-shrink:0}
 .footer-why strong{color:#1d9bd1;font-style:normal}
-#replay{position:fixed;bottom:60px;right:20px;background:var(--brand);color:#fff;border:none;border-radius:20px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:999}
+#replay{position:fixed;bottom:18px;right:20px;background:var(--brand);color:#fff;border:none;border-radius:20px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:999}
 #replay.show{opacity:1;transform:none}
+#mute-btn{position:fixed;bottom:18px;left:20px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);border-radius:20px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:none;z-index:999}
+#mute-btn.vis{display:block}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#3e3e3e;border-radius:3px}
 </style>
 </head>
 <body>
+<audio id="nar" preload="auto"><source src="niantic-narration.mp3" type="audio/mpeg"></audio>
 
 <div id="intro">
   <div class="intro-logo">Salesforce Agentforce · Simulation</div>
   <div class="intro-company">Niantic Spatial</div>
   <div class="intro-product">Marketing Cloud Next</div>
   <div class="intro-scene">
-    <p><span class="h">340 enterprise accounts</span> are actively using Scaniverse.</p>
-    <p>None of them have ever been contacted by sales.</p>
-    <p>They've been generating <span class="h">$2.1M in predictable pipeline</span> in silence.</p>
+    <p>Scaniverse has <span class="h">enterprise-scale users</span> you&rsquo;ve never contacted.</p>
+    <p>Product telemetry says <span class="h">340 organizations</span> are active at 10K+ employees.</p>
+    <p><span class="h">Zero sales touch</span> on any of them.</p>
   </div>
   <div class="intro-without">
     <div class="lbl">Without Agentforce</div>
-    <p>An analyst eventually notices the product telemetry in a quarterly business review. By then, 40% have already evaluated competitors. The pipeline was there — the team just didn't know.</p>
+    <p>Your data team runs a quarterly report on high-usage accounts. By the time sales reviews the list, most have already evaluated alternatives — or signed with a competitor.</p>
   </div>
   <div class="intro-cta">Watch what happens instead ↓</div>
+  <button class="narr-btn" onclick="startNarration()">&#9654; Play narration</button>
   <div class="intro-bar"></div>
 </div>
 
@@ -170,15 +176,15 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
     <div class="sb-body">
       <div class="sb-lbl">Channels</div>
       <div class="ch"><span class="ch-h">#</span>general</div>
-      <div class="ch"><span class="ch-h">#</span>enterprise-sales</div>
+      <div class="ch"><span class="ch-h">#</span>sales-enterprise</div>
       <div class="ch active"><span class="ch-h">#</span>gtm-pipeline-enterprise</div>
-      <div class="ch"><span class="ch-h">#</span>product-scaniverse<span class="badge">4</span></div>
-      <div class="ch"><span class="ch-h">#</span>partnerships</div>
-      <div class="ch"><span class="ch-h">#</span>defense-govtech</div>
-      <div class="ch"><span class="ch-h">#</span>data-platform</div>
+      <div class="ch"><span class="ch-h">#</span>product-scaniverse<span class="badge">2</span></div>
+      <div class="ch"><span class="ch-h">#</span>partner-channel</div>
+      <div class="ch"><span class="ch-h">#</span>data-intelligence</div>
+      <div class="ch"><span class="ch-h">#</span>enterprise-deals</div>
       <div class="sb-lbl" style="margin-top:10px">Direct Messages</div>
-      <div class="ch"><span class="sdot" style="color:#2bac76">●</span> Derek Huang</div>
-      <div class="ch"><span class="sdot" style="color:#6b6c6e">●</span> Anika Patel</div>
+      <div class="ch"><span class="sdot" style="color:#2bac76">●</span> Derek Nakamura</div>
+      <div class="ch"><span class="sdot" style="color:#6b6c6e">●</span> Priya Mehta</div>
     </div>
   </div>
 
@@ -187,11 +193,11 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
       <span style="color:#8b8c8e;font-size:17px">#</span>
       <span class="ch-hdr-name">gtm-pipeline-enterprise</span>
       <div class="div-line"></div>
-      <span class="ch-hdr-desc">Scaniverse Enterprise · GTM Pipeline Intelligence</span>
+      <span class="ch-hdr-desc">Enterprise GTM &middot; Pipeline Intelligence &amp; Account Signals</span>
       <div class="avs">
-        <div class="mav" style="background:#0891b2;margin-left:8px">DH</div>
-        <div class="mav" style="background:#7c3aed">AP</div>
-        <span style="font-size:12px;color:#8b8c8e;margin-left:5px">11</span>
+        <div class="mav" style="background:#0891b2;margin-left:8px">DN</div>
+        <div class="mav" style="background:#7c3aed">PM</div>
+        <span style="font-size:12px;color:#8b8c8e;margin-left:5px">9</span>
       </div>
     </div>
 
@@ -207,16 +213,18 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
         <span class="ic" id="ic"></span>
       </div>
     </div>
-    <div class="footer-why"><strong>The headless advantage:</strong> Marketing Cloud Next continuously matched Scaniverse product telemetry against CRM — no analyst ran a query, no one built a report. 340 accounts discovered, 297 enrolled in an enterprise nurture sequence, 43 routed to a specialist — in 9 minutes. Derek reviewed once.</div>
+    <div class="footer-why"><strong>The headless advantage:</strong> Derek never opened a CRM report. Never asked a data analyst. One question in Slack &mdash; 340 dark pipeline accounts surfaced, segmented, and moving. That&rsquo;s what headless GTM intelligence looks like.</div>
   </div>
 </div>
 
-<button id="replay" onclick="location.reload()">↺ Replay</button>
+<button id="replay" onclick="location.reload()">&#8635; Replay</button>
+<button id="mute-btn" onclick="toggleMute()">&#128266; Narration</button>
 
 <script>
 const $=id=>document.getElementById(id);
 const D=ms=>new Promise(r=>setTimeout(r,ms));
 const mw=$('mw'),msgs=$('msgs'),ta=$('ta');
+let simStarted=false;
 function scroll(){mw.scrollTop=mw.scrollHeight}
 async function type_ind(cls,init,name,ms){ta.innerHTML=`<div class="t-row"><div class="t-av ${cls}">${init}</div><div class="t-dots"><span></span><span></span><span></span></div><span class="t-lbl">${name} is typing…</span></div>`;scroll();await D(ms);ta.innerHTML='';}
 function el(html,cls){const e=document.createElement('div');if(cls)e.className=cls;e.innerHTML=html;msgs.appendChild(e);setTimeout(()=>e.classList.add('show'),60);scroll();return e;}
@@ -226,70 +234,96 @@ function addThread(o){const e=document.createElement('div');e.className='thread-
 function insight(before,now){el(`<div class="ins-bar"></div><div class="ins-body"><div class="ins-before"><em>${before}</em></div><div class="ins-now"><em>Now: </em>${now}</div></div>`,'insight');}
 async function typeInput(text){const ib=$('ib'),ip=$('ip'),it=$('it'),ic=$('ic');ib.classList.add('active');ip.classList.add('hide');ic.classList.add('on');for(const c of text){it.textContent+=c;scroll();await D(23+Math.random()*17)}await D(460);ib.style.transition='opacity .15s';ib.style.opacity='0';await D(150);it.textContent='';ic.classList.remove('on');ip.classList.remove('hide');ib.classList.remove('active');ib.style.opacity='1';}
 
-async function run(){
-  await D(5600);$('intro').classList.add('fade');await D(900);
-  await D(400);
+function startNarration(){
+  const nar=$('nar');
+  if(nar){nar.play().then(()=>{$('mute-btn').classList.add('vis')}).catch(()=>{});}
+  if(!simStarted){simStarted=true;$('intro').classList.add('fade');setTimeout(()=>startSim(),900);}
+}
+function toggleMute(){const nar=$('nar'),btn=$('mute-btn');if(!nar)return;nar.muted=!nar.muted;btn.innerHTML=nar.muted?'&#128263; Muted':'&#128266; Narration';}
+
+async function startSim(){
+  await D(600);
+  secDiv('&#9312; Derek Opens Slack');await D(400);
+
+  await typeInput("I'd like to find enterprise accounts actively using Scaniverse that we haven't reached out to yet — anything that looks like hidden pipeline. 10K+ employees, active usage.");
+  await D(300);
+  addMsg({bg:'#0891b2',init:'DN',name:'Derek Nakamura',ts:'Today at 10:22 AM',role:'VP Enterprise GTM',
+    html:`I&rsquo;d like to find enterprise accounts actively using Scaniverse that we haven&rsquo;t reached out to yet &mdash; anything that looks like hidden pipeline. 10K+ employees, active usage.`
+  });
+
+  await D(500);
   const pb=document.createElement('div');pb.className='proc';
-  pb.innerHTML=`<div class="proc-spin"></div><div class="proc-dot"></div><div class="proc-txt">Pipeline Scout · Cross-referencing Scaniverse usage telemetry against CRM contact records…</div>`;
+  pb.innerHTML=`<div class="proc-spin"></div><div class="proc-dot"></div><div class="proc-txt">Pipeline Scout &middot; Cross-referencing Scaniverse telemetry against CRM contact records&hellip;</div>`;
   msgs.appendChild(pb);setTimeout(()=>pb.classList.add('show'),60);scroll();
   await D(2600);pb.style.transition='opacity .4s';pb.style.opacity='0';await D(500);
 
-  secDiv('① The Signal — 340 Active Customers Nobody Knew Were Pipeline');await D(400);
-  await type_ind('ag','🔭','Pipeline Scout',1900);
-  addMsg({ag:true,init:'🔭',name:'Pipeline Scout',ts:'Today at 11:02 AM',bid:'b1',
-    btns:['Review Segments','Enroll Now','Send to Sales'],
-    html:`<div class="ar"><span class="r-blue">🔍</span><b>340 enterprise accounts using Scaniverse — zero CRM contact, zero sales touch</b></div>
-    Marketing Cloud Next matched Scaniverse product telemetry against CRM. <strong>340 enterprise-tier organizations</strong> (10k+ employees, active usage >3 months, high scan volume) have never been contacted by a Niantic sales rep or enrolled in any marketing sequence.
+  secDiv('&#9313; What Pipeline Scout Found');await D(400);
+  await type_ind('ag','&#128301;','Pipeline Scout',1900);
+  addMsg({ag:true,init:'&#128301;',name:'Pipeline Scout',ts:'Today at 10:23 AM',
+    html:`<div class="ar"><span class="r-green">&#128994;</span><b>340 enterprise organizations &mdash; active Scaniverse usage, zero CRM contact</b></div>
+    Cross-referenced product telemetry with Salesforce CRM. Found <strong>340 organizations</strong> at 10K+ employees with 3+ months of active, high-volume Scaniverse usage &mdash; and <strong>no sales contact, no marketing touch, no open opportunity</strong> on any of them.
     <div class="db">
-      <div class="dr"><span class="dk">Enterprise accounts identified</span><span class="dv">340 — zero prior sales contact</span></div>
-      <div class="dr"><span class="dk">Average monthly scan volume</span><span class="dv">12,400 scans per account</span></div>
-      <div class="dr"><span class="dk">Predicted pipeline (if enrolled)</span><span class="dv pos">$2.1M</span></div>
-      <div class="dr"><span class="dk">Flagged: defense/govtech accounts</span><span class="dv warn">43 — require specialized routing</span></div>
+      <div class="dr"><span class="dk">Enterprise orgs with active usage</span><span class="dv">340 accounts</span></div>
+      <div class="dr"><span class="dk">Avg. Scaniverse usage (monthly scans)</span><span class="dv pos">4,200+ per org</span></div>
+      <div class="dr"><span class="dk">CRM contact records: zero</span><span class="dv neg">Dark pipeline</span></div>
+      <div class="dr"><span class="dk">Predicted pipeline value</span><span class="dv pos">$2.1M</span></div>
     </div>`
   });
   await D(700);
-  insight('Old way: analyst notices in quarterly review. 40% have evaluated competitors by then. Pipeline existed — just invisible.','340 accounts found by continuous telemetry match. None of them had to raise their hand.');
+  insight('Old way: quarterly data report, weeks of manual research, SDR calls on cold lists that may already have competitive contracts.','340 product-qualified accounts surfaced in seconds. Every one is already using the product — there is no cold call.');
 
-  await D(2200);secDiv('② What Agentforce Staged — Routing Decision Needed for 43 Accounts');await D(400);
-  await type_ind('ag','🔭','Pipeline Scout',2100);
-  addMsg({ag:true,init:'🔭',name:'Pipeline Scout',ts:'Today at 11:03 AM',
-    html:`<div class="ar"><span class="r-green">📤</span><b>297 accounts enrolled in enterprise nurture — 43 need your call on routing</b></div>
-    Marketing Cloud Next has automatically enrolled <strong>297 commercial accounts</strong> in a personalized 6-touch enterprise discovery sequence, timed to each account's usage patterns.<br><br>
-    The remaining <strong>43 accounts</strong> show defense, aerospace, or federal agency signals. These require Tradewinds channel routing — not a standard Marketing Cloud journey.
+  await D(2200);secDiv('&#9314; What Pipeline Scout Staged &mdash; One Decision Needed');await D(400);
+  await type_ind('ag','&#128301;','Pipeline Scout',2100);
+  addMsg({ag:true,init:'&#128301;',name:'Pipeline Scout',ts:'Today at 10:23 AM',bid:'b1',
+    btns:['Run All Sequences','Preview Outreach','Adjust Segmentation'],
+    html:`<div class="ar"><span class="r-blue">&#128203;</span><b>Personalized sequences built for 297 commercial accounts &mdash; 43 need your routing call</b></div>
+    Built personalized outreach sequences for all 340 accounts using company-specific usage data:
+    <ul>
+      <li><strong>297 commercial accounts:</strong> 3-touch email sequence referencing their specific scan volume and use case signal &mdash; ready to deploy immediately</li>
+      <li><strong>43 flagged as defense/govtech:</strong> DoD contractors, federal agencies, defense-adjacent manufacturers &mdash; need specialist routing</li>
+    </ul>
     <div class="db">
-      <div class="dr"><span class="dk">Commercial accounts auto-enrolled</span><span class="dv pos">297 — sequences live</span></div>
-      <div class="dr"><span class="dk">Defense/gov accounts flagged</span><span class="dv warn">43 — routing decision needed</span></div>
-      <div class="dr"><span class="dk">Tradewinds channel eligible</span><span class="dv">Yes — pending your approval</span></div>
+      <div class="dr"><span class="dk">Commercial sequences ready</span><span class="dv pos">297 accounts</span></div>
+      <div class="dr"><span class="dk">Defense/govtech flagged</span><span class="dv warn">43 accounts &middot; routing needed</span></div>
+      <div class="dr"><span class="dk">Estimated qualified pipeline</span><span class="dv pos">$2.1M</span></div>
     </div>
-    ⏸ <strong>Derek's call:</strong> Route the 43 defense accounts to Tradewinds, or hold for direct sales?`
+    &#9208; <strong>How do you want to handle the 43 defense/govtech accounts?</strong>`
   });
   await D(700);
-  insight('Old way: SDR team manually reviews 340 accounts. 3+ days to segment and sequence. Defense accounts missed entirely.','297 enrolled automatically. 43 flagged for the one routing call that needs strategic judgment.');
+  insight('Old way: SDR team researches 340 accounts individually, no differentiation by sector, one generic email blast.','297 personalized sequences built automatically. Only the judgment call on the 43 specialist accounts needs Derek.');
 
-  await D(2200);secDiv('③ The Human Moment — Defense Accounts Need Derek\'s Judgment');await D(400);
+  await D(2200);secDiv('&#9315; The Human Moment &mdash; Derek Knows the Defense Accounts');await D(400);
   const hs=document.createElement('div');hs.className='human-spot';
-  hs.innerHTML=`<div class="hs-lbl">Why this stops here</div><div class="hs-txt">Marketing Cloud doesn't know which defense accounts are in active Tradewinds engagement or which are politically sensitive right now. Derek manages those partner relationships. The machine flagged the right accounts — the human knows what to do with them.</div>`;
+  hs.innerHTML=`<div class="hs-lbl">Why this stops here</div><div class="hs-txt">Pipeline Scout knows 43 accounts are defense-adjacent. It doesn't know that several are already in active partner conversations with Tradewinds — or that sending them Marketing Cloud sequences would be the wrong move. Derek does.</div>`;
   msgs.appendChild(hs);setTimeout(()=>hs.classList.add('show'),60);scroll();
   await D(1100);
 
-  await typeInput('Route all 43 to Tradewinds. Tag them as warm — several are already in partner conversations. Do not add to Marketing Cloud journeys.');
+  await typeInput("Route the 43 to Tradewinds and tag as warm — several are already in partner conversations. Don't put them in marketing journeys. Run the other 297 now.");
   await D(350);
-  addThread({bg:'#0891b2',init:'DH',name:'Derek Huang',ts:'11:04 AM',role:'VP Enterprise GTM',
-    btns:['Route 43 to Tradewinds','Preview Account List'],
-    html:`Route all 43 to Tradewinds and tag as warm — a few of these are already in active partner conversations and I don't want them in a Marketing Cloud journey. Keep the 297 commercial accounts running. Let's go.`
+  addThread({bg:'#0891b2',init:'DN',name:'Derek Nakamura',ts:'10:24 AM',role:'VP Enterprise GTM',
+    btns:['Route 43 to Tradewinds + Run 297 Sequences','Preview First-Touch Email'],
+    html:`Route the 43 defense/govtech accounts to <strong>Tradewinds</strong> and tag them as warm &mdash; some are already in partner conversations and a marketing email would undercut it. Do not enroll them in journeys. <strong>Run the 297 commercial sequences now.</strong>`
   });
 
-  await D(2000);secDiv('④ The Outcome');await D(300);
+  await D(2000);secDiv('&#9316; The Outcome');await D(300);
   const rh=document.createElement('div');rh.className='result';
   rh.innerHTML=`<div class="result-num">$2.1M</div>
-    <div class="result-lbl">predicted pipeline activated from accounts nobody knew were there — in 9 minutes</div>
+    <div class="result-lbl">predicted pipeline activated &mdash; from accounts that were invisible 10 minutes ago</div>
     <ul class="result-list">
-      <li><span class="rc">✓</span><span><strong>297 commercial accounts</strong> enrolled in personalized enterprise sequences — automatically, using actual usage behavior, not a prospect list someone built</span></li>
-      <li><span class="rc">✓</span><span><strong>43 defense/gov accounts</strong> routed to Tradewinds with Derek's context — not dumped into a generic nurture that would have burned the relationship</span></li>
-      <li><span class="rc">✓</span><span>Marketing Cloud ran headlessly against product telemetry — <strong>no analyst, no QBR, no SDR research session</strong>. 340 accounts discovered in real time.</span></li>
+      <li><span class="rc">&#10003;</span><span><strong>297 personalized outreach sequences launched</strong> &mdash; each using product-specific usage data as the opening, not a generic cold email</span></li>
+      <li><span class="rc">&#10003;</span><span>43 defense/govtech accounts routed to Tradewinds &mdash; because <strong>Derek knew the partner context</strong> that the data couldn&rsquo;t tell you</span></li>
+      <li><span class="rc">&#10003;</span><span>No analyst. No QBR. No quarterly report. <strong>One conversation in Slack</strong> and $2.1M of dark pipeline is in motion</span></li>
     </ul>`;
   msgs.appendChild(rh);setTimeout(()=>rh.classList.add('show'),60);scroll();
   await D(1000);$('replay').classList.add('show');
+}
+
+async function run(){
+  await D(5600);
+  if(simStarted)return;
+  simStarted=true;
+  $('intro').classList.add('fade');await D(900);
+  await startSim();
 }
 window.onload=()=>run();
 </script>

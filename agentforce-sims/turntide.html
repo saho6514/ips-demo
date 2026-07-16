@@ -18,10 +18,12 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 .intro-scene{max-width:560px;text-align:center;margin-bottom:32px}
 .intro-scene p{font-size:20px;color:rgba(255,255,255,.8);line-height:1.8;margin-bottom:2px}
 .intro-scene .h{color:#fff;font-weight:900}
-.intro-without{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 24px;max-width:500px;text-align:center;margin-bottom:36px}
+.intro-without{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 24px;max-width:500px;text-align:center;margin-bottom:28px}
 .intro-without .lbl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(224,30,90,.7);margin-bottom:5px}
 .intro-without p{font-size:15px;color:#aaa;line-height:1.65}
 .intro-cta{font-size:13px;color:var(--brand);font-weight:700;opacity:.75;animation:pulse 2.2s ease-in-out infinite}
+.narr-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);color:rgba(255,255,255,.65);border-radius:20px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:14px;transition:background .2s,color .2s}
+.narr-btn:hover{background:rgba(0,180,198,.18);border-color:rgba(0,180,198,.4);color:var(--brand)}
 .intro-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--brand);animation:ibar 5.5s linear forwards}
 @keyframes ibar{0%{width:0}100%{width:100%}}
 @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
@@ -135,27 +137,32 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 @keyframes blink{50%{opacity:0}}
 .footer-why{background:#13151a;border-top:1px solid #2c2d30;padding:9px 20px;font-size:13px;color:#6b6c6e;font-style:italic;line-height:1.6;flex-shrink:0}
 .footer-why strong{color:#1d9bd1;font-style:normal}
-#replay{position:fixed;bottom:60px;right:20px;background:var(--brand);color:#fff;border:none;border-radius:20px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:999}
+#replay{position:fixed;bottom:18px;right:20px;background:var(--brand);color:#fff;border:none;border-radius:20px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:999}
 #replay.show{opacity:1;transform:none}
+#mute-btn{position:fixed;bottom:18px;left:20px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);border-radius:20px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:none;z-index:999;transition:opacity .3s}
+#mute-btn.vis{display:block}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#3e3e3e;border-radius:3px}
 </style>
 </head>
 <body>
+<audio id="nar" preload="auto"><source src="turntide-narration.mp3" type="audio/mpeg"></audio>
 
 <div id="intro">
   <div class="intro-logo">Salesforce Agentforce · Simulation</div>
   <div class="intro-company">Turntide</div>
-  <div class="intro-product">Revenue Cloud Advanced</div>
+  <div class="intro-product">Marketing Cloud Next</div>
   <div class="intro-scene">
-    <p>A <span class="h">$2.1M Bobcat OEM deal</span> has been stalled for 34 days.</p>
-    <p>3 spec changes were added after the quote was signed.</p>
-    <p><span class="h">$294K in scope creep</span> was never billed.</p>
+    <p>Turntide's motors are <span class="h">software-defined</span>.</p>
+    <p>Every installation is generating <span class="h">live performance data</span>.</p>
+    <p><span class="h">6 Bobcat OEM accounts</span> — 847 motors showing 17% efficiency decline.</p>
+    <p>All <span class="h">6 contracts renew in the next 90 days</span>.</p>
   </div>
   <div class="intro-without">
     <div class="lbl">Without Agentforce</div>
-    <p>Finance runs a quarterly review and notices the gap. By then the project is 60% complete. Recovering scope is legally murky and the customer relationship takes a hit.</p>
+    <p>That telemetry sits in an ops dashboard nobody in sales watches. Account managers open renewal conversations with "how are things going?" — not knowing a fleet problem is already building.</p>
   </div>
   <div class="intro-cta">Watch what happens instead ↓</div>
+  <button class="narr-btn" onclick="startNarration()">&#9654; Play narration</button>
   <div class="intro-bar"></div>
 </div>
 
@@ -171,27 +178,27 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
       <div class="sb-lbl">Channels</div>
       <div class="ch"><span class="ch-h">#</span>general</div>
       <div class="ch"><span class="ch-h">#</span>sales-enterprise</div>
-      <div class="ch active"><span class="ch-h">#</span>enterprise-deals-oem</div>
-      <div class="ch"><span class="ch-h">#</span>revenue-ops<span class="badge">2</span></div>
-      <div class="ch"><span class="ch-h">#</span>deal-desk</div>
-      <div class="ch"><span class="ch-h">#</span>engineering-proposals</div>
-      <div class="ch"><span class="ch-h">#</span>contracts-legal</div>
+      <div class="ch active"><span class="ch-h">#</span>key-accounts-oem</div>
+      <div class="ch"><span class="ch-h">#</span>field-service<span class="badge">4</span></div>
+      <div class="ch"><span class="ch-h">#</span>revenue-ops</div>
+      <div class="ch"><span class="ch-h">#</span>engineering-iot</div>
+      <div class="ch"><span class="ch-h">#</span>renewals-q3</div>
       <div class="sb-lbl" style="margin-top:10px">Direct Messages</div>
-      <div class="ch"><span class="sdot" style="color:#2bac76">●</span> Priya Sharma</div>
-      <div class="ch"><span class="sdot" style="color:#6b6c6e">●</span> Carlos Ruiz</div>
+      <div class="ch"><span class="sdot" style="color:#2bac76">●</span> Alex Chen</div>
+      <div class="ch"><span class="sdot" style="color:#6b6c6e">●</span> Mira Kapoor</div>
     </div>
   </div>
 
   <div class="main">
     <div class="ch-hdr">
       <span style="color:#8b8c8e;font-size:17px">#</span>
-      <span class="ch-hdr-name">enterprise-deals-oem</span>
+      <span class="ch-hdr-name">key-accounts-oem</span>
       <div class="div-line"></div>
-      <span class="ch-hdr-desc">OEM Enterprise Deals · Revenue &amp; Contract Ops</span>
+      <span class="ch-hdr-desc">OEM Key Accounts · Telemetry &amp; Renewal Intelligence</span>
       <div class="avs">
-        <div class="mav" style="background:#0891b2;margin-left:8px">PS</div>
-        <div class="mav" style="background:#7c3aed">CR</div>
-        <span style="font-size:12px;color:#8b8c8e;margin-left:5px">7</span>
+        <div class="mav" style="background:#0891b2;margin-left:8px">AC</div>
+        <div class="mav" style="background:#7c3aed">MK</div>
+        <span style="font-size:12px;color:#8b8c8e;margin-left:5px">8</span>
       </div>
     </div>
 
@@ -202,21 +209,23 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 
     <div class="iw">
       <div class="ib" id="ib">
-        <span class="ip" id="ip">Message #enterprise-deals-oem</span>
+        <span class="ip" id="ip">Message #key-accounts-oem</span>
         <span class="it" id="it"></span>
         <span class="ic" id="ic"></span>
       </div>
     </div>
-    <div class="footer-why"><strong>The headless advantage:</strong> Revenue Cloud watched every spec change across every active deal — no finance analyst, no quarterly audit. It flagged $294K in unrecovered scope on day 34, while the project was still early enough to bill cleanly. Priya reviewed in 2 minutes. Full revenue recognized.</div>
+    <div class="footer-why"><strong>The headless advantage:</strong> Motor telemetry sat in one system and renewal dates lived in another. Field Scout connected them automatically — surfacing 6 at-risk accounts before a single account manager knew there was a conversation to have.</div>
   </div>
 </div>
 
-<button id="replay" onclick="location.reload()">↺ Replay</button>
+<button id="replay" onclick="location.reload()">&#8635; Replay</button>
+<button id="mute-btn" onclick="toggleMute()">&#128266; Narration</button>
 
 <script>
 const $=id=>document.getElementById(id);
 const D=ms=>new Promise(r=>setTimeout(r,ms));
 const mw=$('mw'),msgs=$('msgs'),ta=$('ta');
+let simStarted=false;
 function scroll(){mw.scrollTop=mw.scrollHeight}
 async function type_ind(cls,init,name,ms){ta.innerHTML=`<div class="t-row"><div class="t-av ${cls}">${init}</div><div class="t-dots"><span></span><span></span><span></span></div><span class="t-lbl">${name} is typing…</span></div>`;scroll();await D(ms);ta.innerHTML='';}
 function el(html,cls){const e=document.createElement('div');if(cls)e.className=cls;e.innerHTML=html;msgs.appendChild(e);setTimeout(()=>e.classList.add('show'),60);scroll();return e;}
@@ -226,75 +235,90 @@ function addThread(o){const e=document.createElement('div');e.className='thread-
 function insight(before,now){el(`<div class="ins-bar"></div><div class="ins-body"><div class="ins-before"><em>${before}</em></div><div class="ins-now"><em>Now: </em>${now}</div></div>`,'insight');}
 async function typeInput(text){const ib=$('ib'),ip=$('ip'),it=$('it'),ic=$('ic');ib.classList.add('active');ip.classList.add('hide');ic.classList.add('on');for(const c of text){it.textContent+=c;scroll();await D(23+Math.random()*17)}await D(460);ib.style.transition='opacity .15s';ib.style.opacity='0';await D(150);it.textContent='';ic.classList.remove('on');ip.classList.remove('hide');ib.classList.remove('active');ib.style.opacity='1';}
 
-async function run(){
-  await D(5600);$('intro').classList.add('fade');await D(900);
+function startNarration(){
+  const nar=$('nar');
+  if(nar){nar.play().then(()=>{$('mute-btn').classList.add('vis')}).catch(()=>{});}
+  if(!simStarted){simStarted=true;$('intro').classList.add('fade');setTimeout(()=>startSim(),900);}
+}
+function toggleMute(){const nar=$('nar'),btn=$('mute-btn');if(!nar)return;nar.muted=!nar.muted;btn.innerHTML=nar.muted?'&#128263; Muted':'&#128266; Narration';}
+
+async function startSim(){
   await D(400);
   const pb=document.createElement('div');pb.className='proc';
-  pb.innerHTML=`<div class="proc-spin"></div><div class="proc-dot"></div><div class="proc-txt">Deal Architect · Reconciling Bobcat 6-Series quote against all active spec changes…</div>`;
+  pb.innerHTML=`<div class="proc-spin"></div><div class="proc-dot"></div><div class="proc-txt">Field Scout &middot; Cross-referencing 847 motor units against 94 OEM account records&hellip;</div>`;
   msgs.appendChild(pb);setTimeout(()=>pb.classList.add('show'),60);scroll();
   await D(2600);pb.style.transition='opacity .4s';pb.style.opacity='0';await D(500);
 
-  secDiv('① The Signal — Revenue Cloud Found a $294K Gap in a Stalled Deal');await D(400);
-  await type_ind('ag','💼','Deal Architect',1900);
-  addMsg({ag:true,init:'💼',name:'Deal Architect',ts:'Today at 2:11 PM',bid:'b1',
-    btns:['Review Changes','Bill Now','Flag for Legal'],
-    html:`<div class="ar"><span class="r-red">🚨</span><b>$294K unrecovered scope — Bobcat 6-Series OEM, deal stalled 34 days</b></div>
-    Revenue Cloud has cross-referenced the signed Bobcat quote ($1,847,000) against all post-signature engineering change orders. <strong>3 spec changes total $294,300 in unpriced scope</strong> — none appear in the current billing schedule.
+  secDiv('&#9312; The Signal &mdash; Motor Telemetry Meets Renewal Risk');await D(400);
+  await type_ind('ag','&#128225;','Field Scout',1900);
+  addMsg({ag:true,init:'&#128225;',name:'Field Scout',ts:'Today at 7:48 AM',bid:'b1',
+    btns:['Review All 6 Accounts','View Telemetry Data','Dismiss'],
+    html:`<div class="ar"><span class="r-yellow">&#9888;</span><b>6 Bobcat OEM accounts flagged: efficiency decline + renewal in 90 days</b></div>
+    Marketing Cloud Next cross-referenced motor performance telemetry with CRM renewal data overnight. <strong>6 Bobcat OEM accounts</strong> show sustained efficiency decline above 13% — all with contracts renewing in the next 60&ndash;91 days.
     <div class="db">
-      <div class="dr"><span class="dk">CO-001 — Thermal mgmt upgrade</span><span class="dv warn">+$156,000 · unbilled</span></div>
-      <div class="dr"><span class="dk">CO-002 — Bobcat-spec shaft mod</span><span class="dv warn">+$94,300 · unbilled</span></div>
-      <div class="dr"><span class="dk">CO-003 — Variable freq drive add</span><span class="dv warn">+$44,000 · unbilled</span></div>
-      <div class="dr"><span class="dk">Total underpricing risk</span><span class="dv neg">$294,300</span></div>
-      <div class="dr"><span class="dk">Days stalled on original quote</span><span class="dv warn">34 days</span></div>
+      <div class="dr"><span class="dk">Bobcat &ndash; Abilene TX</span><span class="dv neg">&#8722;22% &middot; 147 units &middot; 62 days</span></div>
+      <div class="dr"><span class="dk">Bobcat &ndash; Newton KS</span><span class="dv neg">&#8722;19% &middot; 134 units &middot; 71 days</span></div>
+      <div class="dr"><span class="dk">Bobcat &ndash; San Luis Potos&iacute; MX</span><span class="dv warn">&#8722;20% &middot; 126 units &middot; 79 days</span></div>
+      <div class="dr"><span class="dk">Bobcat &ndash; Bismarck ND</span><span class="dv warn">&#8722;16% &middot; 89 units &middot; 91 days</span></div>
+      <div class="dr"><span class="dk">Bobcat &ndash; Havre de Grace MD</span><span class="dv warn">&#8722;13% &middot; 148 units &middot; 87 days</span></div>
+      <div class="dr"><span class="dk">Bobcat &ndash; Gwinner ND (HQ)</span><span class="dv warn">&#8722;14% &middot; 203 units &middot; 84 days</span></div>
+      <div class="dr"><span class="dk">Combined renewal value</span><span class="dv">$1.4M &middot; avg. &#8722;17% efficiency</span></div>
     </div>`
   });
   await D(700);
-  insight('Old way: quarterly finance review. Project 60%+ complete. Recovery legally complex, customer relationship strained.','Flagged on day 34, project still early. Clean billing window still open.');
+  insight('Old way: Account managers open renewal conversations with "how are things going?" — no idea a fleet problem is building.','Telemetry + renewal data cross-referenced overnight. 6 at-risk accounts surfaced before the first call.');
 
-  await D(2200);secDiv('② The Analysis — One Change Is Theirs to Own');await D(400);
-  await type_ind('ag','💼','Deal Architect',2100);
-  addMsg({ag:true,init:'💼',name:'Deal Architect',ts:'Today at 2:12 PM',
-    html:`<div class="ar"><span class="r-blue">📋</span><b>CO-002 was Bobcat's own request — recoverable with contract language</b></div>
-    Cross-referencing change order origin against communications log and engineering tickets:
+  await D(2200);secDiv('&#9313; What Field Scout Staged &mdash; Personalized for Each Account');await D(400);
+  await type_ind('ag','&#128225;','Field Scout',2100);
+  addMsg({ag:true,init:'&#128225;',name:'Field Scout',ts:'Today at 7:49 AM',
+    html:`<div class="ar"><span class="r-blue">&#128203;</span><b>6 proactive service &amp; renewal sequences ready &mdash; one decision needed</b></div>
+    Each sequence references the specific efficiency data for that plant, opens with a service check offer, and leads into renewal:
     <ul>
-      <li><strong>CO-001 (Thermal, $156K):</strong> Turntide-initiated — required for UL certification compliance. Turntide absorbs.</li>
-      <li><strong>CO-002 (Shaft mod, $94,300):</strong> Bobcat-initiated — email chain confirms their spec change request on Day 12. <strong>Fully billable, contract clause 7.3 applies.</strong></li>
-      <li><strong>CO-003 (VFD, $44K):</strong> Joint scope expansion — billable at 50% per standard OEM terms.</li>
+      <li><strong>5 accounts:</strong> Email + Slack notification sequence, personalised with plant-specific motor health data and a field service offer</li>
+      <li><strong>1 account flagged:</strong> Abilene TX (&minus;22%, Bobcat&rsquo;s primary assembly line) &mdash; high-severity decline, active production environment</li>
     </ul>
     <div class="db">
-      <div class="dr"><span class="dk">Turntide absorbs (CO-001)</span><span class="dv neg">−$156,000</span></div>
-      <div class="dr"><span class="dk">Recoverable: CO-002 + CO-003 (50%)</span><span class="dv pos">+$116,300</span></div>
-      <div class="dr"><span class="dk">Revised deal total</span><span class="dv pos">$2,141,300</span></div>
+      <div class="dr"><span class="dk">Accounts with sequences ready</span><span class="dv pos">5 of 6 &middot; deploy immediately</span></div>
+      <div class="dr"><span class="dk">Abilene TX flag</span><span class="dv warn">Recommend field call before email</span></div>
+      <div class="dr"><span class="dk">Combined pipeline at risk</span><span class="dv neg">$1.4M in next 60&ndash;91 days</span></div>
     </div>
-    ⏸ <strong>Priya's call:</strong> Approve revised billing and send to Bobcat deal desk?`
+    &#9208; <strong>Alex&rsquo;s call:</strong> How do you want to handle Abilene?`
   });
   await D(700);
-  insight('Old way: deal desk manually reviews 3 change orders, researches email thread, interprets contract clause. Takes a day.','Revenue Cloud traced each CO to its origin and applied contract terms automatically.');
+  insight('Old way: No analyst would have known to differentiate Abilene — all 6 accounts would get the same template email.','Field Scout flagged the severity difference. The call on how to handle it stays with Alex.');
 
-  await D(2200);secDiv('③ The Human Moment — Priya\'s Judgment on the Customer Relationship');await D(400);
+  await D(2200);secDiv('&#9314; The Human Moment &mdash; Alex Knows Abilene Is Different');await D(400);
   const hs=document.createElement('div');hs.className='human-spot';
-  hs.innerHTML=`<div class="hs-lbl">Why this stops here</div><div class="hs-txt">Revenue Cloud found the gap and applied the contract logic. But only Priya knows whether Bobcat's VP will push back on CO-002, and whether that relationship is worth protecting right now. That's not a clause — it's a judgment call.</div>`;
+  hs.innerHTML=`<div class="hs-lbl">Why this stops here</div><div class="hs-txt">Field Scout knows the numbers. It doesn't know that Abilene is Bobcat's primary assembly line — or that sending an email there without a field engineer looped in first will feel like a sales move, not a service move. That's Alex's read.</div>`;
   msgs.appendChild(hs);setTimeout(()=>hs.classList.add('show'),60);scroll();
   await D(1100);
 
-  await typeInput('Bobcat initiated CO-002. Clause 7.3 is clear. Bill the full $2,141,300 and flag CO-001 as absorbed in the cover note — they\'ll appreciate the transparency.');
+  await typeInput("Don't lead with email on Abilene — they're mid-production. Get field service in there this week first, then I'll make the renewal call myself. Run the other 5 sequences now.");
   await D(350);
-  addThread({bg:'#0891b2',init:'PS',name:'Priya Sharma',ts:'2:13 PM',role:'VP Revenue Operations',
-    btns:['Send Revised Quote to Bobcat','Schedule Follow-Up Call'],
-    html:`Bobcat requested CO-002 — it's in writing. <strong>Bill the full $2,141,300.</strong> Note CO-001 as absorbed in the cover letter so they see we took the compliance hit. Send it today.`
+  addThread({bg:'#0891b2',init:'AC',name:'Alex Chen',ts:'7:51 AM',role:'Account Manager, OEM North America',
+    btns:['Run 5 Sequences + Schedule Abilene Field Call','Preview Outreach Emails'],
+    html:`Abilene is running their main assembly line on these motors right now. <strong>Don't send them a marketing email.</strong> Get a field engineer on-site this week, then I'll call the plant manager personally for the renewal. <strong>Run the other 5 now</strong> — the telemetry data in the outreach will land well.`
   });
 
-  await D(2000);secDiv('④ The Outcome');await D(300);
+  await D(2000);secDiv('&#9315; The Outcome');await D(300);
   const rh=document.createElement('div');rh.className='result';
-  rh.innerHTML=`<div class="result-num">$294K</div>
-    <div class="result-lbl">unrecovered scope surfaced and billed — deal stalled 34 days, resolved in 2 minutes</div>
+  rh.innerHTML=`<div class="result-num">$1.4M</div>
+    <div class="result-lbl">in at-risk renewals proactively engaged &mdash; before a single customer knew there was a problem</div>
     <ul class="result-list">
-      <li><span class="rc">✓</span><span>Revised deal total: <strong>$2,141,300</strong> — $294K that would have silently evaporated is now recognized revenue</span></li>
-      <li><span class="rc">✓</span><span>Priya spent <strong>2 minutes</strong> reviewing an analysis that would have taken deal desk a full day to produce manually</span></li>
-      <li><span class="rc">✓</span><span>Revenue Cloud watched every active deal simultaneously — <strong>no analyst, no quarterly audit, no missed billing window</strong></span></li>
+      <li><span class="rc">&#10003;</span><span>5 personalized service &amp; renewal sequences deployed automatically &mdash; each with <strong>plant-specific motor health data</strong> as the opening</span></li>
+      <li><span class="rc">&#10003;</span><span>Abilene TX routed to a field call first &mdash; because <strong>Alex knew the relationship</strong>, and Agentforce made sure Alex was the one who decided</span></li>
+      <li><span class="rc">&#10003;</span><span>Motor telemetry + CRM connected automatically overnight &mdash; <strong>no analyst, no report request, no missed renewal window</strong></span></li>
     </ul>`;
   msgs.appendChild(rh);setTimeout(()=>rh.classList.add('show'),60);scroll();
   await D(1000);$('replay').classList.add('show');
+}
+
+async function run(){
+  await D(5600);
+  if(simStarted)return;
+  simStarted=true;
+  $('intro').classList.add('fade');await D(900);
+  await startSim();
 }
 window.onload=()=>run();
 </script>

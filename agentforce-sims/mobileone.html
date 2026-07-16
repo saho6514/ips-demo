@@ -18,7 +18,7 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 .intro-scene{max-width:560px;text-align:center;margin-bottom:32px}
 .intro-scene p{font-size:20px;color:rgba(255,255,255,.8);line-height:1.8;margin-bottom:2px}
 .intro-scene .h{color:#fff;font-weight:900}
-.intro-without{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 24px;max-width:500px;text-align:center;margin-bottom:36px}
+.intro-without{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 24px;max-width:500px;text-align:center;margin-bottom:28px}
 .intro-without .lbl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(224,30,90,.7);margin-bottom:5px}
 .intro-without p{font-size:15px;color:#aaa;line-height:1.65}
 .intro-cta{font-size:13px;color:var(--brand);font-weight:700;opacity:.75;animation:pulse 2.2s ease-in-out infinite}
@@ -135,12 +135,17 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 @keyframes blink{50%{opacity:0}}
 .footer-why{background:#13151a;border-top:1px solid #2c2d30;padding:9px 20px;font-size:13px;color:#6b6c6e;font-style:italic;line-height:1.6;flex-shrink:0}
 .footer-why strong{color:#1d9bd1;font-style:normal}
-#replay{position:fixed;bottom:60px;right:20px;background:var(--brand);color:#fff;border:none;border-radius:20px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:999}
+#replay{position:fixed;bottom:18px;right:20px;background:var(--brand);color:#fff;border:none;border-radius:20px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:999}
 #replay.show{opacity:1;transform:none}
+.narr-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);color:rgba(255,255,255,.65);border-radius:20px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:14px;transition:background .2s,color .2s}
+.narr-btn:hover{background:rgba(226,0,116,.18);border-color:rgba(226,0,116,.4);color:var(--brand)}
+#mute-btn{position:fixed;bottom:18px;left:20px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);border-radius:20px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:none;z-index:999}
+#mute-btn.vis{display:block}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#3e3e3e;border-radius:3px}
 </style>
 </head>
 <body>
+<audio id="nar" preload="auto"><source src="mobileone-narration.mp3" type="audio/mpeg"></audio>
 
 <div id="intro">
   <div class="intro-logo">Salesforce Agentforce · Simulation</div>
@@ -156,6 +161,7 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
     <p>A district manager finds the stock gap in a mid-morning status call. Orders get split across days. Customers leave empty-handed. $91K in revenue walks out the door.</p>
   </div>
   <div class="intro-cta">Watch what happens instead ↓</div>
+  <button class="narr-btn" onclick="startNarration()">&#9654; Play narration</button>
   <div class="intro-bar"></div>
 </div>
 
@@ -212,11 +218,13 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 </div>
 
 <button id="replay" onclick="location.reload()">↺ Replay</button>
+<button id="mute-btn" onclick="toggleMute()">&#128266; Narration</button>
 
 <script>
 const $=id=>document.getElementById(id);
 const D=ms=>new Promise(r=>setTimeout(r,ms));
 const mw=$('mw'),msgs=$('msgs'),ta=$('ta');
+let simStarted=false;
 function scroll(){mw.scrollTop=mw.scrollHeight}
 async function type_ind(cls,init,name,ms){ta.innerHTML=`<div class="t-row"><div class="t-av ${cls}">${init}</div><div class="t-dots"><span></span><span></span><span></span></div><span class="t-lbl">${name} is typing…</span></div>`;scroll();await D(ms);ta.innerHTML='';}
 function el(html,cls){const e=document.createElement('div');if(cls)e.className=cls;e.innerHTML=html;msgs.appendChild(e);setTimeout(()=>e.classList.add('show'),60);scroll();return e;}
@@ -226,11 +234,14 @@ function addThread(o){const e=document.createElement('div');e.className='thread-
 function insight(before,now){el(`<div class="ins-bar"></div><div class="ins-body"><div class="ins-before"><em>${before}</em></div><div class="ins-now"><em>Now: </em>${now}</div></div>`,'insight');}
 async function typeInput(text){const ib=$('ib'),ip=$('ip'),it=$('it'),ic=$('ic');ib.classList.add('active');ip.classList.add('hide');ic.classList.add('on');for(const c of text){it.textContent+=c;scroll();await D(23+Math.random()*17)}await D(460);ib.style.transition='opacity .15s';ib.style.opacity='0';await D(150);it.textContent='';ic.classList.remove('on');ip.classList.remove('hide');ib.classList.remove('active');ib.style.opacity='1';}
 
-async function run(){
-  await D(5600);
-  $('intro').classList.add('fade');
-  await D(900);
+function startNarration(){
+  const nar=$('nar');
+  if(nar){nar.play().then(()=>{$('mute-btn').classList.add('vis')}).catch(()=>{});}
+  if(!simStarted){simStarted=true;$('intro').classList.add('fade');setTimeout(()=>startSim(),900);}
+}
+function toggleMute(){const nar=$('nar'),btn=$('mute-btn');if(!nar)return;nar.muted=!nar.muted;btn.innerHTML=nar.muted?'&#128263; Muted':'&#128266; Narration';}
 
+async function startSim(){
   await D(400);
   const pb=document.createElement('div');pb.className='proc';
   pb.innerHTML=`<div class="proc-spin"></div><div class="proc-dot"></div><div class="proc-txt">Store Pulse · Scanning live inventory across all Southwest District DCs…</div>`;
@@ -297,6 +308,14 @@ async function run(){
     </ul>`;
   msgs.appendChild(rh);setTimeout(()=>rh.classList.add('show'),60);scroll();
   await D(1000);$('replay').classList.add('show');
+}
+
+async function run(){
+  await D(5600);
+  if(simStarted)return;
+  simStarted=true;
+  $('intro').classList.add('fade');await D(900);
+  await startSim();
 }
 window.onload=()=>run();
 </script>
