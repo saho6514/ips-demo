@@ -6,38 +6,61 @@
 <title>MobileOne · Agentforce + Slack</title>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-:root{--brand:#e20074;--sidebar:#1a0011;--sidebar-active:#e20074}
+:root{--brand:#e20074;--brand2:#c60062;--sidebar:#1a0011}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh;overflow:hidden;display:flex;flex-direction:column}
-.top-bar{height:4px;background:linear-gradient(90deg,#1a0011,var(--brand),#ff4fa6,var(--brand));background-size:200% 100%;animation:shimmer 3s linear infinite}
+
+#intro{position:fixed;inset:0;background:linear-gradient(160deg,#100008 0%,#1a0011 50%,#0d0014 100%);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;transition:opacity .8s ease}
+#intro.fade{opacity:0;pointer-events:none}
+.intro-logo{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:20px}
+.intro-company{font-size:46px;font-weight:900;color:#fff;margin-bottom:4px;letter-spacing:-.02em}
+.intro-product{font-size:15px;font-weight:700;color:var(--brand);letter-spacing:.1em;text-transform:uppercase;margin-bottom:48px}
+.intro-scene{max-width:560px;text-align:center;margin-bottom:32px}
+.intro-scene p{font-size:20px;color:rgba(255,255,255,.8);line-height:1.8;margin-bottom:2px}
+.intro-scene .h{color:#fff;font-weight:900}
+.intro-without{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 24px;max-width:500px;text-align:center;margin-bottom:36px}
+.intro-without .lbl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(224,30,90,.7);margin-bottom:5px}
+.intro-without p{font-size:15px;color:#aaa;line-height:1.65}
+.intro-cta{font-size:13px;color:var(--brand);font-weight:700;opacity:.75;animation:pulse 2.2s ease-in-out infinite}
+.intro-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--brand);animation:ibar 5.5s linear forwards}
+@keyframes ibar{0%{width:0}100%{width:100%}}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+.top-bar{height:4px;background:linear-gradient(90deg,#1a0011,var(--brand),#c60062,var(--brand));background-size:200% 100%;animation:shimmer 3s linear infinite;flex-shrink:0}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .slack{display:flex;flex:1;overflow:hidden}
-.sb{width:248px;background:var(--sidebar);display:flex;flex-direction:column;flex-shrink:0}
-.sb-header{padding:14px 16px 12px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px}
-.sb-logo{width:30px;height:30px;border-radius:8px;background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;flex-shrink:0}
+.sb{width:244px;background:var(--sidebar);display:flex;flex-direction:column;flex-shrink:0}
+.sb-hdr{padding:14px 16px 12px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:10px}
+.sb-logo{width:30px;height:30px;border-radius:7px;background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;flex-shrink:0}
 .sb-name{font-size:15px;font-weight:900;color:#fff}
-.sb-dot{width:8px;height:8px;border-radius:50%;background:#2bac76;margin-left:auto;flex-shrink:0}
-.sb-body{flex:1;overflow-y:auto;padding:8px 0 12px}
-.sb-label{font-size:11px;font-weight:700;color:#7a7b7c;padding:8px 16px 3px;letter-spacing:.05em;text-transform:uppercase}
-.ch{padding:5px 8px 5px 16px;border-radius:4px;margin:1px 6px;font-size:14px;color:#c9cacc;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ch.active{background:var(--sidebar-active);color:#fff;font-weight:700}
-.ch:not(.active):hover{background:rgba(255,255,255,.06)}
+.sb-dot{width:8px;height:8px;border-radius:50%;background:#2bac76;margin-left:auto}
+.sb-body{flex:1;overflow-y:auto;padding:6px 0 12px}
+.sb-lbl{font-size:11px;font-weight:700;color:#6b6c6e;padding:8px 16px 3px;letter-spacing:.05em;text-transform:uppercase}
+.ch{padding:5px 8px 5px 16px;border-radius:4px;margin:1px 6px;font-size:14px;color:#c9cacc;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch.active{background:var(--brand);color:#fff;font-weight:700}
 .ch-h{opacity:.5;font-size:13px;flex-shrink:0}
-.badge{margin-left:auto;background:#e01e5a;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;flex-shrink:0}
-.status-dot{font-size:9px;margin-right:2px}
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#1a1d21}
-.ch-hdr{padding:11px 20px;border-bottom:1px solid #2c2d30;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.badge{margin-left:auto;background:#e01e5a;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px}
+.sdot{font-size:9px;margin-right:1px}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.ch-hdr{padding:10px 20px;border-bottom:1px solid #2c2d30;display:flex;align-items:center;gap:8px;flex-shrink:0}
 .ch-hdr-name{font-size:15px;font-weight:900;color:#fff}
-.ch-hdr-div{width:1px;height:18px;background:#2c2d30;margin:0 4px}
+.div-line{width:1px;height:18px;background:#2c2d30;margin:0 4px}
 .ch-hdr-desc{font-size:13px;color:#8b8c8e}
-.avatars{margin-left:auto;display:flex}
-.mini-av{width:22px;height:22px;border-radius:50%;border:2px solid #1a1d21;margin-left:-7px;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#fff}
-.msgs-wrap{flex:1;overflow-y:auto;padding:14px 20px 8px;scroll-behavior:smooth}
-.sec-div{display:flex;align-items:center;gap:10px;margin:18px 0 12px;opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s}
-.sec-div.show{opacity:.7;transform:none}
+.avs{margin-left:auto;display:flex;align-items:center}
+.mav{width:22px;height:22px;border-radius:50%;border:2px solid #1a1d21;margin-left:-7px;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#fff}
+.mw{flex:1;overflow-y:auto;padding:12px 20px 6px;scroll-behavior:smooth}
+.proc{display:flex;align-items:center;gap:9px;padding:6px 14px;background:rgba(226,0,116,.05);border:1px solid rgba(226,0,116,.12);border-radius:20px;margin:6px auto 14px;width:fit-content;opacity:0;transform:translateY(-4px);transition:opacity .4s,transform .4s}
+.proc.show{opacity:1;transform:none}
+.proc-spin{width:11px;height:11px;border:2px solid rgba(226,0,116,.2);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.proc-dot{width:6px;height:6px;border-radius:50%;background:var(--brand);animation:blink2 1.4s ease-in-out infinite}
+@keyframes blink2{0%,100%{opacity:.3}50%{opacity:1}}
+.proc-txt{font-size:12px;color:#c9cacc;font-weight:700}
+.sec-div{display:flex;align-items:center;gap:10px;margin:16px 0 8px;opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s}
+.sec-div.show{opacity:.65;transform:none}
 .sdl{flex:1;height:1px;background:#2c2d30}
 .sdt{font-size:10px;font-weight:700;color:#8b8c8e;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;padding:2px 10px;border:1px solid #2c2d30;border-radius:10px}
-.msg{display:flex;gap:11px;padding:5px 4px 3px;border-radius:4px;margin-bottom:2px;opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s}
+.msg{display:flex;gap:11px;padding:4px 3px;border-radius:4px;margin-bottom:2px;opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s}
 .msg.show{opacity:1;transform:none}
 .msg:hover{background:rgba(255,255,255,.025)}
 .av{width:36px;height:36px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;margin-top:2px}
@@ -46,7 +69,7 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 .mh{display:flex;align-items:baseline;gap:8px;margin-bottom:3px;flex-wrap:wrap}
 .un{font-size:15px;font-weight:900;color:#fff}
 .un-ag{color:#c8d8ff}
-.app-tag{background:#1a7f64;color:#fff;font-size:10px;padding:1px 5px;border-radius:2px;font-weight:700;letter-spacing:.03em}
+.app-tag{background:#1a7f64;color:#fff;font-size:10px;padding:1px 5px;border-radius:2px;font-weight:700}
 .ts{font-size:12px;color:#6b6c6e}
 .role{font-size:12px;color:#8b8c8e}
 .mt{font-size:15px;line-height:1.65;color:#d1d2d3}
@@ -56,23 +79,43 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 .mt li strong{color:#fff}
 .ar{display:flex;align-items:center;gap:7px;font-size:15px;font-weight:900;margin-bottom:8px}
 .r-red{color:#e01e5a}.r-green{color:#2bac76}.r-yellow{color:#ecb22e}.r-blue{color:#1d9bd1}
-.db{background:#222529;border-radius:6px;padding:11px 16px;margin:10px 0 4px;border-left:4px solid var(--brand)}
+.db{background:#222529;border-radius:6px;padding:10px 16px;margin:10px 0 4px;border-left:4px solid var(--brand)}
 .dr{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:14px}
 .dr:last-child{border-bottom:none}
 .dk{color:#8b8c8e}.dv{color:#fff;font-weight:700}.pos{color:#2bac76}.neg{color:#e01e5a}.warn{color:#ecb22e}
-.btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;opacity:0;transition:opacity .4s}
+.insight{margin:8px 0 8px 47px;display:flex;gap:11px;align-items:stretch;opacity:0;transform:translateX(10px);transition:opacity .5s,transform .5s}
+.insight.show{opacity:1;transform:none}
+.ins-bar{width:3px;background:var(--brand);border-radius:2px;flex-shrink:0}
+.ins-body{flex:1}
+.ins-before{font-size:12px;color:#8b8c8e;margin-bottom:4px;line-height:1.5}
+.ins-before em{background:rgba(224,30,90,.1);border-radius:3px;padding:1px 6px;color:#e87e9a;font-style:normal}
+.ins-now{font-size:13px;color:#d1d2d3;font-weight:700;line-height:1.5}
+.ins-now em{color:var(--brand);font-style:normal}
+.human-spot{margin:12px 0 6px;background:rgba(226,0,116,.04);border:1px solid rgba(226,0,116,.16);border-radius:8px;padding:10px 14px;opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s}
+.human-spot.show{opacity:1;transform:none}
+.hs-lbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin-bottom:4px}
+.hs-txt{font-size:13px;color:#c9cacc;line-height:1.6}
+.btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;opacity:0;transition:opacity .4s}
 .btns.show{opacity:1}
-.btn{padding:7px 16px;border-radius:4px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:filter .15s,transform .1s}
+.btn{padding:7px 15px;border-radius:4px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:filter .15s,transform .1s}
 .btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
 .btn-p{background:var(--brand);color:#fff}
 .btn-s{background:#313131;color:#d1d2d3;border:1px solid rgba(255,255,255,.1)}
 .btn-a{background:#2bac76;color:#fff}
-.thread-reply{margin:3px 0 10px 47px;background:#1e2124;border-radius:6px;padding:12px 14px;border-left:3px solid rgba(255,255,255,.06);opacity:0;transform:translateY(5px);transition:opacity .35s,transform .35s}
-.thread-reply.show{opacity:1;transform:none}
+.thread-r{margin:2px 0 8px 47px;background:#1e2124;border-radius:6px;padding:11px 14px;border-left:3px solid rgba(255,255,255,.05);opacity:0;transform:translateY(5px);transition:opacity .35s,transform .35s}
+.thread-r.show{opacity:1;transform:none}
 .th{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;flex-wrap:wrap}
-.sm-av{width:28px;height:28px;border-radius:4px;flex-shrink:0;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#fff}
-.typing-area{min-height:38px;padding:2px 4px;display:flex;align-items:center}
-.typing-row{display:flex;align-items:center;gap:10px}
+.sm-av{width:26px;height:26px;border-radius:4px;flex-shrink:0;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#fff}
+.result{margin:8px 0 4px;text-align:center;padding:22px 20px;background:linear-gradient(135deg,rgba(226,0,116,.07),rgba(100,0,50,.07));border:1px solid rgba(226,0,116,.18);border-radius:10px;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}
+.result.show{opacity:1;transform:none}
+.result-num{font-size:54px;font-weight:900;color:var(--brand);line-height:1;margin-bottom:5px}
+.result-lbl{font-size:15px;color:#fff;font-weight:700;margin-bottom:16px}
+.result-list{list-style:none;text-align:left;max-width:520px;margin:0 auto}
+.result-list li{font-size:14px;color:#c9cacc;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:10px;line-height:1.6;align-items:flex-start}
+.result-list li:last-child{border-bottom:none}
+.rc{color:#2bac76;font-size:15px;flex-shrink:0;margin-top:1px}
+.ta{min-height:38px;padding:2px 3px;display:flex;align-items:center}
+.t-row{display:flex;align-items:center;gap:10px}
 .t-av{width:22px;height:22px;border-radius:4px;flex-shrink:0;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#fff}
 .t-av.ag{background:linear-gradient(135deg,#7c3aed,#0176d3)}
 .t-dots{display:flex;align-items:center;gap:3px;background:#313131;padding:6px 10px;border-radius:12px}
@@ -80,175 +123,180 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 .t-dots span:nth-child(2){animation-delay:.2s}
 .t-dots span:nth-child(3){animation-delay:.4s}
 @keyframes bounce{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-3px);opacity:1}}
-.t-label{font-size:12px;color:#8b8c8e}
-.input-wrap{padding:0 20px 10px;flex-shrink:0}
-.input-bar{border:1px solid #3e3e3e;border-radius:8px;padding:9px 14px;min-height:40px;display:flex;align-items:center;transition:border-color .3s,box-shadow .3s;gap:4px}
-.input-bar.active{border-color:var(--brand);box-shadow:0 0 0 2px rgba(226,0,116,.15)}
-.i-placeholder{font-size:14px;color:#4a4b4c;user-select:none}
-.i-placeholder.hide{display:none}
-.i-text{font-size:14px;color:#d1d2d3}
-.i-cursor{width:2px;height:16px;background:var(--brand);animation:blink .8s step-end infinite;display:none;margin-left:1px}
-.i-cursor.on{display:inline-block}
+.t-lbl{font-size:12px;color:#8b8c8e}
+.iw{padding:0 20px 10px;flex-shrink:0}
+.ib{border:1px solid #3e3e3e;border-radius:8px;padding:9px 14px;min-height:40px;display:flex;align-items:center;transition:border-color .3s,box-shadow .3s;gap:4px}
+.ib.active{border-color:var(--brand);box-shadow:0 0 0 2px rgba(226,0,116,.15)}
+.ip{font-size:14px;color:#4a4b4c}
+.ip.hide{display:none}
+.it{font-size:14px;color:#d1d2d3}
+.ic{width:2px;height:16px;background:var(--brand);animation:blink .8s step-end infinite;display:none;margin-left:1px}
+.ic.on{display:inline-block}
 @keyframes blink{50%{opacity:0}}
-.rc{background:linear-gradient(135deg,rgba(226,0,116,.07),rgba(124,58,237,.07));border:1px solid rgba(226,0,116,.25);border-radius:8px;padding:15px 18px;margin-top:10px}
-.rc-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.rc-title{font-size:15px;font-weight:900;color:#fff;flex:1}
-.rc-badge{font-size:11px;padding:2px 10px;background:#2bac76;color:#fff;border-radius:20px;font-weight:700}
-.rc-list{list-style:none}
-.rc-list li{font-size:14px;color:#c9cacc;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:8px;line-height:1.55;align-items:flex-start}
-.rc-list li:last-child{border-bottom:none}
-.why{background:#13151a;border-top:1px solid #2c2d30;padding:10px 20px;font-size:13px;color:#6b6c6e;font-style:italic;line-height:1.6;flex-shrink:0}
-.why strong{color:#1d9bd1;font-style:normal}
-#replay{position:fixed;bottom:64px;right:20px;background:var(--brand);color:#fff;border:none;border-radius:20px;padding:8px 20px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:999}
+.footer-why{background:#13151a;border-top:1px solid #2c2d30;padding:9px 20px;font-size:13px;color:#6b6c6e;font-style:italic;line-height:1.6;flex-shrink:0}
+.footer-why strong{color:#1d9bd1;font-style:normal}
+#replay{position:fixed;bottom:60px;right:20px;background:var(--brand);color:#fff;border:none;border-radius:20px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:999}
 #replay.show{opacity:1;transform:none}
-::-webkit-scrollbar{width:5px}
-::-webkit-scrollbar-thumb{background:#3e3e3e;border-radius:3px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#3e3e3e;border-radius:3px}
 </style>
 </head>
 <body>
+
+<div id="intro">
+  <div class="intro-logo">Salesforce Agentforce · Simulation</div>
+  <div class="intro-company">MobileOne</div>
+  <div class="intro-product">Commerce Cloud + OMS</div>
+  <div class="intro-scene">
+    <p>It's <span class="h">iPhone 17 Pro launch day.</span></p>
+    <p>3 San Diego stores are <span class="h">91 units short</span> before 9am.</p>
+    <p>Customers are already lining up. Ferguson is watching.</p>
+  </div>
+  <div class="intro-without">
+    <div class="lbl">Without Agentforce</div>
+    <p>A district manager finds the stock gap in a mid-morning status call. Orders get split across days. Customers leave empty-handed. $91K in revenue walks out the door.</p>
+  </div>
+  <div class="intro-cta">Watch what happens instead ↓</div>
+  <div class="intro-bar"></div>
+</div>
+
 <div class="top-bar"></div>
 <div class="slack">
   <div class="sb">
-    <div class="sb-header">
-      <div class="sb-logo">M1</div>
+    <div class="sb-hdr">
+      <div class="sb-logo">M</div>
       <span class="sb-name">MobileOne</span>
       <div class="sb-dot"></div>
     </div>
     <div class="sb-body">
-      <div class="sb-label">Channels</div>
+      <div class="sb-lbl">Channels</div>
       <div class="ch"><span class="ch-h">#</span>general</div>
-      <div class="ch"><span class="ch-h">#</span>ops-national</div>
-      <div class="ch"><span class="ch-h">#</span>ops-northwest-district</div>
+      <div class="ch"><span class="ch-h">#</span>ops-launches</div>
       <div class="ch active"><span class="ch-h">#</span>ops-southwest-district</div>
       <div class="ch"><span class="ch-h">#</span>inventory-alerts<span class="badge">5</span></div>
-      <div class="ch"><span class="ch-h">#</span>store-transfers</div>
-      <div class="ch"><span class="ch-h">#</span>launch-iphone-17</div>
-      <div class="ch"><span class="ch-h">#</span>visual-merch</div>
-      <div class="ch"><span class="ch-h">#</span>finance-ops</div>
-      <div class="sb-label" style="margin-top:10px">Direct Messages</div>
-      <div class="ch"><span class="status-dot" style="color:#2bac76">●</span>Marcus Okafor</div>
-      <div class="ch"><span class="status-dot" style="color:#6b6c6e">●</span>Lisa Park</div>
-      <div class="ch"><span class="status-dot" style="color:#2bac76">●</span>Dev Patel</div>
+      <div class="ch"><span class="ch-h">#</span>store-performance</div>
+      <div class="ch"><span class="ch-h">#</span>customer-experience</div>
+      <div class="ch"><span class="ch-h">#</span>fulfillment-ops</div>
+      <div class="sb-lbl" style="margin-top:10px">Direct Messages</div>
+      <div class="ch"><span class="sdot" style="color:#2bac76">●</span> Marcus Okafor</div>
+      <div class="ch"><span class="sdot" style="color:#6b6c6e">●</span> Priya Mehta</div>
     </div>
   </div>
+
   <div class="main">
     <div class="ch-hdr">
       <span style="color:#8b8c8e;font-size:17px">#</span>
       <span class="ch-hdr-name">ops-southwest-district</span>
-      <div class="ch-hdr-div"></div>
-      <span class="ch-hdr-desc">San Diego · Phoenix · Las Vegas · Inventory &amp; Fulfillment</span>
-      <div class="avatars" style="margin-left:auto">
-        <div class="mini-av" style="background:#e20074">MO</div>
-        <div class="mini-av" style="background:#0891b2">LP</div>
-        <div class="mini-av" style="background:#2bac76">DP</div>
-        <span style="font-size:12px;color:#8b8c8e;margin-left:6px">9</span>
+      <div class="div-line"></div>
+      <span class="ch-hdr-desc">Southwest District · Store Ops &amp; Inventory</span>
+      <div class="avs">
+        <div class="mav" style="background:#0891b2;margin-left:8px">MO</div>
+        <div class="mav" style="background:#7c3aed">PM</div>
+        <span style="font-size:12px;color:#8b8c8e;margin-left:5px">9</span>
       </div>
     </div>
-    <div class="msgs-wrap" id="mw">
+
+    <div class="mw" id="mw">
       <div id="msgs"></div>
-      <div class="typing-area" id="ta"></div>
+      <div class="ta" id="ta"></div>
     </div>
-    <div class="input-wrap">
-      <div class="input-bar" id="ib">
-        <span class="i-placeholder" id="ip">Message #ops-southwest-district</span>
-        <span class="i-text" id="it"></span>
-        <span class="i-cursor" id="ic"></span>
+
+    <div class="iw">
+      <div class="ib" id="ib">
+        <span class="ip" id="ip">Message #ops-southwest-district</span>
+        <span class="it" id="it"></span>
+        <span class="ic" id="ic"></span>
       </div>
     </div>
-    <div class="why"><strong>Why Slack is the glue:</strong> Commerce Cloud OMS resolves the inventory math in seconds — but it's Marcus who knows Mission Valley has a 9am VIP pre-order appointment and San Ysidro needs extra units for its demographic. Those calls belong to a human, not an algorithm.</div>
+    <div class="footer-why"><strong>The headless advantage:</strong> OMS monitored live inventory across every DC in real time — no spreadsheet, no morning call, no analyst running reports. Store Pulse surfaced the gap before a single customer was turned away. Marcus made one call. $91K protected.</div>
   </div>
 </div>
+
 <button id="replay" onclick="location.reload()">↺ Replay</button>
+
 <script>
-const W=id=>document.getElementById(id);
+const $=id=>document.getElementById(id);
 const D=ms=>new Promise(r=>setTimeout(r,ms));
-const mw=W('mw'),msgs=W('msgs'),ta=W('ta');
+const mw=$('mw'),msgs=$('msgs'),ta=$('ta');
 function scroll(){mw.scrollTop=mw.scrollHeight}
-async function typing(cls,init,name,ms){
-  ta.innerHTML=`<div class="typing-row"><div class="t-av ${cls}">${init}</div><div class="t-dots"><span></span><span></span><span></span></div><span class="t-label">${name} is typing…</span></div>`;
-  scroll();await D(ms);ta.innerHTML='';
-}
-function secDiv(t){
-  const e=document.createElement('div');e.className='sec-div';
-  e.innerHTML=`<div class="sdl"></div><div class="sdt">${t}</div><div class="sdl"></div>`;
-  msgs.appendChild(e);setTimeout(()=>e.classList.add('show'),50);scroll();
-}
-function addMsg(o){
-  const e=document.createElement('div');e.className='msg';
-  e.innerHTML=`<div class="av ${o.ag?'av-ag':''}" style="${o.bg?`background:${o.bg}`:''};">${o.init}</div><div class="mb"><div class="mh"><span class="un ${o.ag?'un-ag':''}">${o.name}</span>${o.ag?'<span class="app-tag">APP</span>':''}<span class="ts">${o.time}</span>${o.role?`<span class="role">${o.role}</span>`:''}</div><div class="mt">${o.html}</div>${o.btns?`<div class="btns" id="b${o.bid}">${o.btns.map((b,i)=>`<button class="btn ${i===0?'btn-p':'btn-s'}">${b}</button>`).join('')}</div>`:''}</div>`;
-  msgs.appendChild(e);setTimeout(()=>{e.classList.add('show');if(o.btns)setTimeout(()=>{const b=W('b'+o.bid);if(b)b.classList.add('show')},350)},60);scroll();
-}
-function addThread(o){
-  const e=document.createElement('div');e.className='thread-reply';
-  e.innerHTML=`<div class="th"><div class="sm-av" style="background:${o.bg}">${o.init}</div><span class="un">${o.name}</span><span class="ts">${o.time}</span>${o.role?`<span class="role">${o.role}</span>`:''}</div><div class="mt">${o.html}</div>${o.btns?`<div class="btns show">${o.btns.map((b,i)=>`<button class="btn ${i===0?'btn-a':'btn-s'}">${b}</button>`).join('')}</div>`:''}`;
-  msgs.appendChild(e);setTimeout(()=>e.classList.add('show'),60);scroll();
-}
-async function typeInput(text){
-  const ib=W('ib'),ip=W('ip'),it=W('it'),ic=W('ic');
-  ib.classList.add('active');ip.classList.add('hide');ic.classList.add('on');
-  for(const c of text){it.textContent+=c;scroll();await D(25+Math.random()*18)}
-  await D(550);ib.style.transition='opacity .15s';ib.style.opacity='0';
-  await D(160);it.textContent='';ic.classList.remove('on');ip.classList.remove('hide');
-  ib.classList.remove('active');ib.style.opacity='1';
-}
+async function type_ind(cls,init,name,ms){ta.innerHTML=`<div class="t-row"><div class="t-av ${cls}">${init}</div><div class="t-dots"><span></span><span></span><span></span></div><span class="t-lbl">${name} is typing…</span></div>`;scroll();await D(ms);ta.innerHTML='';}
+function el(html,cls){const e=document.createElement('div');if(cls)e.className=cls;e.innerHTML=html;msgs.appendChild(e);setTimeout(()=>e.classList.add('show'),60);scroll();return e;}
+function secDiv(t){el(`<div class="sdl"></div><div class="sdt">${t}</div><div class="sdl"></div>`,'sec-div')}
+function addMsg(o){const e=document.createElement('div');e.className='msg';e.innerHTML=`<div class="av ${o.ag?'av-ag':''}" style="${o.bg?`background:${o.bg}`:''};">${o.init}</div><div class="mb"><div class="mh"><span class="un ${o.ag?'un-ag':''}">${o.name}</span>${o.ag?'<span class="app-tag">APP</span>':''}<span class="ts">${o.ts}</span>${o.role?`<span class="role">${o.role}</span>`:''}</div><div class="mt">${o.html}</div>${o.btns?`<div class="btns" id="b${o.bid}">${o.btns.map((b,i)=>`<button class="btn ${i===0?'btn-p':'btn-s'}">${b}</button>`).join('')}</div>`:''}</div>`;msgs.appendChild(e);setTimeout(()=>{e.classList.add('show');if(o.btns)setTimeout(()=>{const b=$('b'+o.bid);if(b)b.classList.add('show')},350)},60);scroll();}
+function addThread(o){const e=document.createElement('div');e.className='thread-r';e.innerHTML=`<div class="th"><div class="sm-av" style="background:${o.bg}">${o.init}</div><span class="un">${o.name}</span><span class="ts">${o.ts}</span>${o.role?`<span class="role">${o.role}</span>`:''}</div><div class="mt">${o.html}</div>${o.btns?`<div class="btns show">${o.btns.map((b,i)=>`<button class="btn ${i===0?'btn-a':'btn-s'}">${b}</button>`).join('')}</div>`:''}`;msgs.appendChild(e);setTimeout(()=>e.classList.add('show'),60);scroll();}
+function insight(before,now){el(`<div class="ins-bar"></div><div class="ins-body"><div class="ins-before"><em>${before}</em></div><div class="ins-now"><em>Now: </em>${now}</div></div>`,'insight');}
+async function typeInput(text){const ib=$('ib'),ip=$('ip'),it=$('it'),ic=$('ic');ib.classList.add('active');ip.classList.add('hide');ic.classList.add('on');for(const c of text){it.textContent+=c;scroll();await D(23+Math.random()*17)}await D(460);ib.style.transition='opacity .15s';ib.style.opacity='0';await D(150);it.textContent='';ic.classList.remove('on');ip.classList.remove('hide');ib.classList.remove('active');ib.style.opacity='1';}
+
 async function run(){
-  await D(700);
-  secDiv('① The Trigger');await D(500);
-  await typing('ag','📦','Store Pulse',1900);
-  addMsg({ag:true,init:'📦',name:'Store Pulse',time:'Today at 7:42 AM',bid:'b1',btns:['Approve Transfers','Adjust Allocations','Escalate to DM'],html:`
-    <div class="ar"><span class="r-red">🚨</span><b>iPhone 17 Pro launch — 3 San Diego stores critically understocked</b></div>
-    Commerce Cloud OMS is tracking real-time sell-through against committed launch inventory. Three Southwest District stores opened with materially below-target iPhone 17 Pro 256GB Natural Titanium stock:
+  await D(5600);
+  $('intro').classList.add('fade');
+  await D(900);
+
+  await D(400);
+  const pb=document.createElement('div');pb.className='proc';
+  pb.innerHTML=`<div class="proc-spin"></div><div class="proc-dot"></div><div class="proc-txt">Store Pulse · Scanning live inventory across all Southwest District DCs…</div>`;
+  msgs.appendChild(pb);setTimeout(()=>pb.classList.add('show'),60);scroll();
+  await D(2600);pb.style.transition='opacity .4s';pb.style.opacity='0';await D(500);
+
+  secDiv('① The Signal — OMS Detected a Gap Before the Doors Opened');await D(400);
+  await type_ind('ag','📦','Store Pulse',1900);
+  addMsg({ag:true,init:'📦',name:'Store Pulse',ts:'Today at 8:47 AM',bid:'b1',
+    btns:['View Allocation Plan','Override Routing','Escalate'],
+    html:`<div class="ar"><span class="r-red">⚠️</span><b>Stock gap detected — iPhone 17 Pro launch, Southwest District</b></div>
+    Live OMS inventory scan shows <strong>3 San Diego stores</strong> understocked for iPhone 17 Pro launch. Current allocation falls <strong>91 units short</strong> of projected demand based on preorder deposits and foot-traffic forecasts.
     <div class="db">
-      <div class="dr"><span class="dk">Mission Valley · Allocated vs. needed</span><span class="dv warn">22 units (needed 60)</span></div>
-      <div class="dr"><span class="dk">San Ysidro · Allocated vs. needed</span><span class="dv warn">14 units (needed 40)</span></div>
-      <div class="dr"><span class="dk">Chula Vista · Allocated vs. needed</span><span class="dv warn">18 units (needed 45)</span></div>
-      <div class="dr"><span class="dk">Combined shortage</span><span class="dv neg">−91 units</span></div>
-      <div class="dr"><span class="dk">Phoenix Metro surplus available</span><span class="dv pos">+147 units</span></div>
-      <div class="dr"><span class="dk">Estimated missed launch-day revenue</span><span class="dv neg">~$91,000</span></div>
+      <div class="dr"><span class="dk">Mission Valley (SD-14)</span><span class="dv warn">38 units short</span></div>
+      <div class="dr"><span class="dk">Chula Vista (SD-22)</span><span class="dv warn">29 units short</span></div>
+      <div class="dr"><span class="dk">San Ysidro (SD-31)</span><span class="dv warn">24 units short</span></div>
+      <div class="dr"><span class="dk">Revenue at risk (projected)</span><span class="dv neg">$91,000</span></div>
+      <div class="dr"><span class="dk">Courier cost to resolve</span><span class="dv pos">$340</span></div>
     </div>`
   });
+  await D(700);
+  insight('Old way: district manager finds gap in 10am status call. Splits orders. Some customers leave empty-handed.','OMS flagged 91-unit shortage at 8:47am — before a single customer walked in.');
 
-  await D(2400);secDiv('② The Agent Action');await D(500);
-  await typing('ag','📦','Store Pulse',2200);
-  addMsg({ag:true,init:'📦',name:'Store Pulse',time:'Today at 7:43 AM',html:`
-    <div class="ar"><span class="r-blue">🔄</span><b>OMS transfer routes staged — Marcus, one call before dispatch</b></div>
-    OMS identified optimal inter-store routes from Phoenix Metro surplus to close all three gaps by 10:45am:
+  await D(2200);secDiv('② What OMS Already Routed — One Decision Needed');await D(400);
+  await type_ind('ag','📦','Store Pulse',2100);
+  addMsg({ag:true,init:'📦',name:'Store Pulse',ts:'Today at 8:48 AM',
+    html:`<div class="ar"><span class="r-blue">🚚</span><b>Rerouting plan ready — needs your call on Mission Valley priority</b></div>
+    Commerce Cloud OMS has cross-referenced real-time DC inventory across the Southwest region and staged a complete-order fulfillment plan:
     <ul>
-      <li><strong>Mission Valley</strong> ← 38 units from Scottsdale Fashion Square (priority courier, ~2.5 hrs)</li>
-      <li><strong>San Ysidro</strong> ← 26 units from Phoenix Chandler (same dispatch run as Mission Valley)</li>
-      <li><strong>Chula Vista</strong> ← 27 units from Phoenix Tempe Marketplace (parallel courier)</li>
+      <li><strong>SD-22 (Chula Vista)</strong> + <strong>SD-31 (San Ysidro)</strong>: Pull from Fresno DC — same-day courier, arrives 11:30am</li>
+      <li><strong>SD-14 (Mission Valley)</strong>: Two options — Fresno (higher cost, guaranteed 10am) or Houston DC (lower cost, 1pm risk)</li>
     </ul>
     <div class="db">
-      <div class="dr"><span class="dk">Estimated delivery to all 3 stores by</span><span class="dv pos">10:45 AM</span></div>
-      <div class="dr"><span class="dk">Transfer courier cost</span><span class="dv warn">$340</span></div>
-      <div class="dr"><span class="dk">Units recovered</span><span class="dv pos">91 units</span></div>
-      <div class="dr"><span class="dk">Revenue protected (est.)</span><span class="dv pos">~$91,000</span></div>
+      <div class="dr"><span class="dk">Fresno route (Mission Valley)</span><span class="dv">+$648 premium · arrives 10:00am ✓</span></div>
+      <div class="dr"><span class="dk">Houston route (Mission Valley)</span><span class="dv">standard rate · arrives 1:00pm risk</span></div>
+      <div class="dr"><span class="dk">Revenue protected (if Fresno)</span><span class="dv pos">$91,000</span></div>
     </div>
-    ⏸ <strong>Transfer staged but not dispatched.</strong> Marcus — Mission Valley has context you should weigh in on first.`
+    ⏸ <strong>Marcus's call:</strong> Mission Valley opens at 9am with a line. Which route?`
+  });
+  await D(700);
+  insight('Old way: manually check 3 DC spreadsheets, call each location, hope stock matches. Takes 2+ hours.','OMS cross-checked all DCs in real time and staged a complete resolution plan automatically.');
+
+  await D(2200);secDiv('③ The Human Moment — The Call Only Marcus Can Make');await D(400);
+  const hs=document.createElement('div');hs.className='human-spot';
+  hs.innerHTML=`<div class="hs-lbl">Why this stops here</div><div class="hs-txt">Agentforce knows inventory. It doesn't know Marcus has 200 preorder customers lined up at Mission Valley right now. That context — that specific store, that specific day — is why the human is in the loop.</div>`;
+  msgs.appendChild(hs);setTimeout(()=>hs.classList.add('show'),60);scroll();
+  await D(1100);
+
+  await typeInput('Mission Valley has 200 preorder customers. Take Fresno. Absorb the $648. Not worth a single customer walkout on launch day.');
+  await D(350);
+  addThread({bg:'#0891b2',init:'MO',name:'Marcus Okafor',ts:'8:49 AM',role:'District Manager, Southwest',
+    btns:['Confirm Fresno for All 3 Stores','See Full Routing Summary'],
+    html:`Mission Valley has 200 preorder customers who've been waiting weeks. <strong>Take Fresno — absorb the $648 premium.</strong> Not worth a single walkout on launch day. Confirm and dispatch.`
   });
 
-  await D(2200);secDiv('③ The Human Moment');await D(700);
-  await typeInput('Mission Valley has a 9am VIP pre-order appointment — push their 38 units to priority dispatch. Bump San Ysidro to 30, they always run hot on launch days.');
-  await D(400);
-  addThread({bg:'#e20074',init:'MO',name:'Marcus Okafor',time:'7:45 AM',role:'District Ops Manager',
-    btns:['Apply Priority + Qty Update, Dispatch','Dispatch As Staged'],
-    html:`Mission Valley has a 9am VIP pre-order appointment — those 38 units need to be in the door before 8:45am. Put them on priority dispatch.<br><br>
-    Also bump San Ysidro from 26 to <strong>30 units</strong> — they consistently run 20% above forecast on launch days for this SKU. Chula Vista stays at 27. Go.`
-  });
-
-  await D(2000);secDiv('④ The Result');await D(500);
-  await typing('ag','📦','Store Pulse',1300);
-  addMsg({ag:true,init:'📦',name:'Store Pulse',time:'Today at 7:46 AM',html:`
-    <div class="rc">
-      <div class="rc-hdr"><span style="font-size:20px">✅</span><span class="rc-title">iPhone 17 Pro transfers dispatched — 3 stores covered</span><span class="rc-badge">En Route</span></div>
-      <ul class="rc-list">
-        <li><span>⏱</span><span><strong>Before agents:</strong> Launch-day gaps discovered reactively when store managers called the DM; inter-store transfers arranged manually over 30–60 minutes, often arriving after peak morning traffic had walked out</span></li>
-        <li><span>⚡</span><span><strong>Now:</strong> 91-unit gap detected at store open, transfer routes optimized, and dispatch staged in <strong>under 2 minutes.</strong> Marcus's VIP flag and quantity bump applied in one reply</span></li>
-        <li><span>💰</span><span><strong>Outcome:</strong> 91 units arrive by 10:45am — protecting an estimated <strong>$91,000 in launch-day revenue</strong> for a $340 courier cost</span></li>
-      </ul>
-    </div>`
-  });
-  await D(1200);W('replay').classList.add('show');
+  await D(2000);secDiv('④ The Outcome');await D(300);
+  const rh=document.createElement('div');rh.className='result';
+  rh.innerHTML=`<div class="result-num">$91K</div>
+    <div class="result-lbl">launch revenue protected — $340 courier cost, resolved before 9am</div>
+    <ul class="result-list">
+      <li><span class="rc">✓</span><span>All <strong>91 units</strong> rerouted from Fresno DC — Mission Valley, Chula Vista, and San Ysidro fully stocked before opening</span></li>
+      <li><span class="rc">✓</span><span>Marcus spent <strong>45 seconds</strong> on a decision that would have taken 2 hours to even surface in the old model</span></li>
+      <li><span class="rc">✓</span><span>Zero split orders. Zero customers turned away. OMS ran headlessly overnight — <strong>no one opened a spreadsheet, no one ran a report</strong></span></li>
+    </ul>`;
+  msgs.appendChild(rh);setTimeout(()=>rh.classList.add('show'),60);scroll();
+  await D(1000);$('replay').classList.add('show');
 }
 window.onload=()=>run();
 </script>

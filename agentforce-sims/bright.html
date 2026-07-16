@@ -6,38 +6,61 @@
 <title>Bright Innovation Labs · Agentforce + Slack</title>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-:root{--brand:#f472b6;--sidebar:#1a0a14;--sidebar-active:#db2777}
+:root{--brand:#f472b6;--brand2:#db2777;--sidebar:#1a0a14}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh;overflow:hidden;display:flex;flex-direction:column}
-.top-bar{height:4px;background:linear-gradient(90deg,#1a0a14,#db2777,#f9a8d4,#db2777);background-size:200% 100%;animation:shimmer 3s linear infinite}
+
+#intro{position:fixed;inset:0;background:linear-gradient(160deg,#100009 0%,#1a0a14 50%,#0d0008 100%);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;transition:opacity .8s ease}
+#intro.fade{opacity:0;pointer-events:none}
+.intro-logo{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:20px}
+.intro-company{font-size:46px;font-weight:900;color:#fff;margin-bottom:4px;letter-spacing:-.02em}
+.intro-product{font-size:15px;font-weight:700;color:var(--brand);letter-spacing:.1em;text-transform:uppercase;margin-bottom:48px}
+.intro-scene{max-width:560px;text-align:center;margin-bottom:32px}
+.intro-scene p{font-size:20px;color:rgba(255,255,255,.8);line-height:1.8;margin-bottom:2px}
+.intro-scene .h{color:#fff;font-weight:900}
+.intro-without{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 24px;max-width:500px;text-align:center;margin-bottom:36px}
+.intro-without .lbl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(224,30,90,.7);margin-bottom:5px}
+.intro-without p{font-size:15px;color:#aaa;line-height:1.65}
+.intro-cta{font-size:13px;color:var(--brand);font-weight:700;opacity:.75;animation:pulse 2.2s ease-in-out infinite}
+.intro-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--brand);animation:ibar 5.5s linear forwards}
+@keyframes ibar{0%{width:0}100%{width:100%}}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+.top-bar{height:4px;background:linear-gradient(90deg,#1a0a14,var(--brand),#db2777,var(--brand));background-size:200% 100%;animation:shimmer 3s linear infinite;flex-shrink:0}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .slack{display:flex;flex:1;overflow:hidden}
-.sb{width:248px;background:var(--sidebar);display:flex;flex-direction:column;flex-shrink:0}
-.sb-header{padding:14px 16px 12px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px}
-.sb-logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#db2777,#9d174d);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;flex-shrink:0}
+.sb{width:244px;background:var(--sidebar);display:flex;flex-direction:column;flex-shrink:0}
+.sb-hdr{padding:14px 16px 12px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:10px}
+.sb-logo{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--brand),var(--brand2));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;flex-shrink:0}
 .sb-name{font-size:15px;font-weight:900;color:#fff}
-.sb-dot{width:8px;height:8px;border-radius:50%;background:#2bac76;margin-left:auto;flex-shrink:0}
-.sb-body{flex:1;overflow-y:auto;padding:8px 0 12px}
-.sb-label{font-size:11px;font-weight:700;color:#7a7b7c;padding:8px 16px 3px;letter-spacing:.05em;text-transform:uppercase}
-.ch{padding:5px 8px 5px 16px;border-radius:4px;margin:1px 6px;font-size:14px;color:#c9cacc;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ch.active{background:var(--sidebar-active);color:#fff;font-weight:700}
-.ch:not(.active):hover{background:rgba(255,255,255,.06)}
+.sb-dot{width:8px;height:8px;border-radius:50%;background:#2bac76;margin-left:auto}
+.sb-body{flex:1;overflow-y:auto;padding:6px 0 12px}
+.sb-lbl{font-size:11px;font-weight:700;color:#6b6c6e;padding:8px 16px 3px;letter-spacing:.05em;text-transform:uppercase}
+.ch{padding:5px 8px 5px 16px;border-radius:4px;margin:1px 6px;font-size:14px;color:#c9cacc;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch.active{background:var(--brand2);color:#fff;font-weight:700}
 .ch-h{opacity:.5;font-size:13px;flex-shrink:0}
-.badge{margin-left:auto;background:#e01e5a;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;flex-shrink:0}
-.status-dot{font-size:9px;margin-right:2px}
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#1a1d21}
-.ch-hdr{padding:11px 20px;border-bottom:1px solid #2c2d30;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.badge{margin-left:auto;background:#e01e5a;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px}
+.sdot{font-size:9px;margin-right:1px}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.ch-hdr{padding:10px 20px;border-bottom:1px solid #2c2d30;display:flex;align-items:center;gap:8px;flex-shrink:0}
 .ch-hdr-name{font-size:15px;font-weight:900;color:#fff}
-.ch-hdr-div{width:1px;height:18px;background:#2c2d30;margin:0 4px}
+.div-line{width:1px;height:18px;background:#2c2d30;margin:0 4px}
 .ch-hdr-desc{font-size:13px;color:#8b8c8e}
-.avatars{margin-left:auto;display:flex}
-.mini-av{width:22px;height:22px;border-radius:50%;border:2px solid #1a1d21;margin-left:-7px;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#fff}
-.msgs-wrap{flex:1;overflow-y:auto;padding:14px 20px 8px;scroll-behavior:smooth}
-.sec-div{display:flex;align-items:center;gap:10px;margin:18px 0 12px;opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s}
-.sec-div.show{opacity:.7;transform:none}
+.avs{margin-left:auto;display:flex;align-items:center}
+.mav{width:22px;height:22px;border-radius:50%;border:2px solid #1a1d21;margin-left:-7px;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#fff}
+.mw{flex:1;overflow-y:auto;padding:12px 20px 6px;scroll-behavior:smooth}
+.proc{display:flex;align-items:center;gap:9px;padding:6px 14px;background:rgba(244,114,182,.05);border:1px solid rgba(244,114,182,.12);border-radius:20px;margin:6px auto 14px;width:fit-content;opacity:0;transform:translateY(-4px);transition:opacity .4s,transform .4s}
+.proc.show{opacity:1;transform:none}
+.proc-spin{width:11px;height:11px;border:2px solid rgba(244,114,182,.2);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.proc-dot{width:6px;height:6px;border-radius:50%;background:var(--brand);animation:blink2 1.4s ease-in-out infinite}
+@keyframes blink2{0%,100%{opacity:.3}50%{opacity:1}}
+.proc-txt{font-size:12px;color:#c9cacc;font-weight:700}
+.sec-div{display:flex;align-items:center;gap:10px;margin:16px 0 8px;opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s}
+.sec-div.show{opacity:.65;transform:none}
 .sdl{flex:1;height:1px;background:#2c2d30}
 .sdt{font-size:10px;font-weight:700;color:#8b8c8e;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;padding:2px 10px;border:1px solid #2c2d30;border-radius:10px}
-.msg{display:flex;gap:11px;padding:5px 4px 3px;border-radius:4px;margin-bottom:2px;opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s}
+.msg{display:flex;gap:11px;padding:4px 3px;border-radius:4px;margin-bottom:2px;opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s}
 .msg.show{opacity:1;transform:none}
 .msg:hover{background:rgba(255,255,255,.025)}
 .av{width:36px;height:36px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;margin-top:2px}
@@ -46,7 +69,7 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 .mh{display:flex;align-items:baseline;gap:8px;margin-bottom:3px;flex-wrap:wrap}
 .un{font-size:15px;font-weight:900;color:#fff}
 .un-ag{color:#c8d8ff}
-.app-tag{background:#1a7f64;color:#fff;font-size:10px;padding:1px 5px;border-radius:2px;font-weight:700;letter-spacing:.03em}
+.app-tag{background:#1a7f64;color:#fff;font-size:10px;padding:1px 5px;border-radius:2px;font-weight:700}
 .ts{font-size:12px;color:#6b6c6e}
 .role{font-size:12px;color:#8b8c8e}
 .mt{font-size:15px;line-height:1.65;color:#d1d2d3}
@@ -56,23 +79,43 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 .mt li strong{color:#fff}
 .ar{display:flex;align-items:center;gap:7px;font-size:15px;font-weight:900;margin-bottom:8px}
 .r-red{color:#e01e5a}.r-green{color:#2bac76}.r-yellow{color:#ecb22e}.r-blue{color:#1d9bd1}
-.db{background:#222529;border-radius:6px;padding:11px 16px;margin:10px 0 4px;border-left:4px solid var(--brand)}
+.db{background:#222529;border-radius:6px;padding:10px 16px;margin:10px 0 4px;border-left:4px solid var(--brand)}
 .dr{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:14px}
 .dr:last-child{border-bottom:none}
 .dk{color:#8b8c8e}.dv{color:#fff;font-weight:700}.pos{color:#2bac76}.neg{color:#e01e5a}.warn{color:#ecb22e}
-.btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;opacity:0;transition:opacity .4s}
+.insight{margin:8px 0 8px 47px;display:flex;gap:11px;align-items:stretch;opacity:0;transform:translateX(10px);transition:opacity .5s,transform .5s}
+.insight.show{opacity:1;transform:none}
+.ins-bar{width:3px;background:var(--brand);border-radius:2px;flex-shrink:0}
+.ins-body{flex:1}
+.ins-before{font-size:12px;color:#8b8c8e;margin-bottom:4px;line-height:1.5}
+.ins-before em{background:rgba(224,30,90,.1);border-radius:3px;padding:1px 6px;color:#e87e9a;font-style:normal}
+.ins-now{font-size:13px;color:#d1d2d3;font-weight:700;line-height:1.5}
+.ins-now em{color:var(--brand);font-style:normal}
+.human-spot{margin:12px 0 6px;background:rgba(244,114,182,.04);border:1px solid rgba(244,114,182,.16);border-radius:8px;padding:10px 14px;opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s}
+.human-spot.show{opacity:1;transform:none}
+.hs-lbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin-bottom:4px}
+.hs-txt{font-size:13px;color:#c9cacc;line-height:1.6}
+.btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;opacity:0;transition:opacity .4s}
 .btns.show{opacity:1}
-.btn{padding:7px 16px;border-radius:4px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:filter .15s,transform .1s}
+.btn{padding:7px 15px;border-radius:4px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:filter .15s,transform .1s}
 .btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
-.btn-p{background:var(--sidebar-active);color:#fff}
+.btn-p{background:var(--brand2);color:#fff}
 .btn-s{background:#313131;color:#d1d2d3;border:1px solid rgba(255,255,255,.1)}
 .btn-a{background:#2bac76;color:#fff}
-.thread-reply{margin:3px 0 10px 47px;background:#1e2124;border-radius:6px;padding:12px 14px;border-left:3px solid rgba(255,255,255,.06);opacity:0;transform:translateY(5px);transition:opacity .35s,transform .35s}
-.thread-reply.show{opacity:1;transform:none}
+.thread-r{margin:2px 0 8px 47px;background:#1e2124;border-radius:6px;padding:11px 14px;border-left:3px solid rgba(255,255,255,.05);opacity:0;transform:translateY(5px);transition:opacity .35s,transform .35s}
+.thread-r.show{opacity:1;transform:none}
 .th{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;flex-wrap:wrap}
-.sm-av{width:28px;height:28px;border-radius:4px;flex-shrink:0;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#fff}
-.typing-area{min-height:38px;padding:2px 4px;display:flex;align-items:center}
-.typing-row{display:flex;align-items:center;gap:10px}
+.sm-av{width:26px;height:26px;border-radius:4px;flex-shrink:0;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#fff}
+.result{margin:8px 0 4px;text-align:center;padding:22px 20px;background:linear-gradient(135deg,rgba(244,114,182,.07),rgba(219,39,119,.07));border:1px solid rgba(244,114,182,.18);border-radius:10px;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}
+.result.show{opacity:1;transform:none}
+.result-num{font-size:54px;font-weight:900;color:var(--brand);line-height:1;margin-bottom:5px}
+.result-lbl{font-size:15px;color:#fff;font-weight:700;margin-bottom:16px}
+.result-list{list-style:none;text-align:left;max-width:520px;margin:0 auto}
+.result-list li{font-size:14px;color:#c9cacc;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:10px;line-height:1.6;align-items:flex-start}
+.result-list li:last-child{border-bottom:none}
+.rc{color:#2bac76;font-size:15px;flex-shrink:0;margin-top:1px}
+.ta{min-height:38px;padding:2px 3px;display:flex;align-items:center}
+.t-row{display:flex;align-items:center;gap:10px}
 .t-av{width:22px;height:22px;border-radius:4px;flex-shrink:0;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#fff}
 .t-av.ag{background:linear-gradient(135deg,#7c3aed,#0176d3)}
 .t-dots{display:flex;align-items:center;gap:3px;background:#313131;padding:6px 10px;border-radius:12px}
@@ -80,173 +123,178 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 .t-dots span:nth-child(2){animation-delay:.2s}
 .t-dots span:nth-child(3){animation-delay:.4s}
 @keyframes bounce{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-3px);opacity:1}}
-.t-label{font-size:12px;color:#8b8c8e}
-.input-wrap{padding:0 20px 10px;flex-shrink:0}
-.input-bar{border:1px solid #3e3e3e;border-radius:8px;padding:9px 14px;min-height:40px;display:flex;align-items:center;transition:border-color .3s,box-shadow .3s;gap:4px}
-.input-bar.active{border-color:var(--brand);box-shadow:0 0 0 2px rgba(244,114,182,.15)}
-.i-placeholder{font-size:14px;color:#4a4b4c;user-select:none}
-.i-placeholder.hide{display:none}
-.i-text{font-size:14px;color:#d1d2d3}
-.i-cursor{width:2px;height:16px;background:var(--brand);animation:blink .8s step-end infinite;display:none;margin-left:1px}
-.i-cursor.on{display:inline-block}
+.t-lbl{font-size:12px;color:#8b8c8e}
+.iw{padding:0 20px 10px;flex-shrink:0}
+.ib{border:1px solid #3e3e3e;border-radius:8px;padding:9px 14px;min-height:40px;display:flex;align-items:center;transition:border-color .3s,box-shadow .3s;gap:4px}
+.ib.active{border-color:var(--brand);box-shadow:0 0 0 2px rgba(244,114,182,.15)}
+.ip{font-size:14px;color:#4a4b4c}
+.ip.hide{display:none}
+.it{font-size:14px;color:#d1d2d3}
+.ic{width:2px;height:16px;background:var(--brand);animation:blink .8s step-end infinite;display:none;margin-left:1px}
+.ic.on{display:inline-block}
 @keyframes blink{50%{opacity:0}}
-.rc{background:linear-gradient(135deg,rgba(244,114,182,.07),rgba(124,58,237,.07));border:1px solid rgba(244,114,182,.25);border-radius:8px;padding:15px 18px;margin-top:10px}
-.rc-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.rc-title{font-size:15px;font-weight:900;color:#fff;flex:1}
-.rc-badge{font-size:11px;padding:2px 10px;background:#2bac76;color:#fff;border-radius:20px;font-weight:700}
-.rc-list{list-style:none}
-.rc-list li{font-size:14px;color:#c9cacc;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:8px;line-height:1.55;align-items:flex-start}
-.rc-list li:last-child{border-bottom:none}
-.why{background:#13151a;border-top:1px solid #2c2d30;padding:10px 20px;font-size:13px;color:#6b6c6e;font-style:italic;line-height:1.6;flex-shrink:0}
-.why strong{color:#1d9bd1;font-style:normal}
-#replay{position:fixed;bottom:64px;right:20px;background:var(--sidebar-active);color:#fff;border:none;border-radius:20px;padding:8px 20px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:999}
+.footer-why{background:#13151a;border-top:1px solid #2c2d30;padding:9px 20px;font-size:13px;color:#6b6c6e;font-style:italic;line-height:1.6;flex-shrink:0}
+.footer-why strong{color:#1d9bd1;font-style:normal}
+#replay{position:fixed;bottom:60px;right:20px;background:var(--brand2);color:#fff;border:none;border-radius:20px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:999}
 #replay.show{opacity:1;transform:none}
-::-webkit-scrollbar{width:5px}
-::-webkit-scrollbar-thumb{background:#3e3e3e;border-radius:3px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#3e3e3e;border-radius:3px}
 </style>
 </head>
 <body>
+
+<div id="intro">
+  <div class="intro-logo">Salesforce Agentforce · Simulation</div>
+  <div class="intro-company">Bright Innovation Labs</div>
+  <div class="intro-product">Revenue Cloud Advanced</div>
+  <div class="intro-scene">
+    <p>4 change orders in <span class="h">63 days</span> on the Naturium hair color project.</p>
+    <p><span class="h">$46,400 in unbilled scope</span> is quietly accumulating.</p>
+    <p>The team is heads-down. No one is watching the contract.</p>
+  </div>
+  <div class="intro-without">
+    <div class="lbl">Without Agentforce</div>
+    <p>The account manager notices at the 90-day check-in. The project is nearly complete. Trying to bill $46K after the fact strains the client relationship — and most of it just gets written off.</p>
+  </div>
+  <div class="intro-cta">Watch what happens instead ↓</div>
+  <div class="intro-bar"></div>
+</div>
+
 <div class="top-bar"></div>
 <div class="slack">
   <div class="sb">
-    <div class="sb-header">
+    <div class="sb-hdr">
       <div class="sb-logo">B</div>
       <span class="sb-name">Bright Innovation</span>
       <div class="sb-dot"></div>
     </div>
     <div class="sb-body">
-      <div class="sb-label">Channels</div>
+      <div class="sb-lbl">Channels</div>
       <div class="ch"><span class="ch-h">#</span>general</div>
-      <div class="ch"><span class="ch-h">#</span>project-ohio-facility</div>
-      <div class="ch"><span class="ch-h">#</span>project-arizona-facility</div>
+      <div class="ch"><span class="ch-h">#</span>client-ops</div>
       <div class="ch active"><span class="ch-h">#</span>client-ops-margin-watch</div>
-      <div class="ch"><span class="ch-h">#</span>formulation-r-and-d<span class="badge">2</span></div>
-      <div class="ch"><span class="ch-h">#</span>supply-chain</div>
-      <div class="ch"><span class="ch-h">#</span>quality-compliance</div>
-      <div class="ch"><span class="ch-h">#</span>finance</div>
-      <div class="sb-label" style="margin-top:10px">Direct Messages</div>
-      <div class="ch"><span class="status-dot" style="color:#2bac76">●</span>Rachel Osei</div>
-      <div class="ch"><span class="status-dot" style="color:#6b6c6e">●</span>Miguel Torres</div>
-      <div class="ch"><span class="status-dot" style="color:#2bac76">●</span>Zoe Chen</div>
+      <div class="ch"><span class="ch-h">#</span>projects-naturium<span class="badge">2</span></div>
+      <div class="ch"><span class="ch-h">#</span>finance-revenue</div>
+      <div class="ch"><span class="ch-h">#</span>contracts-legal</div>
+      <div class="ch"><span class="ch-h">#</span>project-management</div>
+      <div class="sb-lbl" style="margin-top:10px">Direct Messages</div>
+      <div class="ch"><span class="sdot" style="color:#2bac76">●</span> Rachel Osei</div>
+      <div class="ch"><span class="sdot" style="color:#6b6c6e">●</span> James Liu</div>
     </div>
   </div>
+
   <div class="main">
     <div class="ch-hdr">
       <span style="color:#8b8c8e;font-size:17px">#</span>
       <span class="ch-hdr-name">client-ops-margin-watch</span>
-      <div class="ch-hdr-div"></div>
-      <span class="ch-hdr-desc">Project Margin · Change Orders · Contract Amendments</span>
-      <div class="avatars" style="margin-left:auto">
-        <div class="mini-av" style="background:#db2777">RO</div>
-        <div class="mini-av" style="background:#0891b2">MT</div>
-        <div class="mini-av" style="background:#7b5cf5">ZC</div>
-        <span style="font-size:12px;color:#8b8c8e;margin-left:6px">8</span>
+      <div class="div-line"></div>
+      <span class="ch-hdr-desc">Client Projects · Scope &amp; Margin Intelligence</span>
+      <div class="avs">
+        <div class="mav" style="background:#059669;margin-left:8px">RO</div>
+        <div class="mav" style="background:#7c3aed">JL</div>
+        <span style="font-size:12px;color:#8b8c8e;margin-left:5px">8</span>
       </div>
     </div>
-    <div class="msgs-wrap" id="mw">
+
+    <div class="mw" id="mw">
       <div id="msgs"></div>
-      <div class="typing-area" id="ta"></div>
+      <div class="ta" id="ta"></div>
     </div>
-    <div class="input-wrap">
-      <div class="input-bar" id="ib">
-        <span class="i-placeholder" id="ip">Message #client-ops-margin-watch</span>
-        <span class="i-text" id="it"></span>
-        <span class="i-cursor" id="ic"></span>
+
+    <div class="iw">
+      <div class="ib" id="ib">
+        <span class="ip" id="ip">Message #client-ops-margin-watch</span>
+        <span class="it" id="it"></span>
+        <span class="ic" id="ic"></span>
       </div>
     </div>
-    <div class="why"><strong>Why Slack is the glue:</strong> Revenue Cloud Advanced tracks every change order against the original contract and surfaces the gap before product ships. Slack is where Rachel makes the one call that matters — absorbing CO-002 protects a client relationship more than the $4,800 is worth, and no algorithm can make that call.</div>
+    <div class="footer-why"><strong>The headless advantage:</strong> Revenue Cloud watched scope creep across every active project simultaneously — no PM had to notice, no account manager had to track it manually. Margin Watch surfaced $46,400 at day 63 with the change order origins already researched. Rachel made the call in 90 seconds. $41,600 recovered.</div>
   </div>
 </div>
+
 <button id="replay" onclick="location.reload()">↺ Replay</button>
+
 <script>
-const W=id=>document.getElementById(id);
+const $=id=>document.getElementById(id);
 const D=ms=>new Promise(r=>setTimeout(r,ms));
-const mw=W('mw'),msgs=W('msgs'),ta=W('ta');
+const mw=$('mw'),msgs=$('msgs'),ta=$('ta');
 function scroll(){mw.scrollTop=mw.scrollHeight}
-async function typing(cls,init,name,ms){
-  ta.innerHTML=`<div class="typing-row"><div class="t-av ${cls}">${init}</div><div class="t-dots"><span></span><span></span><span></span></div><span class="t-label">${name} is typing…</span></div>`;
-  scroll();await D(ms);ta.innerHTML='';
-}
-function secDiv(t){
-  const e=document.createElement('div');e.className='sec-div';
-  e.innerHTML=`<div class="sdl"></div><div class="sdt">${t}</div><div class="sdl"></div>`;
-  msgs.appendChild(e);setTimeout(()=>e.classList.add('show'),50);scroll();
-}
-function addMsg(o){
-  const e=document.createElement('div');e.className='msg';
-  e.innerHTML=`<div class="av ${o.ag?'av-ag':''}" style="${o.bg?`background:${o.bg}`:''};">${o.init}</div><div class="mb"><div class="mh"><span class="un ${o.ag?'un-ag':''}">${o.name}</span>${o.ag?'<span class="app-tag">APP</span>':''}<span class="ts">${o.time}</span>${o.role?`<span class="role">${o.role}</span>`:''}</div><div class="mt">${o.html}</div>${o.btns?`<div class="btns" id="b${o.bid}">${o.btns.map((b,i)=>`<button class="btn ${i===0?'btn-p':'btn-s'}">${b}</button>`).join('')}</div>`:''}</div>`;
-  msgs.appendChild(e);setTimeout(()=>{e.classList.add('show');if(o.btns)setTimeout(()=>{const b=W('b'+o.bid);if(b)b.classList.add('show')},350)},60);scroll();
-}
-function addThread(o){
-  const e=document.createElement('div');e.className='thread-reply';
-  e.innerHTML=`<div class="th"><div class="sm-av" style="background:${o.bg}">${o.init}</div><span class="un">${o.name}</span><span class="ts">${o.time}</span>${o.role?`<span class="role">${o.role}</span>`:''}</div><div class="mt">${o.html}</div>${o.btns?`<div class="btns show">${o.btns.map((b,i)=>`<button class="btn ${i===0?'btn-a':'btn-s'}">${b}</button>`).join('')}</div>`:''}`;
-  msgs.appendChild(e);setTimeout(()=>e.classList.add('show'),60);scroll();
-}
-async function typeInput(text){
-  const ib=W('ib'),ip=W('ip'),it=W('it'),ic=W('ic');
-  ib.classList.add('active');ip.classList.add('hide');ic.classList.add('on');
-  for(const c of text){it.textContent+=c;scroll();await D(25+Math.random()*18)}
-  await D(550);ib.style.transition='opacity .15s';ib.style.opacity='0';
-  await D(160);it.textContent='';ic.classList.remove('on');ip.classList.remove('hide');
-  ib.classList.remove('active');ib.style.opacity='1';
-}
+async function type_ind(cls,init,name,ms){ta.innerHTML=`<div class="t-row"><div class="t-av ${cls}">${init}</div><div class="t-dots"><span></span><span></span><span></span></div><span class="t-lbl">${name} is typing…</span></div>`;scroll();await D(ms);ta.innerHTML='';}
+function el(html,cls){const e=document.createElement('div');if(cls)e.className=cls;e.innerHTML=html;msgs.appendChild(e);setTimeout(()=>e.classList.add('show'),60);scroll();return e;}
+function secDiv(t){el(`<div class="sdl"></div><div class="sdt">${t}</div><div class="sdl"></div>`,'sec-div')}
+function addMsg(o){const e=document.createElement('div');e.className='msg';e.innerHTML=`<div class="av ${o.ag?'av-ag':''}" style="${o.bg?`background:${o.bg}`:''};">${o.init}</div><div class="mb"><div class="mh"><span class="un ${o.ag?'un-ag':''}">${o.name}</span>${o.ag?'<span class="app-tag">APP</span>':''}<span class="ts">${o.ts}</span>${o.role?`<span class="role">${o.role}</span>`:''}</div><div class="mt">${o.html}</div>${o.btns?`<div class="btns" id="b${o.bid}">${o.btns.map((b,i)=>`<button class="btn ${i===0?'btn-p':'btn-s'}">${b}</button>`).join('')}</div>`:''}</div>`;msgs.appendChild(e);setTimeout(()=>{e.classList.add('show');if(o.btns)setTimeout(()=>{const b=$('b'+o.bid);if(b)b.classList.add('show')},350)},60);scroll();}
+function addThread(o){const e=document.createElement('div');e.className='thread-r';e.innerHTML=`<div class="th"><div class="sm-av" style="background:${o.bg}">${o.init}</div><span class="un">${o.name}</span><span class="ts">${o.ts}</span>${o.role?`<span class="role">${o.role}</span>`:''}</div><div class="mt">${o.html}</div>${o.btns?`<div class="btns show">${o.btns.map((b,i)=>`<button class="btn ${i===0?'btn-a':'btn-s'}">${b}</button>`).join('')}</div>`:''}`;msgs.appendChild(e);setTimeout(()=>e.classList.add('show'),60);scroll();}
+function insight(before,now){el(`<div class="ins-bar"></div><div class="ins-body"><div class="ins-before"><em>${before}</em></div><div class="ins-now"><em>Now: </em>${now}</div></div>`,'insight');}
+async function typeInput(text){const ib=$('ib'),ip=$('ip'),it=$('it'),ic=$('ic');ib.classList.add('active');ip.classList.add('hide');ic.classList.add('on');for(const c of text){it.textContent+=c;scroll();await D(23+Math.random()*17)}await D(460);ib.style.transition='opacity .15s';ib.style.opacity='0';await D(150);it.textContent='';ic.classList.remove('on');ip.classList.remove('hide');ib.classList.remove('active');ib.style.opacity='1';}
+
 async function run(){
-  await D(700);
-  secDiv('① The Trigger');await D(500);
-  await typing('ag','💰','Margin Watch',1900);
-  addMsg({ag:true,init:'💰',name:'Margin Watch',time:'Today at 11:07 AM',bid:'b1',btns:['Generate Amendment Package','Review Change Detail','Flag for Client Call'],html:`
-    <div class="ar"><span class="r-red">🔴</span><b>Margin alert — Naturium Hair Color Project · OH Facility</b></div>
-    This project has accumulated <strong>4 change orders in 63 days.</strong> The original contract price has <strong>not been updated</strong> since kickoff — all scope changes have been absorbed by Bright with no client billing.
-    <div class="db">
-      <div class="dr"><span class="dk">CO-001 · Ingredient substitution (Keratin → BioKeratin Pro)</span><span class="dv warn">+$0.34/unit</span></div>
-      <div class="dr"><span class="dk">CO-002 · pH adjustment / internal quality hold</span><span class="dv warn">+$0.12/unit</span></div>
-      <div class="dr"><span class="dk">CO-003 · Packaging upgrade (standard → airless pump)</span><span class="dv warn">+$0.91/unit</span></div>
-      <div class="dr"><span class="dk">CO-004 · Fragrance re-formulation batch</span><span class="dv warn">$6,200 flat</span></div>
-      <div class="dr"><span class="dk">Original contract (40,000 units)</span><span class="dv">$312,000</span></div>
-      <div class="dr"><span class="dk">Actual cost-to-complete</span><span class="dv neg">$358,400</span></div>
-      <div class="dr"><span class="dk">Unrecovered scope</span><span class="dv neg">~$46,400</span></div>
-      <div class="dr"><span class="dk">Days until ship</span><span class="dv warn">18 days</span></div>
-    </div>`
-  });
-
-  await D(2400);secDiv('② The Agent Action');await D(500);
-  await typing('ag','💰','Margin Watch',2200);
-  addMsg({ag:true,init:'💰',name:'Margin Watch',time:'Today at 11:08 AM',html:`
-    <div class="ar"><span class="r-blue">📄</span><b>Amendment package generated — awaiting Rachel's review before client send</b></div>
-    Revenue Cloud has consolidated all 4 change orders into a single client-facing amendment with supporting documentation:
-    <div class="db">
-      <div class="dr"><span class="dk">CO-001 · 40,000 units × $0.34</span><span class="dv">$13,600</span></div>
-      <div class="dr"><span class="dk">CO-002 · 40,000 units × $0.12</span><span class="dv">$4,800</span></div>
-      <div class="dr"><span class="dk">CO-003 · 40,000 units × $0.91</span><span class="dv">$36,400</span></div>
-      <div class="dr"><span class="dk">CO-004 · Fragrance batch flat cost</span><span class="dv">$6,200</span></div>
-      <div class="dr"><span class="dk">Proposed amendment total</span><span class="dv pos">+$46,400 → new contract: $358,400</span></div>
-    </div>
-    Attached: ingredient sub cert (CO-001), packaging spec (CO-003), fragrance batch record (CO-004).<br><br>
-    ⏸ <strong>One question before sending:</strong> CO-002 was a pH variance on Bright's formulation — not a client spec change. Rachel, do you want to bill it or absorb it?`
-  });
-
-  await D(2200);secDiv('③ The Human Moment');await D(700);
-  await typeInput('Absorb CO-002 — that was our issue. Recover the other three. Add a proactive cover note, send at $41,600.');
+  await D(5600);$('intro').classList.add('fade');await D(900);
   await D(400);
-  addThread({bg:'#db2777',init:'RO',name:'Rachel Osei',time:'11:14 AM',role:'VP Client Services',
-    btns:['Apply CO-002 Absorption & Send Amendment','Preview Final Draft'],
-    html:`<strong>Absorb CO-002.</strong> The pH adjustment was a formulation variance on our side — that's on us, not Naturium. The other three are clearly client-driven and they know it.<br><br>
-    Send at <strong>$41,600</strong>. Add a note to the cover letter that we're flagging this proactively — I want Naturium to see we're on top of their project before they ever see the final invoice. That client relationship matters more than the $4,800.`
-  });
+  const pb=document.createElement('div');pb.className='proc';
+  pb.innerHTML=`<div class="proc-spin"></div><div class="proc-dot"></div><div class="proc-txt">Margin Watch · Reconciling Naturium project change orders against signed SOW…</div>`;
+  msgs.appendChild(pb);setTimeout(()=>pb.classList.add('show'),60);scroll();
+  await D(2600);pb.style.transition='opacity .4s';pb.style.opacity='0';await D(500);
 
-  await D(2000);secDiv('④ The Result');await D(500);
-  await typing('ag','💰','Margin Watch',1300);
-  addMsg({ag:true,init:'💰',name:'Margin Watch',time:'Today at 11:16 AM',html:`
-    <div class="rc">
-      <div class="rc-hdr"><span style="font-size:20px">✅</span><span class="rc-title">Naturium amendment sent — $41,600 recovered</span><span class="rc-badge">$41,600 Recovered</span></div>
-      <ul class="rc-list">
-        <li><span>⏱</span><span><strong>Before agents:</strong> Change orders lived in email threads and a shared spreadsheet; margin erosion typically discovered at invoice time — after product shipped — and often never recovered because the conversation felt adversarial</span></li>
-        <li><span>⚡</span><span><strong>Now:</strong> $46,400 gap identified, documented, and sent as a proactive amendment <strong>18 days before ship date.</strong> Rachel spent 2 minutes on a decision, not 2 hours building a case</span></li>
-        <li><span>🤝</span><span><strong>Rachel's call paid off:</strong> Absorbing CO-002 ($4,800) while recovering $41,600 signals a trustworthy partner. That relationship judgment is something no algorithm should make</span></li>
-      </ul>
+  secDiv('① The Signal — $46,400 in Scope Creep, Caught at Day 63');await D(400);
+  await type_ind('ag','📊','Margin Watch',1900);
+  addMsg({ag:true,init:'📊',name:'Margin Watch',ts:'Today at 3:44 PM',bid:'b1',
+    btns:['Review Change Orders','Bill Now','Schedule Client Call'],
+    html:`<div class="ar"><span class="r-red">⚠️</span><b>$46,400 in unrecovered scope — Naturium Hair Color Project, Day 63</b></div>
+    Revenue Cloud has reconciled all change orders against the signed SOW for the Naturium Hair Color Formulation project. <strong>4 change orders totaling $46,400</strong> are outside original scope and have not been billed.
+    <div class="db">
+      <div class="dr"><span class="dk">CO-001 — Additional SKU color variants</span><span class="dv warn">+$18,200 · unbilled</span></div>
+      <div class="dr"><span class="dk">CO-002 — pH stability testing (Bright-initiated)</span><span class="dv warn">+$4,800 · unbilled</span></div>
+      <div class="dr"><span class="dk">CO-003 — Packaging compliance update</span><span class="dv warn">+$14,600 · unbilled</span></div>
+      <div class="dr"><span class="dk">CO-004 — Extended lab hours, Q3 rush</span><span class="dv warn">+$8,800 · unbilled</span></div>
+      <div class="dr"><span class="dk">Total unrecovered scope</span><span class="dv neg">$46,400</span></div>
     </div>`
   });
-  await D(1200);W('replay').classList.add('show');
+  await D(700);
+  insight('Old way: account manager notices at 90-day check-in. Project nearly done. $46K request after the fact strains the relationship — most gets written off.','Caught at day 63 with billing window still clean. Change order origins already researched.');
+
+  await D(2200);secDiv('② The Analysis — One Change Order Is Bright\'s Own Risk');await D(400);
+  await type_ind('ag','📊','Margin Watch',2100);
+  addMsg({ag:true,init:'📊',name:'Margin Watch',ts:'Today at 3:45 PM',
+    html:`<div class="ar"><span class="r-blue">🔎</span><b>CO-002 was Bright-initiated — Rachel's call on whether to absorb or bill</b></div>
+    Origin review of all 4 change orders:
+    <ul>
+      <li><strong>CO-001 (Color variants, $18,200):</strong> Naturium-requested via email — fully billable, contract clause 4.1</li>
+      <li><strong>CO-002 (pH stability, $4,800):</strong> <strong>Bright-initiated</strong> — required to resolve a formulation issue from Bright's original spec. This is a judgment call.</li>
+      <li><strong>CO-003 (Packaging, $14,600):</strong> Regulatory change — shared risk, billable at full per clause 4.3</li>
+      <li><strong>CO-004 (Rush hours, $8,800):</strong> Client-requested acceleration — fully billable</li>
+    </ul>
+    <div class="db">
+      <div class="dr"><span class="dk">Clearly billable (CO-001, 003, 004)</span><span class="dv pos">$41,600</span></div>
+      <div class="dr"><span class="dk">Judgment call — Bright-initiated (CO-002)</span><span class="dv warn">$4,800</span></div>
+    </div>
+    ⏸ <strong>Rachel's call:</strong> Absorb CO-002 as a goodwill gesture, or bill in full?`
+  });
+  await D(700);
+  insight('Old way: account manager manually reviews 4 COs, researches email chains, interprets contract. Half a day minimum.','Revenue Cloud traced each CO to its origin and flagged the one requiring Rachel\'s judgment.');
+
+  await D(2200);secDiv('③ The Human Moment — Rachel Knows the Client Relationship');await D(400);
+  const hs=document.createElement('div');hs.className='human-spot';
+  hs.innerHTML=`<div class="hs-lbl">Why this stops here</div><div class="hs-txt">Revenue Cloud knows CO-002 is technically Bright's fault. It doesn't know Rachel is in renewal discussions with Naturium next month — and that absorbing $4,800 on a $46K project sends a very specific relationship signal. That's not contract logic. That's account management.</div>`;
+  msgs.appendChild(hs);setTimeout(()=>hs.classList.add('show'),60);scroll();
+  await D(1100);
+
+  await typeInput('Absorb CO-002 — we caused the pH issue, owns it. Bill the full $41,600 on the other three. I\'ll mention CO-002 on the call so they know we took the hit.');
+  await D(350);
+  addThread({bg:'#059669',init:'RO',name:'Rachel Osei',ts:'3:46 PM',role:'Senior Account Manager',
+    btns:['Send Revised Invoice ($41,600)','Preview Before Sending'],
+    html:`Absorb CO-002 — that was our formulation miss, not theirs. <strong>Bill the full $41,600 on CO-001, 003, and 004.</strong> I'll mention we absorbed CO-002 on the check-in call — costs us $4,800 but buys goodwill going into renewal. Send the invoice.`
+  });
+
+  await D(2000);secDiv('④ The Outcome');await D(300);
+  const rh=document.createElement('div');rh.className='result';
+  rh.innerHTML=`<div class="result-num">$41,600</div>
+    <div class="result-lbl">recovered from scope creep that would have been written off — caught at day 63, not day 90</div>
+    <ul class="result-list">
+      <li><span class="rc">✓</span><span><strong>$41,600 invoiced</strong> cleanly — while the project was still in flight and the billing was easy to justify</span></li>
+      <li><span class="rc">✓</span><span>Rachel strategically <strong>absorbed CO-002 ($4,800)</strong> as a goodwill gesture heading into renewal — a decision no algorithm could make</span></li>
+      <li><span class="rc">✓</span><span>Revenue Cloud watched scope across every active project — <strong>no PM had to notice, no account manager had to track it</strong>. It surfaced automatically, with the research already done.</span></li>
+    </ul>`;
+  msgs.appendChild(rh);setTimeout(()=>rh.classList.add('show'),60);scroll();
+  await D(1000);$('replay').classList.add('show');
 }
 window.onload=()=>run();
 </script>

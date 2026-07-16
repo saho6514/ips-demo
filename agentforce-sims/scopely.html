@@ -6,41 +6,75 @@
 <title>Scopely · Agentforce + Slack</title>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-:root{--brand:#ff6b35;--brand-dark:#c94d1a;--sidebar:#1c0f28;--sidebar-active:#ff6b35}
+:root{--brand:#ff6b35;--brand2:#9b59b6;--sidebar:#1c0f28}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh;overflow:hidden;display:flex;flex-direction:column}
-.top-bar{height:4px;background:linear-gradient(90deg,#1c0f28,var(--brand),#9b59b6,var(--brand));background-size:200% 100%;animation:shimmer 3s linear infinite}
+
+/* INTRO OVERLAY */
+#intro{position:fixed;inset:0;background:linear-gradient(160deg,#0e0818 0%,#1c0f28 50%,#2a1408 100%);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;transition:opacity .8s ease}
+#intro.fade{opacity:0;pointer-events:none}
+.intro-logo{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:20px}
+.intro-company{font-size:46px;font-weight:900;color:#fff;margin-bottom:4px;letter-spacing:-.02em}
+.intro-product{font-size:15px;font-weight:700;color:var(--brand);letter-spacing:.1em;text-transform:uppercase;margin-bottom:48px}
+.intro-scene{max-width:560px;text-align:center;margin-bottom:32px}
+.intro-scene p{font-size:20px;color:rgba(255,255,255,.8);line-height:1.8;margin-bottom:2px}
+.intro-scene .h{color:#fff;font-weight:900}
+.intro-without{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 24px;max-width:500px;text-align:center;margin-bottom:36px}
+.intro-without .lbl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(224,30,90,.7);margin-bottom:5px}
+.intro-without p{font-size:15px;color:#aaa;line-height:1.65}
+.intro-cta{font-size:13px;color:var(--brand);font-weight:700;opacity:.75;animation:pulse 2.2s ease-in-out infinite}
+.intro-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--brand);animation:ibar 5.5s linear forwards}
+@keyframes ibar{0%{width:0}100%{width:100%}}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+/* TOP SHIMMER */
+.top-bar{height:4px;background:linear-gradient(90deg,#1c0f28,var(--brand),#9b59b6,var(--brand));background-size:200% 100%;animation:shimmer 3s linear infinite;flex-shrink:0}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .slack{display:flex;flex:1;overflow:hidden}
+
 /* SIDEBAR */
-.sb{width:248px;background:var(--sidebar);display:flex;flex-direction:column;flex-shrink:0}
-.sb-header{padding:14px 16px 12px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px}
-.sb-logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--brand),#9b59b6);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;flex-shrink:0}
+.sb{width:244px;background:var(--sidebar);display:flex;flex-direction:column;flex-shrink:0}
+.sb-hdr{padding:14px 16px 12px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:10px}
+.sb-logo{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--brand),var(--brand2));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;flex-shrink:0}
 .sb-name{font-size:15px;font-weight:900;color:#fff}
-.sb-dot{width:8px;height:8px;border-radius:50%;background:#2bac76;margin-left:auto;flex-shrink:0}
-.sb-body{flex:1;overflow-y:auto;padding:8px 0 12px}
-.sb-label{font-size:11px;font-weight:700;color:#7a7b7c;padding:8px 16px 3px;letter-spacing:.05em;text-transform:uppercase}
-.ch{padding:5px 8px 5px 16px;border-radius:4px;margin:1px 6px;font-size:14px;color:#c9cacc;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ch.active{background:var(--sidebar-active);color:#fff;font-weight:700}
-.ch:not(.active):hover{background:rgba(255,255,255,.06)}
+.sb-dot{width:8px;height:8px;border-radius:50%;background:#2bac76;margin-left:auto}
+.sb-body{flex:1;overflow-y:auto;padding:6px 0 12px}
+.sb-lbl{font-size:11px;font-weight:700;color:#6b6c6e;padding:8px 16px 3px;letter-spacing:.05em;text-transform:uppercase}
+.ch{padding:5px 8px 5px 16px;border-radius:4px;margin:1px 6px;font-size:14px;color:#c9cacc;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch.active{background:var(--brand);color:#fff;font-weight:700}
 .ch-h{opacity:.5;font-size:13px;flex-shrink:0}
-.badge{margin-left:auto;background:#e01e5a;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;flex-shrink:0}
-.status-dot{font-size:9px;margin-right:2px}
+.badge{margin-left:auto;background:#e01e5a;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px}
+.sdot{font-size:9px;margin-right:1px}
+
 /* MAIN */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#1a1d21}
-.ch-hdr{padding:11px 20px;border-bottom:1px solid #2c2d30;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.ch-hdr{padding:10px 20px;border-bottom:1px solid #2c2d30;display:flex;align-items:center;gap:8px;flex-shrink:0}
 .ch-hdr-name{font-size:15px;font-weight:900;color:#fff}
-.ch-hdr-div{width:1px;height:18px;background:#2c2d30;margin:0 4px}
+.div-line{width:1px;height:18px;background:#2c2d30;margin:0 4px}
 .ch-hdr-desc{font-size:13px;color:#8b8c8e}
-.avatars{margin-left:auto;display:flex}
-.mini-av{width:22px;height:22px;border-radius:50%;border:2px solid #1a1d21;margin-left:-7px;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#fff}
+.avs{margin-left:auto;display:flex;align-items:center}
+.mav{width:22px;height:22px;border-radius:50%;border:2px solid #1a1d21;margin-left:-7px;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#fff}
+
 /* MESSAGES */
-.msgs-wrap{flex:1;overflow-y:auto;padding:14px 20px 8px;scroll-behavior:smooth}
-.sec-div{display:flex;align-items:center;gap:10px;margin:18px 0 12px;opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s}
-.sec-div.show{opacity:.7;transform:none}
+.mw{flex:1;overflow-y:auto;padding:12px 20px 6px;scroll-behavior:smooth}
+
+/* headless processing */
+.proc{display:flex;align-items:center;gap:9px;padding:6px 14px;background:rgba(255,107,53,.05);border:1px solid rgba(255,107,53,.12);border-radius:20px;margin:6px auto 14px;width:fit-content;opacity:0;transform:translateY(-4px);transition:opacity .4s,transform .4s}
+.proc.show{opacity:1;transform:none}
+.proc-spin{width:11px;height:11px;border:2px solid rgba(255,107,53,.2);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.proc-dot{width:6px;height:6px;border-radius:50%;background:var(--brand);animation:blink2 1.4s ease-in-out infinite}
+@keyframes blink2{0%,100%{opacity:.3}50%{opacity:1}}
+.proc-txt{font-size:12px;color:#c9cacc;font-weight:700}
+
+/* section dividers */
+.sec-div{display:flex;align-items:center;gap:10px;margin:16px 0 8px;opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s}
+.sec-div.show{opacity:.65;transform:none}
 .sdl{flex:1;height:1px;background:#2c2d30}
 .sdt{font-size:10px;font-weight:700;color:#8b8c8e;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;padding:2px 10px;border:1px solid #2c2d30;border-radius:10px}
-.msg{display:flex;gap:11px;padding:5px 4px 3px;border-radius:4px;margin-bottom:2px;opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s}
+
+/* messages */
+.msg{display:flex;gap:11px;padding:4px 3px;border-radius:4px;margin-bottom:2px;opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s}
 .msg.show{opacity:1;transform:none}
 .msg:hover{background:rgba(255,255,255,.025)}
 .av{width:36px;height:36px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;margin-top:2px}
@@ -49,7 +83,7 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 .mh{display:flex;align-items:baseline;gap:8px;margin-bottom:3px;flex-wrap:wrap}
 .un{font-size:15px;font-weight:900;color:#fff}
 .un-ag{color:#c8d8ff}
-.app-tag{background:#1a7f64;color:#fff;font-size:10px;padding:1px 5px;border-radius:2px;font-weight:700;letter-spacing:.03em}
+.app-tag{background:#1a7f64;color:#fff;font-size:10px;padding:1px 5px;border-radius:2px;font-weight:700}
 .ts{font-size:12px;color:#6b6c6e}
 .role{font-size:12px;color:#8b8c8e}
 .mt{font-size:15px;line-height:1.65;color:#d1d2d3}
@@ -59,25 +93,56 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 .mt li strong{color:#fff}
 .ar{display:flex;align-items:center;gap:7px;font-size:15px;font-weight:900;margin-bottom:8px}
 .r-red{color:#e01e5a}.r-green{color:#2bac76}.r-yellow{color:#ecb22e}.r-blue{color:#1d9bd1}
-.db{background:#222529;border-radius:6px;padding:11px 16px;margin:10px 0 4px;border-left:4px solid var(--brand)}
+
+.db{background:#222529;border-radius:6px;padding:10px 16px;margin:10px 0 4px;border-left:4px solid var(--brand)}
 .dr{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:14px}
 .dr:last-child{border-bottom:none}
 .dk{color:#8b8c8e}.dv{color:#fff;font-weight:700}.pos{color:#2bac76}.neg{color:#e01e5a}.warn{color:#ecb22e}
-.btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;opacity:0;transition:opacity .4s}
+
+/* insight callouts */
+.insight{margin:8px 0 8px 47px;display:flex;gap:11px;align-items:stretch;opacity:0;transform:translateX(10px);transition:opacity .5s,transform .5s}
+.insight.show{opacity:1;transform:none}
+.ins-bar{width:3px;background:var(--brand);border-radius:2px;flex-shrink:0}
+.ins-body{flex:1}
+.ins-before{font-size:12px;color:#8b8c8e;margin-bottom:4px;line-height:1.5}
+.ins-before em{background:rgba(224,30,90,.1);border-radius:3px;padding:1px 6px;color:#e87e9a;font-style:normal}
+.ins-now{font-size:13px;color:#d1d2d3;font-weight:700;line-height:1.5}
+.ins-now em{color:var(--brand);font-style:normal}
+
+/* human spotlight */
+.human-spot{margin:12px 0 6px;background:rgba(255,107,53,.04);border:1px solid rgba(255,107,53,.16);border-radius:8px;padding:10px 14px;opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s}
+.human-spot.show{opacity:1;transform:none}
+.hs-lbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin-bottom:4px}
+.hs-txt{font-size:13px;color:#c9cacc;line-height:1.6}
+
+/* buttons */
+.btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;opacity:0;transition:opacity .4s}
 .btns.show{opacity:1}
-.btn{padding:7px 16px;border-radius:4px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:filter .15s,transform .1s}
+.btn{padding:7px 15px;border-radius:4px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:filter .15s,transform .1s}
 .btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
 .btn-p{background:var(--brand);color:#fff}
 .btn-s{background:#313131;color:#d1d2d3;border:1px solid rgba(255,255,255,.1)}
 .btn-a{background:#2bac76;color:#fff}
-/* THREAD */
-.thread-reply{margin:3px 0 10px 47px;background:#1e2124;border-radius:6px;padding:12px 14px;border-left:3px solid rgba(255,255,255,.06);opacity:0;transform:translateY(5px);transition:opacity .35s,transform .35s}
-.thread-reply.show{opacity:1;transform:none}
+
+/* thread reply */
+.thread-r{margin:2px 0 8px 47px;background:#1e2124;border-radius:6px;padding:11px 14px;border-left:3px solid rgba(255,255,255,.05);opacity:0;transform:translateY(5px);transition:opacity .35s,transform .35s}
+.thread-r.show{opacity:1;transform:none}
 .th{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;flex-wrap:wrap}
-.sm-av{width:28px;height:28px;border-radius:4px;flex-shrink:0;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#fff}
-/* TYPING */
-.typing-area{min-height:38px;padding:2px 4px;display:flex;align-items:center}
-.typing-row{display:flex;align-items:center;gap:10px}
+.sm-av{width:26px;height:26px;border-radius:4px;flex-shrink:0;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#fff}
+
+/* result hero */
+.result{margin:8px 0 4px;text-align:center;padding:22px 20px;background:linear-gradient(135deg,rgba(255,107,53,.07),rgba(155,89,182,.07));border:1px solid rgba(255,107,53,.18);border-radius:10px;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}
+.result.show{opacity:1;transform:none}
+.result-num{font-size:54px;font-weight:900;color:var(--brand);line-height:1;margin-bottom:5px}
+.result-lbl{font-size:15px;color:#fff;font-weight:700;margin-bottom:16px}
+.result-list{list-style:none;text-align:left;max-width:520px;margin:0 auto}
+.result-list li{font-size:14px;color:#c9cacc;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:10px;line-height:1.6;align-items:flex-start}
+.result-list li:last-child{border-bottom:none}
+.rc{color:#2bac76;font-size:15px;flex-shrink:0;margin-top:1px}
+
+/* typing */
+.ta{min-height:38px;padding:2px 3px;display:flex;align-items:center}
+.t-row{display:flex;align-items:center;gap:10px}
 .t-av{width:22px;height:22px;border-radius:4px;flex-shrink:0;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#fff}
 .t-av.ag{background:linear-gradient(135deg,#7c3aed,#0176d3)}
 .t-dots{display:flex;align-items:center;gap:3px;background:#313131;padding:6px 10px;border-radius:12px}
@@ -85,203 +150,232 @@ body{font-family:'Lato',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh
 .t-dots span:nth-child(2){animation-delay:.2s}
 .t-dots span:nth-child(3){animation-delay:.4s}
 @keyframes bounce{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-3px);opacity:1}}
-.t-label{font-size:12px;color:#8b8c8e}
-/* INPUT */
-.input-wrap{padding:0 20px 10px;flex-shrink:0}
-.input-bar{border:1px solid #3e3e3e;border-radius:8px;padding:9px 14px;min-height:40px;display:flex;align-items:center;transition:border-color .3s,box-shadow .3s;position:relative;gap:4px}
-.input-bar.active{border-color:var(--brand);box-shadow:0 0 0 2px rgba(255,107,53,.15)}
-.i-placeholder{font-size:14px;color:#4a4b4c;user-select:none}
-.i-placeholder.hide{display:none}
-.i-text{font-size:14px;color:#d1d2d3}
-.i-cursor{width:2px;height:16px;background:var(--brand);animation:blink .8s step-end infinite;display:none;margin-left:1px}
-.i-cursor.on{display:inline-block}
+.t-lbl{font-size:12px;color:#8b8c8e}
+
+/* input bar */
+.iw{padding:0 20px 10px;flex-shrink:0}
+.ib{border:1px solid #3e3e3e;border-radius:8px;padding:9px 14px;min-height:40px;display:flex;align-items:center;transition:border-color .3s,box-shadow .3s;gap:4px}
+.ib.active{border-color:var(--brand);box-shadow:0 0 0 2px rgba(255,107,53,.15)}
+.ip{font-size:14px;color:#4a4b4c}
+.ip.hide{display:none}
+.it{font-size:14px;color:#d1d2d3}
+.ic{width:2px;height:16px;background:var(--brand);animation:blink .8s step-end infinite;display:none;margin-left:1px}
+.ic.on{display:inline-block}
 @keyframes blink{50%{opacity:0}}
-/* RESULT CARD */
-.rc{background:linear-gradient(135deg,rgba(255,107,53,.07),rgba(124,58,237,.07));border:1px solid rgba(255,107,53,.25);border-radius:8px;padding:15px 18px;margin-top:10px}
-.rc-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.rc-title{font-size:15px;font-weight:900;color:#fff;flex:1}
-.rc-badge{font-size:11px;padding:2px 10px;background:#2bac76;color:#fff;border-radius:20px;font-weight:700}
-.rc-list{list-style:none}
-.rc-list li{font-size:14px;color:#c9cacc;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:8px;line-height:1.55;align-items:flex-start}
-.rc-list li:last-child{border-bottom:none}
-/* FOOTER */
-.why{background:#13151a;border-top:1px solid #2c2d30;padding:10px 20px;font-size:13px;color:#6b6c6e;font-style:italic;line-height:1.6;flex-shrink:0}
-.why strong{color:#1d9bd1;font-style:normal}
-/* REPLAY */
-#replay{position:fixed;bottom:64px;right:20px;background:var(--brand);color:#fff;border:none;border-radius:20px;padding:8px 20px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:999}
+
+/* footer */
+.footer-why{background:#13151a;border-top:1px solid #2c2d30;padding:9px 20px;font-size:13px;color:#6b6c6e;font-style:italic;line-height:1.6;flex-shrink:0}
+.footer-why strong{color:#1d9bd1;font-style:normal}
+
+/* replay */
+#replay{position:fixed;bottom:60px;right:20px;background:var(--brand);color:#fff;border:none;border-radius:20px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:999}
 #replay.show{opacity:1;transform:none}
-#replay:hover{filter:brightness(1.1)}
-::-webkit-scrollbar{width:5px}
-::-webkit-scrollbar-thumb{background:#3e3e3e;border-radius:3px}
+
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#3e3e3e;border-radius:3px}
 </style>
 </head>
 <body>
+
+<!-- INTRO -->
+<div id="intro">
+  <div class="intro-logo">Salesforce Agentforce · Simulation</div>
+  <div class="intro-company">Scopely</div>
+  <div class="intro-product">Marketing Cloud Next</div>
+  <div class="intro-scene">
+    <p>It's <span class="h">Monday, 9am.</span></p>
+    <p><span class="h">47,312 high-LTV players</span> have gone quiet for 48 hours.</p>
+    <p>Boardwalk Blitz closes in <span class="h">71 hours.</span></p>
+  </div>
+  <div class="intro-without">
+    <div class="lbl">Without Agentforce</div>
+    <p>Your team discovers this at Wednesday's standup. A 4-day campaign build cycle begins — if it begins at all before the event window closes.</p>
+  </div>
+  <div class="intro-cta">Watch what happens instead ↓</div>
+  <div class="intro-bar"></div>
+</div>
+
 <div class="top-bar"></div>
 <div class="slack">
   <div class="sb">
-    <div class="sb-header">
+    <div class="sb-hdr">
       <div class="sb-logo">S</div>
       <span class="sb-name">Scopely</span>
       <div class="sb-dot"></div>
     </div>
     <div class="sb-body">
-      <div class="sb-label">Channels</div>
+      <div class="sb-lbl">Channels</div>
       <div class="ch"><span class="ch-h">#</span>general</div>
       <div class="ch"><span class="ch-h">#</span>monetization</div>
       <div class="ch"><span class="ch-h">#</span>product-monopoly-go</div>
       <div class="ch active"><span class="ch-h">#</span>player-lifecycle-mgo</div>
       <div class="ch"><span class="ch-h">#</span>live-events<span class="badge">3</span></div>
       <div class="ch"><span class="ch-h">#</span>data-analytics</div>
-      <div class="ch"><span class="ch-h">#</span>product-pokemon-go</div>
       <div class="ch"><span class="ch-h">#</span>game-economy</div>
-      <div class="ch"><span class="ch-h">#</span>engineering</div>
-      <div class="sb-label" style="margin-top:10px">Direct Messages</div>
-      <div class="ch"><span class="status-dot" style="color:#2bac76">●</span>Jordan Vasquez</div>
-      <div class="ch"><span class="status-dot" style="color:#6b6c6e">●</span>Kai Watanabe</div>
-      <div class="ch"><span class="status-dot" style="color:#2bac76">●</span>Rania Farooq</div>
+      <div class="sb-lbl" style="margin-top:10px">Direct Messages</div>
+      <div class="ch"><span class="sdot" style="color:#2bac76">●</span> Jordan Vasquez</div>
+      <div class="ch"><span class="sdot" style="color:#6b6c6e">●</span> Kai Watanabe</div>
     </div>
   </div>
+
   <div class="main">
     <div class="ch-hdr">
       <span style="color:#8b8c8e;font-size:17px">#</span>
       <span class="ch-hdr-name">player-lifecycle-mgo</span>
-      <div class="ch-hdr-div"></div>
+      <div class="div-line"></div>
       <span class="ch-hdr-desc">Monopoly GO · Retention &amp; Monetization Signals</span>
-      <div class="avatars" style="margin-left:auto">
-        <div class="mini-av" style="background:#0891b2">JV</div>
-        <div class="mini-av" style="background:#7c3aed">KW</div>
-        <div class="mini-av" style="background:#ea580c">RF</div>
-        <span style="font-size:12px;color:#8b8c8e;margin-left:6px">12</span>
+      <div class="avs">
+        <div class="mav" style="background:#0891b2;margin-left:8px">JV</div>
+        <div class="mav" style="background:#7c3aed">KW</div>
+        <span style="font-size:12px;color:#8b8c8e;margin-left:5px">12</span>
       </div>
     </div>
-    <div class="msgs-wrap" id="mw">
+
+    <div class="mw" id="mw">
       <div id="msgs"></div>
-      <div class="typing-area" id="ta"></div>
+      <div class="ta" id="ta"></div>
     </div>
-    <div class="input-wrap">
-      <div class="input-bar" id="ib">
-        <span class="i-placeholder" id="ip">Message #player-lifecycle-mgo</span>
-        <span class="i-text" id="it"></span>
-        <span class="i-cursor" id="ic"></span>
+
+    <div class="iw">
+      <div class="ib" id="ib">
+        <span class="ip" id="ip">Message #player-lifecycle-mgo</span>
+        <span class="it" id="it"></span>
+        <span class="ic" id="ic"></span>
       </div>
     </div>
-    <div class="why"><strong>Why Slack is the glue:</strong> Marketing Cloud Next runs the automation at machine speed across 47,312 players simultaneously; Slack is the one moment where Jordan's monetization instinct — "our whales want spins, not stickers" — upgrades the outcome before a single message goes out.</div>
+    <div class="footer-why"><strong>The headless advantage:</strong> Agentforce ran overnight — no one opened Salesforce, no report was scheduled, no analyst was briefed. It surfaced once in Slack, with 47,312 journeys already staged, for the one call only Jordan could make. Total time from detection to deployment: 3 minutes.</div>
   </div>
 </div>
-<button id="replay" onclick="location.reload()">↺ Replay</button>
-<script>
-const W=id=>document.getElementById(id);
-const D=ms=>new Promise(r=>setTimeout(r,ms));
-const mw=W('mw'),msgs=W('msgs'),ta=W('ta');
 
+<button id="replay" onclick="location.reload()">↺ Replay</button>
+
+<script>
+const $=id=>document.getElementById(id);
+const D=ms=>new Promise(r=>setTimeout(r,ms));
+const mw=$('mw'),msgs=$('msgs'),ta=$('ta');
 function scroll(){mw.scrollTop=mw.scrollHeight}
 
-async function typing(cls,init,name,ms){
-  ta.innerHTML=`<div class="typing-row"><div class="t-av ${cls}">${init}</div><div class="t-dots"><span></span><span></span><span></span></div><span class="t-label">${name} is typing…</span></div>`;
+async function type_ind(cls,init,name,ms){
+  ta.innerHTML=`<div class="t-row"><div class="t-av ${cls}">${init}</div><div class="t-dots"><span></span><span></span><span></span></div><span class="t-lbl">${name} is typing…</span></div>`;
   scroll();await D(ms);ta.innerHTML='';
 }
-
-function secDiv(t){
+function el(html,cls){
   const e=document.createElement('div');
-  e.className='sec-div';
-  e.innerHTML=`<div class="sdl"></div><div class="sdt">${t}</div><div class="sdl"></div>`;
-  msgs.appendChild(e);setTimeout(()=>e.classList.add('show'),50);scroll();
-}
-
-function addMsg(o){
-  const e=document.createElement('div');
-  e.className='msg';
-  e.innerHTML=`
-    <div class="av ${o.ag?'av-ag':''}" style="${o.bg?`background:${o.bg}`:''};">${o.init}</div>
-    <div class="mb">
-      <div class="mh"><span class="un ${o.ag?'un-ag':''}">${o.name}</span>${o.ag?'<span class="app-tag">APP</span>':''}<span class="ts">${o.time}</span>${o.role?`<span class="role">${o.role}</span>`:''}</div>
-      <div class="mt">${o.html}</div>
-      ${o.btns?`<div class="btns" id="b${o.bid}">${o.btns.map((b,i)=>`<button class="btn ${i===0?'btn-p':'btn-s'}">${b}</button>`).join('')}</div>`:''}
-    </div>`;
+  if(cls)e.className=cls;
+  e.innerHTML=html;
   msgs.appendChild(e);
-  setTimeout(()=>{e.classList.add('show');if(o.btns)setTimeout(()=>{const b=W('b'+o.bid);if(b)b.classList.add('show')},350)},60);
+  setTimeout(()=>e.classList.add('show'),60);
   scroll();return e;
 }
-
+function secDiv(t){el(`<div class="sdl"></div><div class="sdt">${t}</div><div class="sdl"></div>`,'sec-div')}
+function addMsg(o){
+  const e=document.createElement('div');e.className='msg';
+  e.innerHTML=`<div class="av ${o.ag?'av-ag':''}" style="${o.bg?`background:${o.bg}`:''};">${o.init}</div><div class="mb"><div class="mh"><span class="un ${o.ag?'un-ag':''}">${o.name}</span>${o.ag?'<span class="app-tag">APP</span>':''}<span class="ts">${o.ts}</span>${o.role?`<span class="role">${o.role}</span>`:''}</div><div class="mt">${o.html}</div>${o.btns?`<div class="btns" id="b${o.bid}">${o.btns.map((b,i)=>`<button class="btn ${i===0?'btn-p':'btn-s'}">${b}</button>`).join('')}</div>`:''}</div>`;
+  msgs.appendChild(e);
+  setTimeout(()=>{e.classList.add('show');if(o.btns)setTimeout(()=>{const b=$('b'+o.bid);if(b)b.classList.add('show')},350)},60);
+  scroll();
+}
 function addThread(o){
-  const e=document.createElement('div');e.className='thread-reply';
-  e.innerHTML=`<div class="th"><div class="sm-av" style="background:${o.bg}">${o.init}</div><span class="un">${o.name}</span><span class="ts">${o.time}</span>${o.role?`<span class="role">${o.role}</span>`:''}</div><div class="mt">${o.html}</div>${o.btns?`<div class="btns show">${o.btns.map((b,i)=>`<button class="btn ${i===0?'btn-a':'btn-s'}">${b}</button>`).join('')}</div>`:''}`;
+  const e=document.createElement('div');e.className='thread-r';
+  e.innerHTML=`<div class="th"><div class="sm-av" style="background:${o.bg}">${o.init}</div><span class="un">${o.name}</span><span class="ts">${o.ts}</span>${o.role?`<span class="role">${o.role}</span>`:''}</div><div class="mt">${o.html}</div>${o.btns?`<div class="btns show">${o.btns.map((b,i)=>`<button class="btn ${i===0?'btn-a':'btn-s'}">${b}</button>`).join('')}</div>`:''}`;
   msgs.appendChild(e);setTimeout(()=>e.classList.add('show'),60);scroll();
 }
-
+function insight(before,now){
+  el(`<div class="ins-bar"></div><div class="ins-body"><div class="ins-before"><em>${before}</em></div><div class="ins-now"><em>Now: </em>${now}</div></div>`,'insight');
+}
 async function typeInput(text){
-  const ib=W('ib'),ip=W('ip'),it=W('it'),ic=W('ic');
+  const ib=$('ib'),ip=$('ip'),it=$('it'),ic=$('ic');
   ib.classList.add('active');ip.classList.add('hide');ic.classList.add('on');
-  for(const c of text){it.textContent+=c;scroll();await D(25+Math.random()*18)}
-  await D(550);
-  ib.style.transition='opacity .15s';ib.style.opacity='0';
-  await D(160);it.textContent='';ic.classList.remove('on');ip.classList.remove('hide');
+  for(const c of text){it.textContent+=c;scroll();await D(23+Math.random()*17)}
+  await D(460);ib.style.transition='opacity .15s';ib.style.opacity='0';
+  await D(150);it.textContent='';ic.classList.remove('on');ip.classList.remove('hide');
   ib.classList.remove('active');ib.style.opacity='1';
 }
 
 async function run(){
-  await D(700);
+  await D(5600);
+  $('intro').classList.add('fade');
+  await D(900);
 
-  // ① TRIGGER
-  secDiv('① The Trigger');await D(500);
-  await typing('ag','⚡','Momentum Scout',1900);
-  addMsg({ag:true,init:'⚡',name:'Momentum Scout',time:'Today at 9:14 AM',bid:'b1',btns:['Review Journey','Deploy Now','Snooze 4hrs'],html:`
-    <div class="ar"><span class="r-red">🚨</span><b>Churn risk detected — high-LTV cohort</b></div>
-    <strong>47,312 players</strong> in the Monopoly GO "Golden Banker" segment (top 8% by lifetime spend, avg. LTV $340) have not completed a Daily Wheel event in <strong>48+ hours</strong> — a pattern correlated with <strong>61% 30-day churn</strong> across the last 6 monthly cohorts.<br><br>
-    Event window: <strong>Boardwalk Blitz</strong> closes in 71 hours. This cohort typically drives <strong>$2.1M in event revenue</strong> when fully activated.
+  // headless processing indicator
+  await D(400);
+  const pb=document.createElement('div');
+  pb.className='proc';
+  pb.innerHTML=`<div class="proc-spin"></div><div class="proc-dot"></div><div class="proc-txt">Momentum Scout · Analyzing 47,312 player retention patterns overnight…</div>`;
+  msgs.appendChild(pb);
+  setTimeout(()=>pb.classList.add('show'),60);
+  scroll();await D(2600);
+  pb.style.transition='opacity .4s';pb.style.opacity='0';await D(500);
+
+  // ① THE SIGNAL
+  secDiv('① The Signal — What Agentforce Found While You Slept');await D(400);
+  await type_ind('ag','⚡','Momentum Scout',1900);
+  addMsg({ag:true,init:'⚡',name:'Momentum Scout',ts:'Today at 9:14 AM',bid:'b1',
+    btns:['Review Journeys','Deploy Now','Snooze 4 hrs'],
+    html:`<div class="ar"><span class="r-red">🚨</span><b>Churn risk detected — high-LTV cohort, Boardwalk Blitz window closing</b></div>
+    <strong>47,312 players</strong> in the Monopoly GO "Golden Banker" segment (top 8% by lifetime spend, avg. LTV $340) have not completed a Daily Wheel event in <strong>48+ hours</strong> — a pattern that correlates with <strong>61% 30-day churn</strong> across the last 6 monthly cohorts.<br><br>
+    <strong>Boardwalk Blitz</strong> closes in 71 hours. This cohort drives <strong>$2.1M in event revenue</strong> when fully activated.
     <div class="db">
-      <div class="dr"><span class="dk">Cohort size</span><span class="dv">47,312 players</span></div>
-      <div class="dr"><span class="dk">Avg. lifetime value</span><span class="dv">$340</span></div>
+      <div class="dr"><span class="dk">At-risk cohort</span><span class="dv">47,312 players · avg. LTV $340</span></div>
       <div class="dr"><span class="dk">30-day churn confidence</span><span class="dv warn">61%</span></div>
-      <div class="dr"><span class="dk">At-risk event revenue</span><span class="dv neg">$2.1M</span></div>
+      <div class="dr"><span class="dk">Revenue at risk (event window)</span><span class="dv neg">~$2.1M</span></div>
       <div class="dr"><span class="dk">Hours until Boardwalk Blitz closes</span><span class="dv warn">71 hrs</span></div>
     </div>`
   });
+  await D(700);
+  insight('Old way: discovered at Wednesday standup. 4-day campaign build cycle.','Detected overnight, surfaced at 9:14am — before the window closes.');
 
-  // ② AGENT ACTION
-  await D(2400);secDiv('② The Agent Action');await D(500);
-  await typing('ag','⚡','Momentum Scout',2100);
-  addMsg({ag:true,init:'⚡',name:'Momentum Scout',time:'Today at 9:15 AM',html:`
-    <div class="ar"><span class="r-blue">📡</span><b>Journeys staged — Tier 1 offer needs your call before send</b></div>
-    Marketing Cloud Next segmented all 47,312 players by LTV and timed delivery to each player's individual peak engagement window from Playgami behavioral data:
+  // ② AGENTFORCE ACTION
+  await D(2200);secDiv('② What Agentforce Already Built — Automatically');await D(400);
+  await type_ind('ag','⚡','Momentum Scout',2100);
+  addMsg({ag:true,init:'⚡',name:'Momentum Scout',ts:'Today at 9:15 AM',
+    html:`<div class="ar"><span class="r-blue">📡</span><b>47,312 personalized journeys staged — one decision needed from you</b></div>
+    Marketing Cloud Next segmented the full cohort by LTV tier and timed each message to each player's individual peak engagement window — automatically, using Playgami behavioral data:
     <ul>
-      <li><strong>Tier 1</strong> (top 2%, LTV $600+): Push + in-app — 500 bonus dice + Sticker Pack</li>
+      <li><strong>Tier 1</strong> (top 2%, LTV $600+): Push + in-app overlay — 500 bonus dice + Sticker Pack</li>
       <li><strong>Tier 2</strong> (mid 6%, LTV $200–$599): Push only — 250 bonus dice</li>
-      <li><strong>Tier 3</strong> (LTV $50–$199): Re-engagement push, no offer</li>
+      <li><strong>Tier 3</strong> (LTV $50–$199): Re-engagement push, no-cost offer</li>
     </ul>
     <div class="db">
-      <div class="dr"><span class="dk">Players personalized &amp; ready</span><span class="dv">47,312</span></div>
-      <div class="dr"><span class="dk">Baseline re-engagement (generic push)</span><span class="dv warn">18%</span></div>
-      <div class="dr"><span class="dk">Predicted re-engagement (personalized)</span><span class="dv pos">34%</span></div>
-      <div class="dr"><span class="dk">Incremental projected event revenue</span><span class="dv pos">+$714K</span></div>
+      <div class="dr"><span class="dk">Players segmented &amp; personalized</span><span class="dv">47,312 — no analyst involved</span></div>
+      <div class="dr"><span class="dk">Generic blast re-engagement rate</span><span class="dv warn">18%</span></div>
+      <div class="dr"><span class="dk">Personalized re-engagement (projected)</span><span class="dv pos">34%</span></div>
+      <div class="dr"><span class="dk">Incremental event revenue projected</span><span class="dv pos">+$714K</span></div>
     </div>
-    ⏸ <strong>Paused on Tier 1.</strong> Jordan — is the sticker pack right for your $600+ spenders?`
+    ⏸ <strong>One thing needs Jordan's judgment:</strong> Is the Tier 1 offer right for your $600+ spenders?`
   });
+  await D(700);
+  insight('Old way: 2 analysts, 2 days, manual segmentation, hope the brief was accurate.','47,312 personalized journeys staged automatically. Paused once for the call only Jordan can make.');
 
   // ③ HUMAN MOMENT
-  await D(2200);secDiv('③ The Human Moment');await D(700);
-  await typeInput('The Tier 1 offer is too light. Upgrade to the Premium Wheel spin — Tokyo event converted at 47% with it.');
-  await D(400);
-  addThread({bg:'#0891b2',init:'JV',name:'Jordan Vasquez',time:'9:16 AM',role:'VP Monetization',
-    btns:['Apply Upgrade & Deploy All Tiers','Preview Updated Offer'],
-    html:`The Tier 1 offer is too light for our whales. These players have spent $600+ — a sticker pack doesn't move them. <strong>Upgrade Tier 1 to the Premium Wheel spin.</strong> That's what we used for the Tokyo event and it converted at 47%. Keep Tiers 2 and 3 as-is. Go.`
+  await D(2200);secDiv('③ The Human Moment — The One Call Only You Can Make');await D(400);
+  const hs=document.createElement('div');
+  hs.className='human-spot';
+  hs.innerHTML=`<div class="hs-lbl">Why this stops here</div><div class="hs-txt">Agentforce doesn't know your Tokyo launch history. It doesn't know that your $600+ spenders barely respond to sticker packs. Jordan does. The machine paused exactly once, for the one thing the machine can't know.</div>`;
+  msgs.appendChild(hs);
+  setTimeout(()=>hs.classList.add('show'),60);scroll();
+  await D(1100);
+
+  await typeInput('The Tier 1 offer is too light for our whales — upgrade to Premium Wheel spin. Tokyo converted at 47% with it. Keep Tiers 2 and 3 as-is, deploy.');
+  await D(350);
+  addThread({bg:'#0891b2',init:'JV',name:'Jordan Vasquez',ts:'9:16 AM',role:'VP Monetization',
+    btns:['Apply & Deploy All 47,312','Preview Updated Offer'],
+    html:`The Tier 1 offer is too light. These players spent $600+ — a sticker pack doesn't move them. <strong>Upgrade Tier 1 to the Premium Wheel spin.</strong> We ran it for Tokyo and converted at 47%. Keep Tiers 2 and 3 as-is. Deploy now.`
   });
 
-  // ④ RESULT
-  await D(2000);secDiv('④ The Result');await D(500);
-  await typing('ag','⚡','Momentum Scout',1300);
-  addMsg({ag:true,init:'⚡',name:'Momentum Scout',time:'Today at 9:17 AM',html:`
-    <div class="rc">
-      <div class="rc-hdr"><span style="font-size:20px">✅</span><span class="rc-title">Boardwalk Blitz re-engagement — live</span><span class="rc-badge">Deployed</span></div>
-      <ul class="rc-list">
-        <li><span>⏱</span><span><strong>Before agents:</strong> 4-day brief → build → legal → deploy cycle; Tier 1 personalization took 2 analysts 2 days manually</span></li>
-        <li><span>⚡</span><span><strong>Now:</strong> 47,312 players detected, segmented, and deployed in <strong>3 minutes.</strong> Jordan's offer upgrade applied in under 60 seconds before any message went out</span></li>
-        <li><span>💰</span><span><strong>Outcome:</strong> 34% vs. 18% baseline → <strong>$714K incremental Boardwalk Blitz revenue</strong> from a cohort that was quietly walking out the door</span></li>
-      </ul>
-    </div>`
-  });
-
-  await D(1200);W('replay').classList.add('show');
+  // ④ OUTCOME
+  await D(2000);secDiv('④ The Outcome');await D(300);
+  const rh=document.createElement('div');
+  rh.className='result';
+  rh.innerHTML=`<div class="result-num">$714K</div>
+    <div class="result-lbl">incremental Boardwalk Blitz revenue — deployed before 9:17am</div>
+    <ul class="result-list">
+      <li><span class="rc">✓</span><span><strong>47,312 personalized campaigns deployed</strong> with Jordan's Tier 1 upgrade — automatically, before a single analyst was briefed</span></li>
+      <li><span class="rc">✓</span><span>Jordan spent <strong>60 seconds</strong> on the decision that would have taken 2 people 4 days to even identify</span></li>
+      <li><span class="rc">✓</span><span>The $600+ spenders who were walking out the door got the Premium Wheel spin — because <strong>Jordan knew that</strong>, and Agentforce made sure Jordan was the only one who had to</span></li>
+    </ul>`;
+  msgs.appendChild(rh);
+  setTimeout(()=>rh.classList.add('show'),60);scroll();
+  await D(1000);$('replay').classList.add('show');
 }
 window.onload=()=>run();
 </script>
