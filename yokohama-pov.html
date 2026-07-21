@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Yokohama Tire Americas — Internal Account POV</title>
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --red:      #E31837;
+  --red-dark: #B01028;
+  --black:    #0D0D0D;
+  --gray1:    #181818;
+  --gray2:    #242424;
+  --white:    #FFFFFF;
+  --snow:     #F4F4F4;
+  --muted:    rgba(255,255,255,0.52);
+  --card-bg:  rgba(255,255,255,0.05);
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, Helvetica, sans-serif;
+  background: var(--black);
+}
+
+/* =============================================
+   SLIDE SYSTEM
+   ============================================= */
+.deck {
+  position: fixed;
+  inset: 0;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 5.5vh 6vw 6vh;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dark  { background: var(--black); color: var(--white); }
+.light { background: var(--snow);  color: var(--black); }
+
+.dark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(227,24,55,0.055) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* =============================================
+   NAV DOTS
+   ============================================= */
+.nav-dots {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 100;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.25s, transform 0.25s;
+}
+
+.dot.on-light {
+  background: rgba(0,0,0,0.2);
+}
+
+.dot.active {
+  background: var(--red);
+  transform: scale(1.4);
+}
+
+/* Nav arrows */
+.nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  opacity: 0.2;
+  color: inherit;
+  padding: 12px;
+  z-index: 100;
+  transition: opacity 0.2s;
+}
+
+.nav-arrow:hover { opacity: 0.6; }
+.nav-prev { left: 16px; }
+.nav-next { right: 16px; }
+
+/* =============================================
+   SLIDE NUMBER
+   ============================================= */
+.slide-num {
+  position: absolute;
+  bottom: 18px;
+  right: 32px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  opacity: 0.18;
+  color: inherit;
+}
+
+/* =============================================
+   TYPE
+   ============================================= */
+.eyebrow {
+  font-size: clamp(9px, 0.7vw, 11px);
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 10px;
+}
+
+.headline {
+  font-size: clamp(32px, 3.4vw, 52px);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -1px;
+}
+
+/* =============================================
+   SLIDE 1 — WHY CHANGE
+   ============================================= */
+.s1 { justify-content: space-between; }
+
+.s1-header { margin-bottom: 3vh; }
+
+.s1-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(10px, 1vw, 16px);
+  flex: 1;
+}
+
+.change-card {
+  background: var(--gray1);
+  border-left: 3px solid var(--red);
+  border-radius: 0 6px 6px 0;
+  padding: clamp(16px, 1.8vh, 24px) clamp(16px, 1.4vw, 22px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.change-card h3 {
+  font-size: clamp(14px, 1.15vw, 17px);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--white);
+}
+
+.change-card p {
+  font-size: clamp(12px, 0.95vw, 14px);
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* =============================================
+   SLIDE 2 — WHY SALESFORCE
+   ============================================= */
+.s2 { justify-content: space-between; }
+
+.s2-header { margin-bottom: 2.5vh; }
+
+.s2-lanes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(14px, 1.2vw, 22px);
+  flex: 1;
+}
+
+.lane {
+  border-radius: 8px;
+  padding: clamp(22px, 2.5vh, 32px) clamp(20px, 1.8vw, 28px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 1.4vh, 18px);
+}
+
+.lane-dark {
+  background: var(--black);
+  color: var(--white);
+  border: 1px solid var(--gray2);
+}
+
+.lane-light {
+  background: var(--white);
+  color: var(--black);
+  border: 1px solid #DDD;
+}
+
+.lane-tag {
+  font-size: clamp(8px, 0.6vw, 10px);
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+.lane-name {
+  font-size: clamp(18px, 1.9vw, 26px);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.lane-dark .lane-name { color: var(--white); }
+.lane-light .lane-name { color: var(--black); }
+
+.lane-sub {
+  font-size: clamp(11px, 0.85vw, 13px);
+  margin-top: 5px;
+}
+
+.lane-dark .lane-sub  { color: var(--muted); }
+.lane-light .lane-sub { color: rgba(0,0,0,0.45); }
+
+.lane-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: clamp(9px, 0.65vw, 10px);
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  width: fit-content;
+  background: rgba(227,24,55,0.15);
+  color: var(--red);
+}
+
+.lane-bullets {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 0.9vh, 12px);
+}
+
+.lane-bullets li {
+  font-size: clamp(12px, 1vw, 15px);
+  line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.lane-dark .lane-bullets li  { color: rgba(255,255,255,0.78); }
+.lane-light .lane-bullets li { color: rgba(0,0,0,0.72); }
+
+.lane-arr { color: var(--red); font-weight: 800; flex-shrink: 0; margin-top: 1px; }
+
+/* =============================================
+   SLIDE 3 — WHY NOW
+   ============================================= */
+.s3 { justify-content: space-between; }
+
+.s3-header { margin-bottom: 3vh; }
+
+.s3-signals {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: clamp(10px, 1vw, 16px);
+  flex: 1;
+}
+
+.signal {
+  background: var(--gray1);
+  border-radius: 6px;
+  padding: clamp(18px, 2vh, 28px) clamp(16px, 1.4vw, 22px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.signal-n {
+  font-size: clamp(44px, 4vw, 60px);
+  font-weight: 900;
+  color: var(--red);
+  line-height: 1;
+  letter-spacing: -3px;
+}
+
+.signal-timing {
+  font-size: clamp(8px, 0.6vw, 10px);
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+
+.signal h3 {
+  font-size: clamp(14px, 1.2vw, 18px);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--white);
+  margin-top: 2px;
+}
+
+.signal p {
+  font-size: clamp(12px, 0.95vw, 14px);
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* =============================================
+   SLIDE 4 — PERSONAS
+   ============================================= */
+.s4 { justify-content: space-between; }
+
+.s4-header { margin-bottom: 2.5vh; }
+
+.s4-personas {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: clamp(10px, 0.8vw, 14px);
+  flex: 1;
+}
+
+.persona {
+  background: var(--white);
+  border-radius: 8px;
+  padding: clamp(18px, 2vh, 26px) clamp(16px, 1.4vw, 22px);
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.persona-dept {
+  font-size: clamp(8px, 0.6vw, 10px);
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+.persona-name {
+  font-size: clamp(16px, 1.5vw, 21px);
+  font-weight: 800;
+  color: var(--black);
+  line-height: 1.1;
+}
+
+.persona-title {
+  font-size: clamp(11px, 0.85vw, 13px);
+  color: rgba(0,0,0,0.45);
+  margin-top: 4px;
+}
+
+.persona-divider { border: none; border-top: 1px solid rgba(0,0,0,0.07); }
+
+.persona-angle {
+  font-size: clamp(8px, 0.6vw, 10px);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.28);
+  margin-bottom: 2px;
+}
+
+.persona-points {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.persona-points li {
+  font-size: clamp(12px, 0.95vw, 14px);
+  line-height: 1.5;
+  color: rgba(0,0,0,0.68);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.persona-points li::before {
+  content: '—';
+  color: var(--red);
+  flex-shrink: 0;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.persona-status {
+  margin-top: auto;
+  display: inline-block;
+  font-size: clamp(8px, 0.6vw, 10px);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  width: fit-content;
+}
+
+.status-open { background: rgba(227,24,55,0.1);  color: var(--red-dark); }
+.status-warm { background: rgba(0,0,0,0.06);     color: rgba(0,0,0,0.45); }
+
+/* =============================================
+   SLIDE 5 — ACTIVATION
+   ============================================= */
+.s5 { justify-content: space-between; }
+
+.s5-header { margin-bottom: 3vh; }
+
+.s5-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: clamp(10px, 1vw, 16px);
+  flex: 1;
+}
+
+.action {
+  background: var(--gray1);
+  border-radius: 6px;
+  padding: clamp(18px, 2vh, 28px) clamp(16px, 1.4vw, 22px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.action-when {
+  font-size: clamp(8px, 0.6vw, 10px);
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+
+.action h3 {
+  font-size: clamp(16px, 1.4vw, 20px);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--white);
+}
+
+.action p {
+  font-size: clamp(12px, 0.95vw, 14px);
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.action-goal {
+  margin-top: auto;
+  font-size: clamp(11px, 0.85vw, 13px);
+  font-weight: 600;
+  color: var(--red);
+  line-height: 1.5;
+}
+
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ============================================================
+       SLIDE 1 — WHY CHANGE
+       ============================================================ -->
+  <section class="slide dark s1 active" data-theme="dark">
+
+    <div class="s1-header">
+      <div class="eyebrow">Why Change</div>
+      <div class="headline">Standing Still Has a Cost</div>
+    </div>
+
+    <div class="s1-grid">
+
+      <div class="change-card">
+        <h3>Dealer loyalty data is invisible</h3>
+        <p>Ansira never connects to the CRM. Co-op spend, relationship signals, and buying history don't reach sales, marketing, or service. The Advantage Program is their biggest dealer investment — and it's a black box.</p>
+      </div>
+
+      <div class="change-card">
+        <h3>The consumer site commoditizes the brand</h3>
+        <p>A site built around keyword search and price sorting can't guide a shopper toward ADVAN or GEOLANDAR. Premium SKUs compete on a price list — not on merit, fit, or story.</p>
+      </div>
+
+      <div class="change-card">
+        <h3>Every custom build adds another silo</h3>
+        <p>Rebuilt pricing engine. Separate dealer portal. RingCentral over SCV. Each internal decision compounds the integration gap — and the CIO's build bias means it will keep happening.</p>
+      </div>
+
+      <div class="change-card">
+        <h3>New segments will inherit today's fragmentation</h3>
+        <p>OTR, ag, and mining expansion is happening now. No architecture decision is still a decision — these entities will be built on whatever foundation exists today.</p>
+      </div>
+
+    </div>
+
+    <span class="slide-num">1 / 5</span>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 2 — WHY SALESFORCE
+       ============================================================ -->
+  <section class="slide light s2" data-theme="light">
+
+    <div class="s2-header">
+      <div class="eyebrow">Why Salesforce</div>
+      <div class="headline" style="color:var(--black);">Two Lanes, One Platform</div>
+    </div>
+
+    <div class="s2-lanes">
+
+      <div class="lane lane-dark">
+        <div class="lane-tag">Consumer</div>
+        <div>
+          <div class="lane-name">Agentic Commerce Search</div>
+          <div class="lane-sub">Cimulate · Commerce Cloud</div>
+        </div>
+        <div class="lane-badge">GA — 7/21/26</div>
+        <ul class="lane-bullets">
+          <li><span class="lane-arr">→</span> Intent-aware product discovery — understands what the shopper actually needs, not just the keyword</li>
+          <li><span class="lane-arr">→</span> Surfaces ADVAN, GEOLANDAR, and PARADA instead of defaulting to the cheapest SKU</li>
+          <li><span class="lane-arr">→</span> Replaces a price-sorted list with a buying experience that actively sells premium</li>
+        </ul>
+      </div>
+
+      <div class="lane lane-light">
+        <div class="lane-tag">Dealer / B2B</div>
+        <div>
+          <div class="lane-name">B2B Buyer Agent</div>
+          <div class="lane-sub">Commerce Cloud · native to Salesforce</div>
+        </div>
+        <div class="lane-badge">Unified dealer commerce on one native data foundation</div>
+        <ul class="lane-bullets">
+          <li><span class="lane-arr">→</span> Guided self-service for complex product categories — OTR, agriculture, mining, construction</li>
+          <li><span class="lane-arr">→</span> Dealer data visible across sales, marketing, and service from day one</li>
+          <li><span class="lane-arr">→</span> A credible, native alternative to Ansira — not another disconnected tool</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <span class="slide-num" style="color:var(--black);">2 / 5</span>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 3 — WHY NOW
+       ============================================================ -->
+  <section class="slide dark s3" data-theme="dark">
+
+    <div class="s3-header">
+      <div class="eyebrow">Why Now</div>
+      <div class="headline">Three Signals That Make This Moment Specific</div>
+    </div>
+
+    <div class="s3-signals">
+
+      <div class="signal">
+        <div class="signal-n">01</div>
+        <div class="signal-timing">Live Today</div>
+        <h3>Agentic Commerce Search is GA</h3>
+        <p>First time we can show a solution that actively drives premium product discovery — not just describe it.</p>
+      </div>
+
+      <div class="signal">
+        <div class="signal-n">02</div>
+        <div class="signal-timing">The Stakes Are Real</div>
+        <h3>Net income down 14.6% in FY2026</h3>
+        <p>Despite record revenue. The premium sales strategy needs a digital experience that works for it, not against it.</p>
+      </div>
+
+      <div class="signal">
+        <div class="signal-n">03</div>
+        <div class="signal-timing">The Window Is Now</div>
+        <h3>OTR acquisitions integrating today</h3>
+        <p>Build the dealer commerce foundation right or inherit the same fragmentation at scale.</p>
+      </div>
+
+    </div>
+
+    <span class="slide-num">3 / 5</span>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 4 — PERSONAS
+       ============================================================ -->
+  <section class="slide light s4" data-theme="light">
+
+    <div class="s4-header">
+      <div class="eyebrow">Target Personas</div>
+      <div class="headline" style="color:var(--black);">Four Doors In</div>
+    </div>
+
+    <div class="s4-personas">
+
+      <div class="persona">
+        <div class="persona-dept">Marketing</div>
+        <div>
+          <div class="persona-name">Andrew Briggs</div>
+          <div class="persona-title">VP Marketing &amp; Product Management</div>
+        </div>
+        <hr class="persona-divider">
+        <div class="persona-angle">Entry Angle</div>
+        <ul class="persona-points">
+          <li>Ansira renewal decision and what disconnection costs the brand</li>
+          <li>Dealer loyalty as a revenue lever, not just a cost center</li>
+          <li>Premium brand story at the point of consumer discovery</li>
+        </ul>
+      </div>
+
+      <div class="persona">
+        <div class="persona-dept">Digital</div>
+        <div>
+          <div class="persona-name">Alain Graziani</div>
+          <div class="persona-title">Manager, Web &amp; Mobile Development</div>
+        </div>
+        <hr class="persona-divider">
+        <div class="persona-angle">Entry Angle</div>
+        <ul class="persona-points">
+          <li>Agentic Commerce Search as the upgrade to their custom discovery experience</li>
+          <li>Reducing maintenance burden of custom-built site infrastructure</li>
+          <li>Personalization and intent at scale — without building from scratch</li>
+        </ul>
+      </div>
+
+      <div class="persona">
+        <div class="persona-dept">Operations</div>
+        <div>
+          <div class="persona-name">Ray Polentz</div>
+          <div class="persona-title">VP Supply Chain &amp; Logistics</div>
+        </div>
+        <hr class="persona-divider">
+        <div class="persona-angle">Entry Angle</div>
+        <ul class="persona-points">
+          <li>Dealer network visibility and demand signals feeding supply planning</li>
+          <li>Operational alignment between dealer commitments and inventory</li>
+          <li>OTR and ag expansion creating new complexity to manage</li>
+        </ul>
+      </div>
+
+      <div class="persona">
+        <div class="persona-dept">Sales &amp; Marketing</div>
+        <div>
+          <div class="persona-name">Fardad Niknam</div>
+          <div class="persona-title">VP Sales &amp; Marketing</div>
+        </div>
+        <hr class="persona-divider">
+        <div class="persona-angle">Entry Angle</div>
+        <ul class="persona-points">
+          <li>Spans both sales and marketing — sees the full revenue picture</li>
+          <li>Outreach already initiated — fastest path to a real commerce conversation</li>
+          <li>Connecting brand investment to measurable sell-through at the dealer level</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <span class="slide-num" style="color:var(--black);">4 / 5</span>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 5 — ACTIVATION
+       ============================================================ -->
+  <section class="slide dark s5" data-theme="dark">
+
+    <div class="s5-header">
+      <div class="eyebrow">Activation</div>
+      <div class="headline">30-Day Plan</div>
+    </div>
+
+    <div class="s5-actions">
+
+      <div class="action">
+        <div class="action-when">This Week</div>
+        <h3>Initial Outreach</h3>
+        <p>First touches to all four personas. Lead with something relevant to their world — not a product. The goal is to warm the room and earn a response from a group that's hard to reach.</p>
+      </div>
+
+      <div class="action">
+        <div class="action-when">Follow-On</div>
+        <h3>Agentic Commerce Tour</h3>
+        <p>The Salesforce Agentic Commerce Innovation Tour is a natural next step — a low-pressure, content-led reason to stay in motion with Alain and Andrew after first contact.</p>
+      </div>
+
+      <div class="action">
+        <div class="action-when">30-Day Goal</div>
+        <h3>Break Through</h3>
+        <p>This is a hard-to-reach group with a CIO who controls the door. The goal isn't a demo — it's a real dialogue with any one of the three. One conversation opens the account.</p>
+        <div class="action-goal">One of three engages</div>
+      </div>
+
+    </div>
+
+    <span class="slide-num">5 / 5</span>
+  </section>
+
+</div><!-- /deck -->
+
+
+<!-- Nav dots -->
+<div class="nav-dots" id="navDots">
+  <button class="dot active" onclick="goTo(0)" aria-label="Slide 1"></button>
+  <button class="dot" onclick="goTo(1)" aria-label="Slide 2"></button>
+  <button class="dot" onclick="goTo(2)" aria-label="Slide 3"></button>
+  <button class="dot" onclick="goTo(3)" aria-label="Slide 4"></button>
+  <button class="dot" onclick="goTo(4)" aria-label="Slide 5"></button>
+</div>
+
+<!-- Nav arrows -->
+<button class="nav-arrow nav-prev" id="prevBtn" onclick="goTo(current - 1)" aria-label="Previous">&#8592;</button>
+<button class="nav-arrow nav-next" id="nextBtn" onclick="goTo(current + 1)" aria-label="Next">&#8594;</button>
+
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dots   = Array.from(document.querySelectorAll('.dot'));
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  let current = 0;
+
+  function goTo(n) {
+    n = Math.max(0, Math.min(slides.length - 1, n));
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+
+    // Sync dot color to slide theme
+    const theme = slides[current].dataset.theme;
+    dots.forEach(d => {
+      d.classList.toggle('on-light', theme === 'light');
+    });
+    prevBtn.style.color = theme === 'light' ? '#000' : '#fff';
+    nextBtn.style.color = theme === 'light' ? '#000' : '#fff';
+
+    // Hide arrows at edges
+    prevBtn.style.opacity = current === 0 ? '0' : '';
+    nextBtn.style.opacity = current === slides.length - 1 ? '0' : '';
+  }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)) {
+      e.preventDefault(); goTo(current + 1);
+    } else if (['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)) {
+      e.preventDefault(); goTo(current - 1);
+    }
+  });
+
+  // Swipe / trackpad
+  let touchStartX = 0, touchStartY = 0;
+  document.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      dx < 0 ? goTo(current + 1) : goTo(current - 1);
+    } else if (Math.abs(dy) > 50) {
+      dy < 0 ? goTo(current + 1) : goTo(current - 1);
+    }
+  }, { passive: true });
+
+  // Click right/left half to advance
+  document.addEventListener('click', e => {
+    if (e.target.closest('button')) return;
+    e.clientX > window.innerWidth / 2 ? goTo(current + 1) : goTo(current - 1);
+  });
+
+  // Initialize
+  goTo(0);
+</script>
+
+</body>
+</html>
