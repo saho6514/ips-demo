@@ -29,32 +29,39 @@ html, body {
 }
 
 @media print {
-  @page { size: landscape; margin: 0; }
+  @page { size: 11in 8.5in; margin: 0; }
 
   html, body {
-    height: auto;
-    overflow: visible;
-    background: var(--black);
+    height: auto !important;
+    overflow: visible !important;
+    background: var(--black) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .deck {
-    position: static;
+    position: static !important;
+    width: 11in;
+    height: auto !important;
   }
 
   .slide {
-    position: relative;
-    inset: auto;
-    width: 100vw;
-    height: 100vh;
+    position: relative !important;
+    inset: auto !important;
+    width: 11in !important;
+    height: 8.5in !important;
     opacity: 1 !important;
-    pointer-events: auto;
-    page-break-after: always;
-    break-after: page;
-    overflow: hidden;
+    pointer-events: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    overflow: hidden !important;
   }
 
   .nav-dots,
-  .nav-arrow {
+  .nav-arrow,
+  .slide-num {
     display: none !important;
   }
 }
