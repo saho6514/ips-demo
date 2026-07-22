@@ -28,6 +28,37 @@ html, body {
   background: var(--black);
 }
 
+@media print {
+  @page { size: landscape; margin: 0; }
+
+  html, body {
+    height: auto;
+    overflow: visible;
+    background: var(--black);
+  }
+
+  .deck {
+    position: static;
+  }
+
+  .slide {
+    position: relative;
+    inset: auto;
+    width: 100vw;
+    height: 100vh;
+    opacity: 1 !important;
+    pointer-events: auto;
+    page-break-after: always;
+    break-after: page;
+    overflow: hidden;
+  }
+
+  .nav-dots,
+  .nav-arrow {
+    display: none !important;
+  }
+}
+
 /* =============================================
    SLIDE SYSTEM
    ============================================= */
