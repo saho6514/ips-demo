@@ -501,6 +501,33 @@ body {
   margin: clamp(8px, 1.2vh, 14px) 0;
 }
 
+/* ─── SLIDE 7: THEME BLOCKS ─── */
+.theme-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: clamp(12px, 1.8vw, 22px);
+  flex: 1;
+  align-items: start;
+}
+
+.theme-block {
+  border-top: 3px solid var(--blue);
+  padding: clamp(14px, 2vw, 22px) clamp(12px, 1.5vw, 18px);
+}
+
+.tb-header {
+  font-size: clamp(13px, 1.4vw, 17px);
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: clamp(8px, 1.2vh, 14px);
+}
+
+.tb-body {
+  font-size: clamp(11px, 1.1vw, 14px);
+  color: var(--gray);
+  line-height: 1.6;
+}
+
 /* ─── CO-BRAND (content slides) ─── */
 #co-brand {
   position: fixed;
@@ -743,28 +770,19 @@ body {
   <!-- SLIDE 7: VALIDATE -->
   <div class="slide slide-content" data-slide="7">
     <div class="section-label">Before We Leave Today</div>
-    <div class="slide-headline">Three questions worth<br>answering together</div>
-    <div class="discussion-list">
-      <div class="discussion-item">
-        <div class="di-num">1</div>
-        <div>
-          <div class="di-title">Which paid channels are you running today — and who owns measuring their performance?</div>
-          <div class="di-body">We've built our recommendation around paid search as your primary acquisition engine. Knowing who owns that measurement and what tools they're using today means we come back with something scoped, not generic.</div>
-        </div>
+    <div class="slide-headline">What we'd like to<br>understand together</div>
+    <div class="theme-row">
+      <div class="theme-block">
+        <div class="tb-header">Acquisition &amp; Paid Media</div>
+        <div class="tb-body">Understanding your current channels, what's working, and where efficiency can be gained.</div>
       </div>
-      <div class="discussion-item">
-        <div class="di-num">2</div>
-        <div>
-          <div class="di-title">What does efficiency mean to you here — spend optimization, faster insights, or proving ROI upward?</div>
-          <div class="di-body">The answer shapes exactly what we build first. All three are solvable — but they're not the same starting point.</div>
-        </div>
+      <div class="theme-block">
+        <div class="tb-header">Data &amp; Retention</div>
+        <div class="tb-body">How your customer data flows today and where smarter signals could change your retention motion.</div>
       </div>
-      <div class="discussion-item">
-        <div class="di-num">3</div>
-        <div>
-          <div class="di-title">What would need to be true six months from now for this to have been worth your team's time?</div>
-          <div class="di-body">Not a benchmark — what does a real win feel like for you and the team? We build to that bar.</div>
-        </div>
+      <div class="theme-block">
+        <div class="tb-header">Team &amp; Success</div>
+        <div class="tb-body">What great looks like for your team this year and what it would take to get there.</div>
       </div>
     </div>
     <div class="discussion-footer">If we've read the situation correctly, this should feel short. We'll guide it — and leave with a specific, scoped next step for Digital Room.</div>
