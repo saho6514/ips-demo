@@ -499,23 +499,8 @@ body {
 </head>
 <body>
 
-<!-- ─── PASSWORD GATE ─── -->
-<div id="gate">
-  <div class="gate-logos">
-    <span class="gate-logo-sf">salesforce</span>
-    <div class="gate-divider"></div>
-    <span class="gate-logo-dr">Digital Room</span>
-  </div>
-  <div class="gate-title">Marketing Discovery — August 2026</div>
-  <div class="gate-form">
-    <input type="password" id="pw-input" placeholder="enter password" autofocus>
-    <button onclick="checkPassword()">View Presentation</button>
-    <div class="gate-error" id="pw-error"></div>
-  </div>
-</div>
-
 <!-- ─── DECK ─── -->
-<div id="deck">
+<div id="deck" style="display:block">
 
   <!-- SLIDE 1: COVER -->
   <div class="slide slide-cover active" data-slide="1">
@@ -744,27 +729,8 @@ body {
 <div id="slide-counter">1 / 7</div>
 
 <script>
-  const PASSWORD = 'digitalroom';
   const TOTAL = 7;
   let current = 1;
-
-  function checkPassword() {
-    const val = document.getElementById('pw-input').value.trim().toLowerCase();
-    if (val === PASSWORD) {
-      document.getElementById('gate').style.display = 'none';
-      document.getElementById('deck').style.display = 'block';
-      updateChrome();
-    } else {
-      const err = document.getElementById('pw-error');
-      err.textContent = 'Incorrect password. Try again.';
-      document.getElementById('pw-input').value = '';
-      setTimeout(() => err.textContent = '', 2500);
-    }
-  }
-
-  document.getElementById('pw-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') checkPassword();
-  });
 
   function goTo(n) {
     if (n < 1 || n > TOTAL) return;
@@ -782,8 +748,9 @@ body {
     document.getElementById('co-brand').classList.toggle('visible', isLight);
   }
 
+  updateChrome();
+
   document.addEventListener('keydown', e => {
-    if (document.getElementById('gate').style.display !== 'none') return;
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
     if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')  { e.preventDefault(); goTo(current - 1); }
   });
